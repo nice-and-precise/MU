@@ -1,0 +1,686 @@
+// Midwest Underground - Complete Database Schema
+// Includes HDD Field Operations Management
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// USER MANAGEMENT & AUTHENTICATION
+// ============================================================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  password      String
+  role          String    @default("CREW")
+  phone         String?
+  avatar        String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  createdProjects       Project[]           @relation("ProjectCreator")
+  dailyReports          DailyReport[]       @relation("ReportCreator")
+  signedReports         DailyReport[]       @relation("ReportSigner")
+  rodPasses             RodPass[]
+  inspections           Inspection[]        @relation("InspectionCreator")
+  assignedInspections   Inspection[]        @relation("InspectionAssignee")
+  correctiveActions     CorrectiveAction[]
+  rfis                  RFI[]               @relation("RFICreator")
+  rfiResponses          RFI[]               @relation("RFIResponder")
+  tmTickets             TMTicket[]
+  changeOrders          ChangeOrder[]
+  ticket811Responses    Ticket811Response[]
+  events                Event[]
+  auditLogs             ReportAudit[]
+  photos                Photo[]
+  estimates             Estimate[]          @relation("EstimateCreator")
+
+  @@index([email])
+  @@index([role])
+}
+
+// enum Role {
+//   OWNER
+//   SUPER
+//   CREW
+// }
+
+// ============================================================================
+// PROJECT MANAGEMENT
+// ============================================================================
+
+model Project {
+  id                String              @id @default(cuid())
+  name              String
+  description       String?
+  status            String       @default("PLANNING")
+  startDate         DateTime?
+  endDate           DateTime?
+  budget            Float?
+  location          String?
+  customerName      String?
+  customerContact   String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  createdById       String
+
+  // Relations
+  createdBy         User                @relation("ProjectCreator", fields: [createdById], references: [id])
+  bores             Bore[]
+  dailyReports      DailyReport[]
+  inspections       Inspection[]
+  rfis              RFI[]
+  tmTickets         TMTicket[]
+  changeOrders      ChangeOrder[]
+  tickets811        Ticket811[]
+  events            Event[]
+  pits              Pit[]
+  estimates         Estimate[]
+
+  @@index([status])
+  @@index([createdById])
+}
+
+// enum ProjectStatus {
+//   PLANNING
+//   IN_PROGRESS
+//   COMPLETED
+//   ON_HOLD
+// }
+
+// ============================================================================
+// HDD BORE MANAGEMENT
+// ============================================================================
+
+model Bore {
+  id              String        @id @default(cuid())
+  projectId       String
+  name            String
+  alignment       String?         // GeoJSON LineString
+  depthProfile    String?         // [{station, depth, elevation}]
+  diameterIn      Float?
+  productMaterial String?
+  tracerWire      Boolean       @default(false)
+  entryPitId      String?
+  exitPitId       String?
+  status          String    @default("PLANNED")
+  totalLength     Float?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  project         Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  entryPit        Pit?          @relation("EntryPit", fields: [entryPitId], references: [id])
+  exitPit         Pit?          @relation("ExitPit", fields: [exitPitId], references: [id])
+  rodPasses       RodPass[]
+  inspections     Inspection[]
+  rfis            RFI[]
+  events          Event[]
+  photos          Photo[]
+
+  @@index([projectId])
+  @@index([status])
+  @@index([entryPitId])
+  @@index([exitPitId])
+}
+
+// enum BoreStatus {
+//   PLANNED
+//   IN_PROGRESS
+//   COMPLETED
+//   ABANDONED
+// }
+
+// ============================================================================
+// ROD-BY-ROD LOGGING
+// ============================================================================
+
+model RodPass {
+  id              String    @id @default(cuid())
+  boreId          String
+  sequence        Int
+  passNumber      Int       // 1=Pilot, 2=Ream1, 3=Ream2, etc.
+  linearFeet      Float
+  fluidMix        String?
+  fluidVolumeGal  Float?
+  startedAt       DateTime?
+  completedAt     DateTime?
+  notes           String?
+  loggedById      String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  bore            Bore      @relation(fields: [boreId], references: [id], onDelete: Cascade)
+  loggedBy        User      @relation(fields: [loggedById], references: [id])
+
+  @@index([boreId])
+  @@index([sequence])
+  @@index([loggedById])
+}
+
+// ============================================================================
+// DAILY FIELD REPORTS
+// ============================================================================
+
+model DailyReport {
+  id              String        @id @default(cuid())
+  projectId       String
+  reportDate      DateTime
+  crew            String          // [{name, role, hours}]
+  production      String          @default("[]") // [{boreId, activity, lf, startTime, endTime}]
+  labor           String          @default("[]") // [{name, hours, rate, total}]
+  equipment       String          @default("[]") // [{name, hours, rate, total}]
+  materials       String          @default("[]") // [{description, qty, unit, cost, total}]
+  weather         String?         // {condition, temp, impact}
+  notes           String?
+  photos          String          @default("[]") // [{url, caption, timestamp}]
+  status          String  @default("DRAFT")
+  signedById      String?
+  signedAt        DateTime?
+  createdById     String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  project         Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy       User          @relation("ReportCreator", fields: [createdById], references: [id])
+  signedBy        User?         @relation("ReportSigner", fields: [signedById], references: [id])
+  auditLogs       ReportAudit[]
+  photosNew       Photo[]
+
+  @@unique([projectId, reportDate])
+  @@index([projectId])
+  @@index([reportDate])
+  @@index([status])
+  @@index([createdById])
+  @@index([signedById])
+}
+
+// enum ReportStatus {
+//   DRAFT
+//   SUBMITTED
+//   APPROVED
+//   REJECTED
+// }
+
+model ReportAudit {
+  id              String      @id @default(cuid())
+  reportId        String
+  changedById     String
+  changedAt       DateTime    @default(now())
+  changes         String
+  snapshot        String
+  updatedAt       DateTime    @updatedAt
+
+  // Relations
+  report          DailyReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  changedBy       User        @relation(fields: [changedById], references: [id])
+
+  @@index([reportId])
+  @@index([changedById])
+}
+
+// ============================================================================
+// INSPECTIONS & QA/QC
+// ============================================================================
+
+model Inspection {
+  id              String              @id @default(cuid())
+  projectId       String
+  boreId          String?
+  templateName    String?
+  items           String                // [{question, answer, pass/fail, notes, photo}]
+  assigneeId      String?
+  dueDate         DateTime?
+  completedAt     DateTime?
+  status          String    @default("OPEN")
+  location        String?
+  createdById     String
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  // Relations
+  project         Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  bore            Bore?               @relation(fields: [boreId], references: [id], onDelete: SetNull)
+  assignee        User?               @relation("InspectionAssignee", fields: [assigneeId], references: [id])
+  createdBy       User                @relation("InspectionCreator", fields: [createdById], references: [id])
+  correctiveActions CorrectiveAction[]
+  photos          Photo[]
+
+  @@index([projectId])
+  @@index([status])
+  @@index([boreId])
+  @@index([assigneeId])
+  @@index([createdById])
+}
+
+// enum InspectionStatus {
+//   OPEN
+//   IN_PROGRESS
+//   COMPLETED
+//   FAILED
+// }
+
+model CorrectiveAction {
+  id              String    @id @default(cuid())
+  inspectionId    String
+  description     String
+  assigneeId      String
+  dueDate         DateTime
+  status          String  @default("OPEN")
+  resolution      String?
+  closedAt        DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  inspection      Inspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+  assignee        User       @relation(fields: [assigneeId], references: [id])
+
+  @@index([inspectionId])
+  @@index([status])
+  @@index([assigneeId])
+}
+
+// enum CAStatus {
+//   OPEN
+//   IN_PROGRESS
+//   COMPLETED
+// }
+
+// ============================================================================
+// RFIs (REQUEST FOR INFORMATION)
+// ============================================================================
+
+model RFI {
+  id              String      @id @default(cuid())
+  projectId       String
+  boreId          String?
+  question        String
+  location        String?
+  requiredBy      DateTime?
+  status          String   @default("OPEN")
+  response        String?
+  respondedById   String?
+  respondedAt     DateTime?
+  attachments     String        @default("[]")
+  createdById     String
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relations
+  project         Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  bore            Bore?       @relation(fields: [boreId], references: [id], onDelete: SetNull)
+  createdBy       User        @relation("RFICreator", fields: [createdById], references: [id])
+  respondedBy     User?       @relation("RFIResponder", fields: [respondedById], references: [id])
+  tmTickets       TMTicket[]
+  changeOrders    ChangeOrder[]
+
+  @@index([projectId])
+  @@index([status])
+  @@index([boreId])
+  @@index([createdById])
+  @@index([respondedById])
+}
+
+// enum RFIStatus {
+//   OPEN
+//   ANSWERED
+//   CLOSED
+// }
+
+// ============================================================================
+// T&M TICKETS (TIME & MATERIALS)
+// ============================================================================
+
+model TMTicket {
+  id              String        @id @default(cuid())
+  projectId       String
+  rfiId           String?
+  lineItems       String          // [{description, qty, unit, rate, total}]
+  status          String      @default("DRAFT")
+  approvedById    String?
+  approvedAt      DateTime?
+  photos          String          @default("[]")
+  signature       String?         // {data, timestamp, name}
+  createdById     String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  project         Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  rfi             RFI?          @relation(fields: [rfiId], references: [id], onDelete: SetNull)
+  createdBy       User          @relation(fields: [createdById], references: [id])
+  changeOrders    ChangeOrder[]
+
+  @@index([projectId])
+  @@index([status])
+  @@index([rfiId])
+  @@index([createdById])
+}
+
+// enum TMStatus {
+//   DRAFT
+//   SUBMITTED
+//   APPROVED
+//   REJECTED
+// }
+
+// ============================================================================
+// CHANGE ORDERS
+// ============================================================================
+
+model ChangeOrder {
+  id              String      @id @default(cuid())
+  projectId       String
+  tmTicketId      String?
+  rfiId           String?
+  scope           String
+  pricing         String?
+  budgetImpact    Float?
+  status          String    @default("PENDING")
+  approvedById    String?
+  approvedAt      DateTime?
+  createdById     String
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relations
+  project         Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tmTicket        TMTicket?   @relation(fields: [tmTicketId], references: [id], onDelete: SetNull)
+  rfi             RFI?        @relation(fields: [rfiId], references: [id], onDelete: SetNull)
+  createdBy       User        @relation(fields: [createdById], references: [id])
+
+  @@index([projectId])
+  @@index([status])
+  @@index([tmTicketId])
+  @@index([rfiId])
+  @@index([createdById])
+}
+
+// enum COStatus {
+//   PENDING
+//   APPROVED
+//   REJECTED
+// }
+
+// ============================================================================
+// 811 COMPLIANCE TRACKING
+// ============================================================================
+
+model Ticket811 {
+  id              String              @id @default(cuid())
+  projectId       String
+  ticketNumber    String
+  ticketDate      DateTime
+  expirationDate  DateTime
+  status          String     @default("ACTIVE")
+  notes           String?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  // Relations
+  project         Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  responses       Ticket811Response[]
+
+  @@index([projectId])
+  @@index([expirationDate])
+  @@index([status])
+}
+
+// enum Ticket811Status {
+//   ACTIVE
+//   EXPIRED
+//   RENEWED
+// }
+
+model Ticket811Response {
+  id              String      @id @default(cuid())
+  ticketId        String
+  utilityName     String
+  responseType    String?     // "Positive", "Clear", etc.
+  responseDate    DateTime
+  locatePhotos    String        @default("[]")
+  marksDescription String?
+  respondedById   String
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relations
+  ticket          Ticket811   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  respondedBy     User        @relation(fields: [respondedById], references: [id])
+
+  @@index([ticketId])
+  @@index([respondedById])
+}
+
+// ============================================================================
+// EVENTS & LOGGING
+// ============================================================================
+
+model Event {
+  id              String    @id @default(cuid())
+  projectId       String
+  boreId          String?
+  type            String    // "frac-out", "obstruction", "equipment-failure", etc.
+  location        String?
+  description     String
+  photos          String      @default("[]")
+  timestamp       DateTime  @default(now())
+  createdById     String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  bore            Bore?     @relation(fields: [boreId], references: [id], onDelete: SetNull)
+  createdBy       User      @relation(fields: [createdById], references: [id])
+
+  @@index([projectId])
+  @@index([timestamp])
+  @@index([boreId])
+  @@index([createdById])
+}
+
+// ============================================================================
+// PITS
+// ============================================================================
+
+model Pit {
+  id              String    @id @default(cuid())
+  projectId       String
+  boreId          String?
+  type            String?   // "entry", "exit", "intermediate"
+  location        String?     // {lat, lon}
+  elevation       Float?
+  notes           String?
+  photos          String      @default("[]")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  entryBores      Bore[]    @relation("EntryPit")
+  exitBores       Bore[]    @relation("ExitPit")
+
+  @@index([projectId])
+}
+
+// ============================================================================
+// CONTACT SUBMISSIONS
+// ============================================================================
+
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  service   String?
+  message   String
+  status    String @default("NEW")
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([email])
+}
+
+// enum ContactStatus {
+//   NEW
+//   CONTACTED
+//   CONVERTED
+//   CLOSED
+// }
+
+// ============================================================================
+// PHOTO MANAGEMENT
+// ============================================================================
+
+model Photo {
+  id            String       @id @default(cuid())
+  filename      String
+  url           String
+  thumbnailUrl  String?
+  size          Int
+  mimeType      String
+  boreId        String?
+  inspectionId  String?
+  dailyReportId String?
+  uploadedById  String
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  // Relations
+  bore          Bore?        @relation(fields: [boreId], references: [id], onDelete: Cascade)
+  inspection    Inspection?  @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+  dailyReport   DailyReport? @relation(fields: [dailyReportId], references: [id], onDelete: Cascade)
+  uploadedBy    User         @relation(fields: [uploadedById], references: [id])
+
+  @@index([boreId])
+  @@index([inspectionId])
+  @@index([dailyReportId])
+  @@index([uploadedById])
+}
+
+// ============================================================================
+// COST DATABASE & ESTIMATING
+// ============================================================================
+
+model CostCategory {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  description String?
+  sortOrder   Int        @default(0)
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relations
+  costItems   CostItem[]
+
+  @@index([isActive])
+}
+
+model CostItem {
+  id              String       @id @default(cuid())
+  categoryId      String
+  code            String       @unique  // e.g., "HDD-001", "LABOR-001"
+  name            String
+  description     String?
+  unit            String       // "LF", "HR", "EA", "CY", etc.
+  unitCost        Float
+  laborRate       Float?       // Labor cost per unit
+  equipmentRate   Float?       // Equipment cost per unit
+  materialCost    Float?       // Material cost per unit
+  productionRate  Float?       // Units per hour (for labor calculations)
+  markup          Float        @default(0.15) // Default 15% markup
+  isActive        Boolean      @default(true)
+  notes           String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  // Relations
+  category        CostCategory @relation(fields: [categoryId], references: [id])
+  estimateLines   EstimateLine[]
+
+  @@index([categoryId])
+  @@index([code])
+  @@index([isActive])
+}
+
+model Estimate {
+  id              String         @id @default(cuid())
+  projectId       String?
+  name            String
+  description     String?
+  status          String @default("DRAFT")
+  customerName    String?
+  customerEmail   String?
+  customerPhone   String?
+  validUntil      DateTime?
+  subtotal        Float          @default(0)
+  markupPercent   Float          @default(0.15)
+  markupAmount    Float          @default(0)
+  taxPercent      Float          @default(0)
+  taxAmount       Float          @default(0)
+  total           Float          @default(0)
+  notes           String?
+  terms           String?
+  createdById     String
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  // Relations
+  project         Project?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  createdBy       User           @relation("EstimateCreator", fields: [createdById], references: [id])
+  lines           EstimateLine[]
+
+  @@index([projectId])
+  @@index([status])
+  @@index([createdById])
+}
+
+// enum EstimateStatus {
+//   DRAFT
+//   SENT
+//   APPROVED
+//   REJECTED
+//   EXPIRED
+// }
+
+model EstimateLine {
+  id              String    @id @default(cuid())
+  estimateId      String
+  costItemId      String?
+  lineNumber      Int
+  description     String
+  quantity        Float
+  unit            String
+  unitCost        Float
+  laborCost       Float     @default(0)
+  equipmentCost   Float     @default(0)
+  materialCost    Float     @default(0)
+  subtotal        Float
+  markup          Float     @default(0)
+  total           Float
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  estimate        Estimate  @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+  costItem        CostItem? @relation(fields: [costItemId], references: [id], onDelete: SetNull)
+
+  @@index([estimateId])
+  @@index([costItemId])
+}
