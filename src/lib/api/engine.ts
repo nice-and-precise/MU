@@ -40,9 +40,9 @@ export async function calculatePathWithRust(surveys: SurveyInput[]): Promise<Sur
         // The frontend expects SurveyStation which has all fields.
 
         return data.path.map((p, i) => ({
-            measuredDepth: surveys[i].md,
-            inclination: 90 + surveys[i].pitch, // Approx conversion back for display if needed
-            azimuth: surveys[i].az,
+            md: surveys[i].md,
+            inc: 90 + surveys[i].pitch, // Approx conversion back for display if needed
+            azi: surveys[i].az,
             north: p.north,
             east: p.east,
             tvd: p.tvd,

@@ -2,6 +2,7 @@ import { getProject } from "@/app/actions/projects";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { MapPin, Calendar, DollarSign, Activity, FileText, AlertCircle } from "lucide-react";
+import { LinearProgressBar } from "@/components/projects/LinearProgressBar";
 
 export default async function ProjectDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -109,6 +110,15 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
                         {project.bores.length > 0 ? "45%" : "0%"}
                     </p>
                 </div>
+            </div>
+
+            {/* Linear Progress Section */}
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
+                <LinearProgressBar
+                    projectId={project.id}
+                    totalLength={project.bores.reduce((acc, bore) => acc + (bore.totalLength || 0), 0) || 1000}
+                    progressData={project.stationProgress || []}
+                />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

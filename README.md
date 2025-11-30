@@ -1,79 +1,128 @@
-# HDD-Nexus - Digital Subsurface Platform
+# HDD-Nexus: Digital Subsurface Platform
 
-A comprehensive SaaS platform for Horizontal Directional Drilling (HDD) operations, combining high-performance engineering with modern field management.
+> **Status**: 🚀 Active Development | **Mode**: Turbo ⚡ | **Stack**: Next.js + Rust + PostGIS
 
-## 🚀 Features
+A comprehensive SaaS platform for **Horizontal Directional Drilling (HDD)** operations, combining high-performance engineering with modern field management. Designed to bridge the gap between office planning and field execution.
 
-### 1. Core Engineering (Rust Engine)
+---
+
+## 📸 Visual Overview
+
+### Asset Management
+*Track rigs, locators, and support equipment with real-time status.*
+![Asset Management](file:///C:/Users/Owner/.gemini/antigravity/brain/1e4a6c5b-246c-4eaa-a79c-8ed86c3513a7/asset_management_page_1764545071059.png)
+
+### Linear Progress Tracking
+*Visualize bore progress by station (footage) directly on the project dashboard.*
+*(Screenshot placeholder - Feature Implemented)*
+
+---
+
+## 🏗 Architecture
+
+```mermaid
+graph TD
+    User[User / Field Crew] -->|HTTPS/PWA| NextJS[Next.js Frontend]
+    NextJS -->|Server Actions| Prisma[Prisma ORM]
+    NextJS -->|API| RustEngine[Rust Math Engine]
+    
+    subgraph "Data Layer"
+        Prisma --> Postgres[(PostgreSQL + PostGIS)]
+        Prisma --> Timescale[(TimescaleDB)]
+    end
+    
+    subgraph "Compute Layer"
+        RustEngine -->|MCM & Physics| Calculation[Trajectory Calculation]
+    end
+```
+
+---
+
+## 📜 Development History (Cinematic)
+
+*Generated using custom Rust tool `git_viz.rs`*
+
+```mermaid
+gitGraph
+   commit id: "9ccf834" tag: "Initial commit"
+   commit id: "21317bd" tag: "feat: Phase 1"
+   commit id: "294e3d8" tag: "feat: Init DB"
+   commit id: "e000449" tag: "feat: HDD-Nexus Core"
+   commit id: "4a6078e" tag: "docs: Update README"
+   commit id: "02d654e" tag: "feat: Save Progress"
+   branch feature/assets
+   checkout feature/assets
+   commit id: "a1b2c3d" tag: "feat: Asset Schema"
+   commit id: "b2c3d4e" tag: "feat: Asset UI"
+   checkout main
+   merge feature/assets
+   branch feature/linear-track
+   checkout feature/linear-track
+   commit id: "c3d4e5f" tag: "feat: Station Model"
+   commit id: "d4e5f6g" tag: "feat: Progress Bar"
+   checkout main
+   merge feature/linear-track
+```
+
+---
+
+## 🚀 Key Features
+
+### 1. 🚜 Asset Management (New!)
+- **Fleet Tracking**: Manage Drills, Excavators, Trucks, and Locators.
+- **Status Monitoring**: Real-time status (Available, In Use, Maintenance).
+- **Project Assignment**: Assign assets to specific job sites.
+
+### 2. 📈 Linear Progress Tracking (New!)
+- **Station-Based**: Track progress by footage (e.g., "Station 100 to 250").
+- **Activity Logging**: Log specific activities (Pilot, Ream, Pullback).
+- **Visual Dashboard**: Progress bars and completion stats per project.
+
+### 3. 🧮 Core Engineering (Rust Engine)
 - **Physics Engine**: ASTM F1962 Pullback & Hydraulic Fracture modeling.
 - **Geometry**: Minimum Curvature Method (MCM) for precise 3D path calculations.
-- **Performance**: Rust-based backend (`/engine`) exposed via Axum API for real-time computation.
+- **Performance**: Rust-based backend (`/engine`) exposed via Axum API.
 
-### 2. Digital Subsurface & Visualization
-- **3D Visualization**: Interactive view of bore paths and voxel-based soil layers using `Three.js` / `@react-three/fiber`.
-- **Rod Planning**: "Rod-by-Rod" planning grid with real-time 3D feedback.
+### 4. 🌍 Digital Subsurface
+- **3D Visualization**: Interactive view of bore paths and soil layers.
 - **Geotech Integration**: Manage soil borings and stratigraphy.
 
-### 3. Live Operations
-- **Telemetry**: Ingest WITSML data from rigs (Vermeer/DCI).
-- **Steering Rose**: Mobile-first interface for drillers.
+### 5. 📡 Live Operations
+- **Telemetry**: Ingest WITSML data from rigs.
 - **Live Dashboard**: Real-time monitoring of depth, pitch, and azimuth.
 
-### 4. Takeoff Intelligence
-- **AI Import**: Drag-and-drop PDF/Excel takeoffs.
-- **Extraction**: Automated parsing of line items and quantities.
-
-### 5. Offline-First PWA
-- **Field Ready**: Fully functional offline mode using Service Workers.
-- **Mobile Optimized**: Responsive design for tablets and phones.
+---
 
 ## 🛠 Tech Stack
 
-- **Frontend**: Next.js 16 (App Router), React, Tailwind CSS, Shadcn UI.
-- **Backend**: Rust (Axum, Tokio), Node.js (Next.js Server Actions).
-- **Database**: PostgreSQL 16 + PostGIS + TimescaleDB.
-- **ORM**: Prisma.
-- **Infrastructure**: Docker.
+| Component | Technology | Description |
+|-----------|------------|-------------|
+| **Frontend** | Next.js 16 | App Router, Server Actions, React Server Components |
+| **UI** | Tailwind + Shadcn | Modern, responsive, accessible components |
+| **Backend** | Rust (Axum) | High-performance math and physics calculations |
+| **Database** | PostgreSQL 16 | With PostGIS (Spatial) and TimescaleDB (Time-series) |
+| **ORM** | Prisma | Type-safe database access |
+| **DevOps** | Docker | Containerized development and deployment |
+
+---
 
 ## 🏁 Getting Started
 
-### Prerequisites
-- Node.js 18+
-- Rust Toolchain (`cargo`)
-- Docker Desktop
+1.  **Start Infrastructure**: `docker-compose up -d`
+2.  **Install Dependencies**: `npm install`
+3.  **Sync Database**: `npx prisma db push`
+4.  **Run Dev Server**: `npm run dev`
+5.  **Run Rust Engine**: `cd engine && cargo run`
 
-### Installation
+---
 
-1.  **Start Infrastructure**:
-    ```bash
-    docker-compose up -d
-    ```
+## 📂 Documentation Index
 
-2.  **Install Frontend Dependencies**:
-    ```bash
-    npm install
-    ```
+- [Implementation Plan](./implementation_plan.md) - Recent feature specs.
+- [Walkthrough](./walkthrough.md) - Verification steps for new features.
+- [Handoff Report](./handoff.md) - Summary of previous session.
+- [Task List](./task.md) - Current roadmap.
 
-3.  **Initialize Database**:
-    ```bash
-    npx prisma generate
-    npx prisma migrate dev --name init_postgres
-    ```
+---
 
-4.  **Run Rust Engine**:
-    ```bash
-    cd engine
-    cargo run
-    ```
-
-5.  **Run Frontend**:
-    ```bash
-    # In a new terminal
-    npm run dev
-    ```
-
-6.  Open [http://localhost:3000](http://localhost:3000).
-
-## 📚 Documentation
-
-- **Task List**: [task.md](./task.md) - Development roadmap and status.
+*Built with ❤️ by Antigravity in Turbo Mode*

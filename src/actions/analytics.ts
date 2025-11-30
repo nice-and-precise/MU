@@ -13,7 +13,7 @@ export interface ProductionRate {
  * Mines Daily Reports to calculate actual production rates by soil type.
  * This creates the "Closed Loop" feedback for estimating.
  */
-export async function getHistoricalProductionRates(): Promise<{ success: boolean, data?: ProductionRate[] }> {
+export async function getHistoricalProductionRates(): Promise<{ success: boolean, data?: ProductionRate[], error?: string }> {
     try {
         // 1. Fetch all Daily Reports with production logs
         const reports = await prisma.dailyReport.findMany({

@@ -86,6 +86,8 @@ model Project {
   pits              Pit[]
   estimates         Estimate[]
   geotechReports    GeotechReport[]
+  assets            Asset[]
+  stationProgress   StationProgress[]
 
   @@index([status])
   @@index([createdById])
@@ -820,14 +822,41 @@ model Asset {
   id              String      @id @default(cuid())
   name            String      // e.g., "Vermeer D24x40"
   type            String      // "Drill", "Excavator", "Truck", "Locator"
+  model           String?
   serialNumber    String?
-  status          String      @default("ACTIVE") // "ACTIVE", "MAINTENANCE", "RETIRED"
+  status          String      @default("AVAILABLE") // "AVAILABLE", "IN_USE", "MAINTENANCE", "RETIRED"
+  projectId       String?     // Current location/assignment
   purchaseDate    DateTime?
   hours           Float?      // Engine hours
   location        String?     // Current jobsite or yard
   notes           String?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
+
+  // Relations
+  project         Project?    @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([projectId])
+  @@index([status])
+  @@index([type])
+}
+
+model StationProgress {
+  id              String    @id @default(cuid())
+  projectId       String
+  date            DateTime
+  startStation    Float     // e.g., 100.0
+  endStation      Float     // e.g., 250.0
+  status          String    // "PILOT", "REAM", "PULLBACK", "COMPLETED"
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([date])
 }
 
 model Tooling {

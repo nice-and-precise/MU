@@ -31,6 +31,9 @@ export async function getProject(id: string) {
                 take: 5,
             },
             tickets811: true,
+            stationProgress: {
+                orderBy: { date: 'desc' },
+            },
         },
     });
 }

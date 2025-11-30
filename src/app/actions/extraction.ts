@@ -1,7 +1,7 @@
 'use server';
 
 import { extractDataFromText } from "@/lib/extraction/pipeline";
-import pdf from "pdf-parse";
+const pdf = require("pdf-parse");
 
 export async function processFile(formData: FormData) {
     const file = formData.get('file') as File;
