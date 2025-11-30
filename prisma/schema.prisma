@@ -42,6 +42,7 @@ model User {
   auditLogs             ReportAudit[]
   photos                Photo[]
   estimates             Estimate[]          @relation("EstimateCreator")
+  inventoryTransactions InventoryTransaction[]
 
   @@index([email])
   @@index([role])
@@ -84,6 +85,7 @@ model Project {
   events            Event[]
   pits              Pit[]
   estimates         Estimate[]
+  geotechReports    GeotechReport[]
 
   @@index([status])
   @@index([createdById])
@@ -125,6 +127,7 @@ model Bore {
   rfis            RFI[]
   events          Event[]
   photos          Photo[]
+  borePlan        BorePlan?
 
   @@index([projectId])
   @@index([status])
@@ -151,6 +154,8 @@ model RodPass {
   linearFeet      Float
   fluidMix        String?
   fluidVolumeGal  Float?
+  pitch           Float?    // Degrees
+  azimuth         Float?    // Degrees
   startedAt       DateTime?
   completedAt     DateTime?
   notes           String?
@@ -683,4 +688,152 @@ model EstimateLine {
 
   @@index([estimateId])
   @@index([costItemId])
+}
+
+// ============================================================================
+// GEOTECHNICAL DATA
+// ============================================================================
+
+model GeotechReport {
+  id              String      @id @default(cuid())
+  projectId       String
+  title           String
+  reportDate      DateTime
+  engineer        String?
+  description     String?
+  pdfUrl          String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relations
+  project         Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  soilLayers      SoilLayer[]
+
+  @@index([projectId])
+}
+
+model SoilLayer {
+  id              String        @id @default(cuid())
+  geotechReportId String
+  startDepth      Float
+  endDepth        Float
+  soilType        String        // "Clay", "Sand", "Rock", "Cobble", etc.
+  description     String?
+  color           String?       // Hex code for visualization
+  hardness        Float?        // Scale 1-10 or specific unit
+  phpaRequired    Boolean       @default(false)
+  rockStrengthPsi Float?        // For rock
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  geotechReport   GeotechReport @relation(fields: [geotechReportId], references: [id], onDelete: Cascade)
+
+  @@index([geotechReportId])
+}
+
+// ============================================================================
+// HDD ENGINEERING & PLANNING
+// ============================================================================
+
+model BorePlan {
+  id              String      @id @default(cuid())
+  boreId          String      @unique
+  designMethod    String?     // "ASTM F1962", "PRCI"
+  totalLength     Float
+  pipeDiameter    Float
+  pipeMaterial    String      // "HDPE", "Steel", "PVC"
+  entryAngle      Float?
+  exitAngle       Float?
+  bendRadius      Float?
+  pullbackForce   Float?      // Calculated
+  safetyFactor    Float?
+  fracOutRisk     String?     // "Low", "Medium", "High"
+  notes           String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relations
+  bore            Bore        @relation(fields: [boreId], references: [id], onDelete: Cascade)
+  fluidPlan       FluidPlan?
+}
+
+model FluidPlan {
+  id              String      @id @default(cuid())
+  borePlanId      String      @unique
+  soilType        String
+  pumpRate        Float?      // GPM
+  fluidType       String?     // "Bentonite", "Polymer"
+  additives       String?     // JSON array of additives
+  volumePerFt     Float?      // Calculated
+  totalVolume     Float?      // Calculated
+  cleaningRate    Float?      // Annular Velocity
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relations
+  borePlan        BorePlan    @relation(fields: [borePlanId], references: [id], onDelete: Cascade)
+}
+
+// ============================================================================
+// INVENTORY & ASSET MANAGEMENT
+// ============================================================================
+
+model InventoryItem {
+  id              String      @id @default(cuid())
+  name            String
+  sku             String?     @unique
+  category        String      // "Fluid", "Pipe", "Parts", "PPE"
+  description     String?
+  unit            String      // "Bag", "Pallet", "Foot", "Each"
+  quantityOnHand  Float       @default(0)
+  reorderPoint    Float?
+  location        String?     // Warehouse location
+  costPerUnit     Float?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  transactions    InventoryTransaction[]
+}
+
+model InventoryTransaction {
+  id              String        @id @default(cuid())
+  itemId          String
+  type            String        // "IN", "OUT", "ADJUST"
+  quantity        Float
+  projectId       String?       // If used on a project
+  notes           String?
+  performedById   String
+  createdAt       DateTime      @default(now())
+
+  // Relations
+  item            InventoryItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  performedBy     User          @relation(fields: [performedById], references: [id])
+}
+
+model Asset {
+  id              String      @id @default(cuid())
+  name            String      // e.g., "Vermeer D24x40"
+  type            String      // "Drill", "Excavator", "Truck", "Locator"
+  serialNumber    String?
+  status          String      @default("ACTIVE") // "ACTIVE", "MAINTENANCE", "RETIRED"
+  purchaseDate    DateTime?
+  hours           Float?      // Engine hours
+  location        String?     // Current jobsite or yard
+  notes           String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model Tooling {
+  id              String      @id @default(cuid())
+  name            String      // e.g., "5in Rock Reamer"
+  type            String      // "Reamer", "Housing", "Bit", "Sub"
+  serialNumber    String?
+  condition       String      @default("GOOD") // "GOOD", "FAIR", "POOR", "RETIRED"
+  hoursUsed       Float       @default(0)
+  maxHours        Float?      // Expected life
+  location        String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
 }

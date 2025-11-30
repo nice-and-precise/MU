@@ -5,28 +5,35 @@ export default async function OwnerDashboard() {
 
     return (
         <div className="p-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Owner Dashboard</h1>
+            <div className="mb-8 border-b border-gray-200 pb-4">
+                <h1 className="text-3xl font-bold text-[#003366] uppercase tracking-tight">Owner Dashboard</h1>
+                <p className="text-gray-500 mt-1">Financial & Project Overview</p>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <h3 className="text-gray-500 text-sm font-medium">Active Projects</h3>
-                    <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">{stats.activeProjects}</p>
+                <div className="bg-white p-6 rounded-lg border-t-4 border-[#003366] shadow-sm border-x border-b border-gray-200">
+                    <h3 className="text-gray-500 text-xs font-bold uppercase tracking-wider">Active Projects</h3>
+                    <p className="text-4xl font-extrabold text-gray-900 mt-2">{stats.activeProjects}</p>
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <h3 className="text-gray-500 text-sm font-medium">Total Revenue (Est)</h3>
-                    <p className="text-3xl font-bold text-green-600 mt-2">
+                <div className="bg-white p-6 rounded-lg border-t-4 border-green-600 shadow-sm border-x border-b border-gray-200">
+                    <h3 className="text-gray-500 text-xs font-bold uppercase tracking-wider">Total Revenue (Est)</h3>
+                    <p className="text-4xl font-extrabold text-green-700 mt-2">
                         ${stats.totalRevenue.toLocaleString()}
                     </p>
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <h3 className="text-gray-500 text-sm font-medium">Pending Approvals</h3>
-                    <p className="text-3xl font-bold text-orange-500 mt-2">{stats.pendingApprovals}</p>
+                <div className="bg-white p-6 rounded-lg border-t-4 border-yellow-500 shadow-sm border-x border-b border-gray-200">
+                    <h3 className="text-gray-500 text-xs font-bold uppercase tracking-wider">Pending Approvals</h3>
+                    <p className="text-4xl font-extrabold text-gray-900 mt-2">{stats.pendingApprovals}</p>
                 </div>
             </div>
 
             <div className="mt-8">
-                <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Recent Activity</h2>
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                    <p className="text-gray-500">No recent activity to display.</p>
+                <h2 className="text-xl font-bold mb-4 text-[#003366] flex items-center">
+                    <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
+                    Recent Activity
+                </h2>
+                <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                    <p className="text-gray-500 italic">No recent activity to display.</p>
                 </div>
             </div>
         </div>

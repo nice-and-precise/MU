@@ -3,8 +3,9 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { MapPin, Calendar, DollarSign, Activity, FileText, AlertCircle } from "lucide-react";
 
-export default async function ProjectDetailsPage({ params }: { params: { id: string } }) {
-    const project = await getProject(params.id);
+export default async function ProjectDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
+    const project = await getProject(id);
 
     if (!project) {
         notFound();
@@ -26,13 +27,35 @@ export default async function ProjectDetailsPage({ params }: { params: { id: str
                     </div>
                     <span
                         className={`px-3 py-1 rounded-full text-sm font-medium ${project.status === "IN_PROGRESS"
-                                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                                : "bg-gray-100 text-gray-700"
+                            ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                            : "bg-gray-100 text-gray-700"
                             }`}
                     >
                         {project.status.replace("_", " ")}
                     </span>
                 </div>
+            </div>
+
+            {/* Navigation Tabs */}
+            <div className="flex space-x-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg mb-8 w-fit">
+                <Link
+                    href={`/dashboard/projects/${project.id}`}
+                    className="px-4 py-2 text-sm font-medium rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
+                >
+                    Overview
+                </Link>
+                <Link
+                    href={`/dashboard/projects/${project.id}/geotech`}
+                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors"
+                >
+                    Geotech
+                </Link>
+                <Link
+                    href={`/dashboard/projects/${project.id}/engineering`}
+                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors"
+                >
+                    Engineering
+                </Link>
             </div>
 
             {/* Stats Grid */}
@@ -61,7 +84,13 @@ export default async function ProjectDetailsPage({ params }: { params: { id: str
                         <span className="text-sm font-medium">Location</span>
                     </div>
                     <p className="text-lg font-bold text-gray-900 dark:text-white truncate">
-                        {project.location ? JSON.parse(project.location as string).city : "N/A"}
+                        {(() => {
+                            try {
+                                return project.location ? JSON.parse(project.location).city : "N/A";
+                            } catch (e) {
+                                return project.location || "N/A";
+                            }
+                        })()}
                     </p>
                 </div>
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">

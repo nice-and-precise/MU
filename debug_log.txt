@@ -1,0 +1,2023 @@
+[2025-11-30T00:34:49.268Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: undefined,
+     ?   AND?: ProjectWhereInput | ProjectWhereInput[],
+     ?   OR?: ProjectWhereInput[],
+     ?   NOT?: ProjectWhereInput | ProjectWhereInput[],
+     ?   name?: StringFilter | String,
+     ?   description?: StringNullableFilter | String | Null,
+     ?   status?: StringFilter | String,
+     ?   startDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   endDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   budget?: FloatNullableFilter | Float | Null,
+     ?   location?: StringNullableFilter | String | Null,
+     ?   customerName?: StringNullableFilter | String | Null,
+     ?   customerContact?: StringNullableFilter | String | Null,
+     ?   createdAt?: DateTimeFilter | DateTime,
+     ?   updatedAt?: DateTimeFilter | DateTime,
+     ?   createdById?: StringFilter | String,
+     ?   createdBy?: UserRelationFilter | UserWhereInput,
+     ?   bores?: BoreListRelationFilter,
+     ?   dailyReports?: DailyReportListRelationFilter,
+     ?   inspections?: InspectionListRelationFilter,
+     ?   rfis?: RFIListRelationFilter,
+     ?   tmTickets?: TMTicketListRelationFilter,
+     ?   changeOrders?: ChangeOrderListRelationFilter,
+     ?   tickets811?: Ticket811ListRelationFilter,
+     ?   events?: EventListRelationFilter,
+     ?   pits?: PitListRelationFilter,
+     ?   estimates?: EstimateListRelationFilter
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true
+       }
+     })
+
+Argument `where` of type ProjectWhereUniqueInput needs at least one of `id` arguments. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: undefined,
+     ?   AND?: ProjectWhereInput | ProjectWhereInput[],
+     ?   OR?: ProjectWhereInput[],
+     ?   NOT?: ProjectWhereInput | ProjectWhereInput[],
+     ?   name?: StringFilter | String,
+     ?   description?: StringNullableFilter | String | Null,
+     ?   status?: StringFilter | String,
+     ?   startDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   endDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   budget?: FloatNullableFilter | Float | Null,
+     ?   location?: StringNullableFilter | String | Null,
+     ?   customerName?: StringNullableFilter | String | Null,
+     ?   customerContact?: StringNullableFilter | String | Null,
+     ?   createdAt?: DateTimeFilter | DateTime,
+     ?   updatedAt?: DateTimeFilter | DateTime,
+     ?   createdById?: StringFilter | String,
+     ?   createdBy?: UserRelationFilter | UserWhereInput,
+     ?   bores?: BoreListRelationFilter,
+     ?   dailyReports?: DailyReportListRelationFilter,
+     ?   inspections?: InspectionListRelationFilter,
+     ?   rfis?: RFIListRelationFilter,
+     ?   tmTickets?: TMTicketListRelationFilter,
+     ?   changeOrders?: ChangeOrderListRelationFilter,
+     ?   tickets811?: Ticket811ListRelationFilter,
+     ?   events?: EventListRelationFilter,
+     ?   pits?: PitListRelationFilter,
+     ?   estimates?: EstimateListRelationFilter
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true
+       }
+     })
+
+Argument `where` of type ProjectWhereUniqueInput needs at least one of `id` arguments. Available options are marked with ?.
+    at wn (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:29:1363)
+    at $n.handleRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6958)
+    at $n.handleAndLogRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async getProject (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:25)
+    at async ProjectDetailsPage (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__69e98d30._.js:37:21)
+[2025-11-30T00:34:49.926Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: undefined,
+     ?   AND?: ProjectWhereInput | ProjectWhereInput[],
+     ?   OR?: ProjectWhereInput[],
+     ?   NOT?: ProjectWhereInput | ProjectWhereInput[],
+     ?   name?: StringFilter | String,
+     ?   description?: StringNullableFilter | String | Null,
+     ?   status?: StringFilter | String,
+     ?   startDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   endDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   budget?: FloatNullableFilter | Float | Null,
+     ?   location?: StringNullableFilter | String | Null,
+     ?   customerName?: StringNullableFilter | String | Null,
+     ?   customerContact?: StringNullableFilter | String | Null,
+     ?   createdAt?: DateTimeFilter | DateTime,
+     ?   updatedAt?: DateTimeFilter | DateTime,
+     ?   createdById?: StringFilter | String,
+     ?   createdBy?: UserRelationFilter | UserWhereInput,
+     ?   bores?: BoreListRelationFilter,
+     ?   dailyReports?: DailyReportListRelationFilter,
+     ?   inspections?: InspectionListRelationFilter,
+     ?   rfis?: RFIListRelationFilter,
+     ?   tmTickets?: TMTicketListRelationFilter,
+     ?   changeOrders?: ChangeOrderListRelationFilter,
+     ?   tickets811?: Ticket811ListRelationFilter,
+     ?   events?: EventListRelationFilter,
+     ?   pits?: PitListRelationFilter,
+     ?   estimates?: EstimateListRelationFilter
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true
+       }
+     })
+
+Argument `where` of type ProjectWhereUniqueInput needs at least one of `id` arguments. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: undefined,
+     ?   AND?: ProjectWhereInput | ProjectWhereInput[],
+     ?   OR?: ProjectWhereInput[],
+     ?   NOT?: ProjectWhereInput | ProjectWhereInput[],
+     ?   name?: StringFilter | String,
+     ?   description?: StringNullableFilter | String | Null,
+     ?   status?: StringFilter | String,
+     ?   startDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   endDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   budget?: FloatNullableFilter | Float | Null,
+     ?   location?: StringNullableFilter | String | Null,
+     ?   customerName?: StringNullableFilter | String | Null,
+     ?   customerContact?: StringNullableFilter | String | Null,
+     ?   createdAt?: DateTimeFilter | DateTime,
+     ?   updatedAt?: DateTimeFilter | DateTime,
+     ?   createdById?: StringFilter | String,
+     ?   createdBy?: UserRelationFilter | UserWhereInput,
+     ?   bores?: BoreListRelationFilter,
+     ?   dailyReports?: DailyReportListRelationFilter,
+     ?   inspections?: InspectionListRelationFilter,
+     ?   rfis?: RFIListRelationFilter,
+     ?   tmTickets?: TMTicketListRelationFilter,
+     ?   changeOrders?: ChangeOrderListRelationFilter,
+     ?   tickets811?: Ticket811ListRelationFilter,
+     ?   events?: EventListRelationFilter,
+     ?   pits?: PitListRelationFilter,
+     ?   estimates?: EstimateListRelationFilter
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true
+       }
+     })
+
+Argument `where` of type ProjectWhereUniqueInput needs at least one of `id` arguments. Available options are marked with ?.
+    at wn (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:29:1363)
+    at $n.handleRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6958)
+    at $n.handleAndLogRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async getProject (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:25)
+    at async ProjectDetailsPage (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__69e98d30._.js:37:21)
+[2025-11-30T00:34:50.456Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: undefined,
+     ?   AND?: ProjectWhereInput | ProjectWhereInput[],
+     ?   OR?: ProjectWhereInput[],
+     ?   NOT?: ProjectWhereInput | ProjectWhereInput[],
+     ?   name?: StringFilter | String,
+     ?   description?: StringNullableFilter | String | Null,
+     ?   status?: StringFilter | String,
+     ?   startDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   endDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   budget?: FloatNullableFilter | Float | Null,
+     ?   location?: StringNullableFilter | String | Null,
+     ?   customerName?: StringNullableFilter | String | Null,
+     ?   customerContact?: StringNullableFilter | String | Null,
+     ?   createdAt?: DateTimeFilter | DateTime,
+     ?   updatedAt?: DateTimeFilter | DateTime,
+     ?   createdById?: StringFilter | String,
+     ?   createdBy?: UserRelationFilter | UserWhereInput,
+     ?   bores?: BoreListRelationFilter,
+     ?   dailyReports?: DailyReportListRelationFilter,
+     ?   inspections?: InspectionListRelationFilter,
+     ?   rfis?: RFIListRelationFilter,
+     ?   tmTickets?: TMTicketListRelationFilter,
+     ?   changeOrders?: ChangeOrderListRelationFilter,
+     ?   tickets811?: Ticket811ListRelationFilter,
+     ?   events?: EventListRelationFilter,
+     ?   pits?: PitListRelationFilter,
+     ?   estimates?: EstimateListRelationFilter
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true
+       }
+     })
+
+Argument `where` of type ProjectWhereUniqueInput needs at least one of `id` arguments. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: undefined,
+     ?   AND?: ProjectWhereInput | ProjectWhereInput[],
+     ?   OR?: ProjectWhereInput[],
+     ?   NOT?: ProjectWhereInput | ProjectWhereInput[],
+     ?   name?: StringFilter | String,
+     ?   description?: StringNullableFilter | String | Null,
+     ?   status?: StringFilter | String,
+     ?   startDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   endDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   budget?: FloatNullableFilter | Float | Null,
+     ?   location?: StringNullableFilter | String | Null,
+     ?   customerName?: StringNullableFilter | String | Null,
+     ?   customerContact?: StringNullableFilter | String | Null,
+     ?   createdAt?: DateTimeFilter | DateTime,
+     ?   updatedAt?: DateTimeFilter | DateTime,
+     ?   createdById?: StringFilter | String,
+     ?   createdBy?: UserRelationFilter | UserWhereInput,
+     ?   bores?: BoreListRelationFilter,
+     ?   dailyReports?: DailyReportListRelationFilter,
+     ?   inspections?: InspectionListRelationFilter,
+     ?   rfis?: RFIListRelationFilter,
+     ?   tmTickets?: TMTicketListRelationFilter,
+     ?   changeOrders?: ChangeOrderListRelationFilter,
+     ?   tickets811?: Ticket811ListRelationFilter,
+     ?   events?: EventListRelationFilter,
+     ?   pits?: PitListRelationFilter,
+     ?   estimates?: EstimateListRelationFilter
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true
+       }
+     })
+
+Argument `where` of type ProjectWhereUniqueInput needs at least one of `id` arguments. Available options are marked with ?.
+    at wn (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:29:1363)
+    at $n.handleRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6958)
+    at $n.handleAndLogRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async getProject (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:25)
+    at async ProjectDetailsPage (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__69e98d30._.js:37:21)
+[2025-11-30T00:34:51.420Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: undefined,
+     ?   AND?: ProjectWhereInput | ProjectWhereInput[],
+     ?   OR?: ProjectWhereInput[],
+     ?   NOT?: ProjectWhereInput | ProjectWhereInput[],
+     ?   name?: StringFilter | String,
+     ?   description?: StringNullableFilter | String | Null,
+     ?   status?: StringFilter | String,
+     ?   startDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   endDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   budget?: FloatNullableFilter | Float | Null,
+     ?   location?: StringNullableFilter | String | Null,
+     ?   customerName?: StringNullableFilter | String | Null,
+     ?   customerContact?: StringNullableFilter | String | Null,
+     ?   createdAt?: DateTimeFilter | DateTime,
+     ?   updatedAt?: DateTimeFilter | DateTime,
+     ?   createdById?: StringFilter | String,
+     ?   createdBy?: UserRelationFilter | UserWhereInput,
+     ?   bores?: BoreListRelationFilter,
+     ?   dailyReports?: DailyReportListRelationFilter,
+     ?   inspections?: InspectionListRelationFilter,
+     ?   rfis?: RFIListRelationFilter,
+     ?   tmTickets?: TMTicketListRelationFilter,
+     ?   changeOrders?: ChangeOrderListRelationFilter,
+     ?   tickets811?: Ticket811ListRelationFilter,
+     ?   events?: EventListRelationFilter,
+     ?   pits?: PitListRelationFilter,
+     ?   estimates?: EstimateListRelationFilter
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true
+       }
+     })
+
+Argument `where` of type ProjectWhereUniqueInput needs at least one of `id` arguments. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: undefined,
+     ?   AND?: ProjectWhereInput | ProjectWhereInput[],
+     ?   OR?: ProjectWhereInput[],
+     ?   NOT?: ProjectWhereInput | ProjectWhereInput[],
+     ?   name?: StringFilter | String,
+     ?   description?: StringNullableFilter | String | Null,
+     ?   status?: StringFilter | String,
+     ?   startDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   endDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   budget?: FloatNullableFilter | Float | Null,
+     ?   location?: StringNullableFilter | String | Null,
+     ?   customerName?: StringNullableFilter | String | Null,
+     ?   customerContact?: StringNullableFilter | String | Null,
+     ?   createdAt?: DateTimeFilter | DateTime,
+     ?   updatedAt?: DateTimeFilter | DateTime,
+     ?   createdById?: StringFilter | String,
+     ?   createdBy?: UserRelationFilter | UserWhereInput,
+     ?   bores?: BoreListRelationFilter,
+     ?   dailyReports?: DailyReportListRelationFilter,
+     ?   inspections?: InspectionListRelationFilter,
+     ?   rfis?: RFIListRelationFilter,
+     ?   tmTickets?: TMTicketListRelationFilter,
+     ?   changeOrders?: ChangeOrderListRelationFilter,
+     ?   tickets811?: Ticket811ListRelationFilter,
+     ?   events?: EventListRelationFilter,
+     ?   pits?: PitListRelationFilter,
+     ?   estimates?: EstimateListRelationFilter
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true
+       }
+     })
+
+Argument `where` of type ProjectWhereUniqueInput needs at least one of `id` arguments. Available options are marked with ?.
+    at wn (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:29:1363)
+    at $n.handleRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6958)
+    at $n.handleAndLogRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async getProject (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:25)
+    at async ProjectDetailsPage (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__69e98d30._.js:37:21)
+[2025-11-30T00:34:51.922Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: undefined,
+     ?   AND?: ProjectWhereInput | ProjectWhereInput[],
+     ?   OR?: ProjectWhereInput[],
+     ?   NOT?: ProjectWhereInput | ProjectWhereInput[],
+     ?   name?: StringFilter | String,
+     ?   description?: StringNullableFilter | String | Null,
+     ?   status?: StringFilter | String,
+     ?   startDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   endDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   budget?: FloatNullableFilter | Float | Null,
+     ?   location?: StringNullableFilter | String | Null,
+     ?   customerName?: StringNullableFilter | String | Null,
+     ?   customerContact?: StringNullableFilter | String | Null,
+     ?   createdAt?: DateTimeFilter | DateTime,
+     ?   updatedAt?: DateTimeFilter | DateTime,
+     ?   createdById?: StringFilter | String,
+     ?   createdBy?: UserRelationFilter | UserWhereInput,
+     ?   bores?: BoreListRelationFilter,
+     ?   dailyReports?: DailyReportListRelationFilter,
+     ?   inspections?: InspectionListRelationFilter,
+     ?   rfis?: RFIListRelationFilter,
+     ?   tmTickets?: TMTicketListRelationFilter,
+     ?   changeOrders?: ChangeOrderListRelationFilter,
+     ?   tickets811?: Ticket811ListRelationFilter,
+     ?   events?: EventListRelationFilter,
+     ?   pits?: PitListRelationFilter,
+     ?   estimates?: EstimateListRelationFilter
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true
+       }
+     })
+
+Argument `where` of type ProjectWhereUniqueInput needs at least one of `id` arguments. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: undefined,
+     ?   AND?: ProjectWhereInput | ProjectWhereInput[],
+     ?   OR?: ProjectWhereInput[],
+     ?   NOT?: ProjectWhereInput | ProjectWhereInput[],
+     ?   name?: StringFilter | String,
+     ?   description?: StringNullableFilter | String | Null,
+     ?   status?: StringFilter | String,
+     ?   startDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   endDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   budget?: FloatNullableFilter | Float | Null,
+     ?   location?: StringNullableFilter | String | Null,
+     ?   customerName?: StringNullableFilter | String | Null,
+     ?   customerContact?: StringNullableFilter | String | Null,
+     ?   createdAt?: DateTimeFilter | DateTime,
+     ?   updatedAt?: DateTimeFilter | DateTime,
+     ?   createdById?: StringFilter | String,
+     ?   createdBy?: UserRelationFilter | UserWhereInput,
+     ?   bores?: BoreListRelationFilter,
+     ?   dailyReports?: DailyReportListRelationFilter,
+     ?   inspections?: InspectionListRelationFilter,
+     ?   rfis?: RFIListRelationFilter,
+     ?   tmTickets?: TMTicketListRelationFilter,
+     ?   changeOrders?: ChangeOrderListRelationFilter,
+     ?   tickets811?: Ticket811ListRelationFilter,
+     ?   events?: EventListRelationFilter,
+     ?   pits?: PitListRelationFilter,
+     ?   estimates?: EstimateListRelationFilter
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true
+       }
+     })
+
+Argument `where` of type ProjectWhereUniqueInput needs at least one of `id` arguments. Available options are marked with ?.
+    at wn (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:29:1363)
+    at $n.handleRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6958)
+    at $n.handleAndLogRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async getProject (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:25)
+    at async ProjectDetailsPage (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__69e98d30._.js:37:21)
+[2025-11-30T00:34:52.453Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: undefined,
+     ?   AND?: ProjectWhereInput | ProjectWhereInput[],
+     ?   OR?: ProjectWhereInput[],
+     ?   NOT?: ProjectWhereInput | ProjectWhereInput[],
+     ?   name?: StringFilter | String,
+     ?   description?: StringNullableFilter | String | Null,
+     ?   status?: StringFilter | String,
+     ?   startDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   endDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   budget?: FloatNullableFilter | Float | Null,
+     ?   location?: StringNullableFilter | String | Null,
+     ?   customerName?: StringNullableFilter | String | Null,
+     ?   customerContact?: StringNullableFilter | String | Null,
+     ?   createdAt?: DateTimeFilter | DateTime,
+     ?   updatedAt?: DateTimeFilter | DateTime,
+     ?   createdById?: StringFilter | String,
+     ?   createdBy?: UserRelationFilter | UserWhereInput,
+     ?   bores?: BoreListRelationFilter,
+     ?   dailyReports?: DailyReportListRelationFilter,
+     ?   inspections?: InspectionListRelationFilter,
+     ?   rfis?: RFIListRelationFilter,
+     ?   tmTickets?: TMTicketListRelationFilter,
+     ?   changeOrders?: ChangeOrderListRelationFilter,
+     ?   tickets811?: Ticket811ListRelationFilter,
+     ?   events?: EventListRelationFilter,
+     ?   pits?: PitListRelationFilter,
+     ?   estimates?: EstimateListRelationFilter
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true
+       }
+     })
+
+Argument `where` of type ProjectWhereUniqueInput needs at least one of `id` arguments. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: undefined,
+     ?   AND?: ProjectWhereInput | ProjectWhereInput[],
+     ?   OR?: ProjectWhereInput[],
+     ?   NOT?: ProjectWhereInput | ProjectWhereInput[],
+     ?   name?: StringFilter | String,
+     ?   description?: StringNullableFilter | String | Null,
+     ?   status?: StringFilter | String,
+     ?   startDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   endDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   budget?: FloatNullableFilter | Float | Null,
+     ?   location?: StringNullableFilter | String | Null,
+     ?   customerName?: StringNullableFilter | String | Null,
+     ?   customerContact?: StringNullableFilter | String | Null,
+     ?   createdAt?: DateTimeFilter | DateTime,
+     ?   updatedAt?: DateTimeFilter | DateTime,
+     ?   createdById?: StringFilter | String,
+     ?   createdBy?: UserRelationFilter | UserWhereInput,
+     ?   bores?: BoreListRelationFilter,
+     ?   dailyReports?: DailyReportListRelationFilter,
+     ?   inspections?: InspectionListRelationFilter,
+     ?   rfis?: RFIListRelationFilter,
+     ?   tmTickets?: TMTicketListRelationFilter,
+     ?   changeOrders?: ChangeOrderListRelationFilter,
+     ?   tickets811?: Ticket811ListRelationFilter,
+     ?   events?: EventListRelationFilter,
+     ?   pits?: PitListRelationFilter,
+     ?   estimates?: EstimateListRelationFilter
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true
+       }
+     })
+
+Argument `where` of type ProjectWhereUniqueInput needs at least one of `id` arguments. Available options are marked with ?.
+    at wn (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:29:1363)
+    at $n.handleRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6958)
+    at $n.handleAndLogRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async getProject (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:25)
+    at async ProjectDetailsPage (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__69e98d30._.js:37:21)
+[2025-11-30T00:35:07.339Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: undefined,
+     ?   AND?: ProjectWhereInput | ProjectWhereInput[],
+     ?   OR?: ProjectWhereInput[],
+     ?   NOT?: ProjectWhereInput | ProjectWhereInput[],
+     ?   name?: StringFilter | String,
+     ?   description?: StringNullableFilter | String | Null,
+     ?   status?: StringFilter | String,
+     ?   startDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   endDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   budget?: FloatNullableFilter | Float | Null,
+     ?   location?: StringNullableFilter | String | Null,
+     ?   customerName?: StringNullableFilter | String | Null,
+     ?   customerContact?: StringNullableFilter | String | Null,
+     ?   createdAt?: DateTimeFilter | DateTime,
+     ?   updatedAt?: DateTimeFilter | DateTime,
+     ?   createdById?: StringFilter | String,
+     ?   createdBy?: UserRelationFilter | UserWhereInput,
+     ?   bores?: BoreListRelationFilter,
+     ?   dailyReports?: DailyReportListRelationFilter,
+     ?   inspections?: InspectionListRelationFilter,
+     ?   rfis?: RFIListRelationFilter,
+     ?   tmTickets?: TMTicketListRelationFilter,
+     ?   changeOrders?: ChangeOrderListRelationFilter,
+     ?   tickets811?: Ticket811ListRelationFilter,
+     ?   events?: EventListRelationFilter,
+     ?   pits?: PitListRelationFilter,
+     ?   estimates?: EstimateListRelationFilter
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true
+       }
+     })
+
+Argument `where` of type ProjectWhereUniqueInput needs at least one of `id` arguments. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: undefined,
+     ?   AND?: ProjectWhereInput | ProjectWhereInput[],
+     ?   OR?: ProjectWhereInput[],
+     ?   NOT?: ProjectWhereInput | ProjectWhereInput[],
+     ?   name?: StringFilter | String,
+     ?   description?: StringNullableFilter | String | Null,
+     ?   status?: StringFilter | String,
+     ?   startDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   endDate?: DateTimeNullableFilter | DateTime | Null,
+     ?   budget?: FloatNullableFilter | Float | Null,
+     ?   location?: StringNullableFilter | String | Null,
+     ?   customerName?: StringNullableFilter | String | Null,
+     ?   customerContact?: StringNullableFilter | String | Null,
+     ?   createdAt?: DateTimeFilter | DateTime,
+     ?   updatedAt?: DateTimeFilter | DateTime,
+     ?   createdById?: StringFilter | String,
+     ?   createdBy?: UserRelationFilter | UserWhereInput,
+     ?   bores?: BoreListRelationFilter,
+     ?   dailyReports?: DailyReportListRelationFilter,
+     ?   inspections?: InspectionListRelationFilter,
+     ?   rfis?: RFIListRelationFilter,
+     ?   tmTickets?: TMTicketListRelationFilter,
+     ?   changeOrders?: ChangeOrderListRelationFilter,
+     ?   tickets811?: Ticket811ListRelationFilter,
+     ?   events?: EventListRelationFilter,
+     ?   pits?: PitListRelationFilter,
+     ?   estimates?: EstimateListRelationFilter
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true
+       }
+     })
+
+Argument `where` of type ProjectWhereUniqueInput needs at least one of `id` arguments. Available options are marked with ?.
+    at wn (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:29:1363)
+    at $n.handleRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6958)
+    at $n.handleAndLogRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async getProject (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:25)
+    at async ProjectDetailsPage (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__69e98d30._.js:37:21)
+[2025-11-30T00:36:03.683Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+    at wn (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:29:1363)
+    at $n.handleRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6958)
+    at $n.handleAndLogRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async getProject (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:25)
+    at async ProjectDetailsPage (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__69e98d30._.js:45:21)
+[2025-11-30T00:36:03.948Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4h000hqkomdptqbgpi"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4h000hqkomdptqbgpi"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+    at wn (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:29:1363)
+    at $n.handleRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6958)
+    at $n.handleAndLogRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async getProject (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:25)
+    at async ProjectDetailsPage (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__69e98d30._.js:45:21)
+[2025-11-30T00:36:04.397Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+    at wn (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:29:1363)
+    at $n.handleRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6958)
+    at $n.handleAndLogRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async getProject (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:25)
+    at async ProjectDetailsPage (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__69e98d30._.js:45:21)
+[2025-11-30T00:36:05.703Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+    at wn (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:29:1363)
+    at $n.handleRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6958)
+    at $n.handleAndLogRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async getProject (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:25)
+    at async ProjectDetailsPage (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__69e98d30._.js:45:21)
+[2025-11-30T00:36:06.239Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+    at wn (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:29:1363)
+    at $n.handleRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6958)
+    at $n.handleAndLogRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async getProject (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:25)
+    at async ProjectDetailsPage (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__69e98d30._.js:45:21)
+[2025-11-30T00:36:06.741Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+    at wn (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:29:1363)
+    at $n.handleRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6958)
+    at $n.handleAndLogRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async getProject (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:25)
+    at async ProjectDetailsPage (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__69e98d30._.js:45:21)
+[2025-11-30T00:36:07.222Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+PrismaClientValidationError: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:166
+
+  66     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized access attempt\n`);
+  67     throw new Error("Unauthorized");
+  68 }
+→ 69 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+    at wn (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:29:1363)
+    at $n.handleRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6958)
+    at $n.handleAndLogRequestError (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (C:\Users\Owner\Desktop\MU\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async getProject (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:69:25)
+    at async ProjectDetailsPage (C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__69e98d30._.js:45:21)
+[2025-11-30T00:42:52.631Z] getProject called with id: cmiju0d4y000jqkom48aglqoz (string)
+[2025-11-30T00:42:53.025Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:70:166
+
+  67     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized\n`);
+  68     throw new Error("Unauthorized");
+  69 }
+→ 70 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+[2025-11-30T00:42:53.721Z] getProject called with id: cmiju0d4y000jqkom48aglqoz (string)
+[2025-11-30T00:42:54.006Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:70:166
+
+  67     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized\n`);
+  68     throw new Error("Unauthorized");
+  69 }
+→ 70 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+[2025-11-30T00:42:55.199Z] getProject called with id: cmiju0d4y000jqkom48aglqoz (string)
+[2025-11-30T00:42:55.343Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:70:166
+
+  67     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized\n`);
+  68     throw new Error("Unauthorized");
+  69 }
+→ 70 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+[2025-11-30T00:42:55.819Z] getProject called with id: cmiju0d4y000jqkom48aglqoz (string)
+[2025-11-30T00:42:56.068Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:70:166
+
+  67     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized\n`);
+  68     throw new Error("Unauthorized");
+  69 }
+→ 70 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+[2025-11-30T00:42:56.551Z] getProject called with id: cmiju0d4y000jqkom48aglqoz (string)
+[2025-11-30T00:42:56.754Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:70:166
+
+  67     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized\n`);
+  68     throw new Error("Unauthorized");
+  69 }
+→ 70 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+[2025-11-30T00:42:57.326Z] getProject called with id: cmiju0d4y000jqkom48aglqoz (string)
+[2025-11-30T00:42:57.526Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:70:166
+
+  67     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized\n`);
+  68     throw new Error("Unauthorized");
+  69 }
+→ 70 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+[2025-11-30T00:42:58.240Z] getProject called with id: cmiju0d4y000jqkom48aglqoz (string)
+[2025-11-30T00:42:58.439Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:70:166
+
+  67     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized\n`);
+  68     throw new Error("Unauthorized");
+  69 }
+→ 70 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+[2025-11-30T00:42:58.857Z] getProject called with id: cmiju0d4y000jqkom48aglqoz (string)
+[2025-11-30T00:42:59.068Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:70:166
+
+  67     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized\n`);
+  68     throw new Error("Unauthorized");
+  69 }
+→ 70 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+[2025-11-30T00:42:59.689Z] getProject called with id: cmiju0d4y000jqkom48aglqoz (string)
+[2025-11-30T00:42:59.906Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:70:166
+
+  67     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized\n`);
+  68     throw new Error("Unauthorized");
+  69 }
+→ 70 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+[2025-11-30T00:43:00.354Z] getProject called with id: cmiju0d4h000hqkomdptqbgpi (string)
+[2025-11-30T00:43:00.523Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:70:166
+
+  67     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized\n`);
+  68     throw new Error("Unauthorized");
+  69 }
+→ 70 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4h000hqkomdptqbgpi"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+[2025-11-30T00:43:53.721Z] getProject called with id: cmiju0d4y000jqkom48aglqoz (string)
+[2025-11-30T00:43:54.331Z] getProject called with id: cmiju0d4h000hqkomdptqbgpi (string)
+[2025-11-30T00:43:54.370Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:70:166
+
+  67     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized\n`);
+  68     throw new Error("Unauthorized");
+  69 }
+→ 70 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+[2025-11-30T00:43:54.707Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:70:166
+
+  67     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized\n`);
+  68     throw new Error("Unauthorized");
+  69 }
+→ 70 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4h000hqkomdptqbgpi"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+[2025-11-30T00:43:55.642Z] getProject called with id: cmiju0d4y000jqkom48aglqoz (string)
+[2025-11-30T00:43:56.070Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:70:166
+
+  67     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized\n`);
+  68     throw new Error("Unauthorized");
+  69 }
+→ 70 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+[2025-11-30T00:43:56.766Z] getProject called with id: cmiju0d4y000jqkom48aglqoz (string)
+[2025-11-30T00:43:56.985Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:70:166
+
+  67     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized\n`);
+  68     throw new Error("Unauthorized");
+  69 }
+→ 70 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+[2025-11-30T00:43:58.305Z] getProject called with id: cmiju0d4y000jqkom48aglqoz (string)
+[2025-11-30T00:43:58.502Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:70:166
+
+  67     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized\n`);
+  68     throw new Error("Unauthorized");
+  69 }
+→ 70 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+[2025-11-30T00:43:59.019Z] getProject called with id: cmiju0d4y000jqkom48aglqoz (string)
+[2025-11-30T00:43:59.223Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:70:166
+
+  67     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized\n`);
+  68     throw new Error("Unauthorized");
+  69 }
+→ 70 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+[2025-11-30T00:43:59.703Z] getProject called with id: cmiju0d4y000jqkom48aglqoz (string)
+[2025-11-30T00:43:59.826Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:70:166
+
+  67     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized\n`);
+  68     throw new Error("Unauthorized");
+  69 }
+→ 70 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+[2025-11-30T00:44:00.274Z] getProject called with id: cmiju0d4y000jqkom48aglqoz (string)
+[2025-11-30T00:44:00.455Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:70:166
+
+  67     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized\n`);
+  68     throw new Error("Unauthorized");
+  69 }
+→ 70 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+[2025-11-30T00:44:00.957Z] getProject called with id: cmiju0d4y000jqkom48aglqoz (string)
+[2025-11-30T00:44:01.092Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:70:166
+
+  67     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized\n`);
+  68     throw new Error("Unauthorized");
+  69 }
+→ 70 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+[2025-11-30T00:44:01.456Z] getProject called with id: cmiju0d4y000jqkom48aglqoz (string)
+[2025-11-30T00:44:01.587Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:70:166
+
+  67     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized\n`);
+  68     throw new Error("Unauthorized");
+  69 }
+→ 70 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.
+[2025-11-30T00:44:21.609Z] getProject called with id: cmiju0d4y000jqkom48aglqoz (string)
+[2025-11-30T00:44:21.909Z] Error in getProject: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique()` invocation in
+C:\Users\Owner\Desktop\MU\.next\dev\server\chunks\ssr\[root-of-the-server]__b3f028a4._.js:70:166
+
+  67     __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync('debug_log.txt', `[${new Date().toISOString()}] Unauthorized\n`);
+  68     throw new Error("Unauthorized");
+  69 }
+→ 70 const project = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].project.findUnique({
+       where: {
+         id: "cmiju0d4y000jqkom48aglqoz"
+       },
+       include: {
+         bores: true,
+         dailyReports: {
+           orderBy: {
+             reportDate: "desc"
+           },
+           take: 5
+         },
+         tickets811: true,
+         geotechReports: true,
+         ~~~~~~~~~~~~~~
+     ?   createdBy?: true,
+     ?   inspections?: true,
+     ?   rfis?: true,
+     ?   tmTickets?: true,
+     ?   changeOrders?: true,
+     ?   events?: true,
+     ?   pits?: true,
+     ?   estimates?: true
+       }
+     })
+
+Unknown field `geotechReports` for include statement on model `Project`. Available options are marked with ?.

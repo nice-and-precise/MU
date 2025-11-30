@@ -5,26 +5,33 @@ export default async function SuperDashboard() {
 
     return (
         <div className="p-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Superintendent Dashboard</h1>
+            <div className="mb-8 border-b border-gray-200 pb-4">
+                <h1 className="text-3xl font-bold text-[#003366] uppercase tracking-tight">Superintendent Dashboard</h1>
+                <p className="text-gray-500 mt-1">Field Operations & Oversight</p>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <h3 className="text-gray-500 text-sm font-medium">My Projects</h3>
-                    <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">{stats.myProjects}</p>
+                <div className="bg-white p-6 rounded-lg border-t-4 border-[#003366] shadow-sm border-x border-b border-gray-200">
+                    <h3 className="text-gray-500 text-xs font-bold uppercase tracking-wider">My Projects</h3>
+                    <p className="text-4xl font-extrabold text-gray-900 mt-2">{stats.myProjects}</p>
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <h3 className="text-gray-500 text-sm font-medium">Open Inspections</h3>
-                    <p className="text-3xl font-bold text-blue-500 mt-2">{stats.openInspections}</p>
+                <div className="bg-white p-6 rounded-lg border-t-4 border-blue-500 shadow-sm border-x border-b border-gray-200">
+                    <h3 className="text-gray-500 text-xs font-bold uppercase tracking-wider">Open Inspections</h3>
+                    <p className="text-4xl font-extrabold text-blue-600 mt-2">{stats.openInspections}</p>
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <h3 className="text-gray-500 text-sm font-medium">Daily Reports (Today)</h3>
-                    <p className="text-3xl font-bold text-purple-500 mt-2">{stats.dailyReportsToday}</p>
+                <div className="bg-white p-6 rounded-lg border-t-4 border-purple-600 shadow-sm border-x border-b border-gray-200">
+                    <h3 className="text-gray-500 text-xs font-bold uppercase tracking-wider">Daily Reports (Today)</h3>
+                    <p className="text-4xl font-extrabold text-purple-700 mt-2">{stats.dailyReportsToday}</p>
                 </div>
             </div>
 
             <div className="mt-8">
-                <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Active Crews</h2>
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                    <p className="text-gray-500">Crew locations and status will appear here.</p>
+                <h2 className="text-xl font-bold mb-4 text-[#003366] flex items-center">
+                    <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
+                    Active Crews
+                </h2>
+                <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                    <p className="text-gray-500 italic">Crew locations and status will appear here.</p>
                 </div>
             </div>
         </div>
