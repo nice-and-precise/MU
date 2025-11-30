@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Terminal, Activity, Play, Pause, RefreshCw } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import SteeringRose from '@/components/drilling/SteeringRose';
 
 export default function LiveTelemetryPage() {
     const params = useParams();
@@ -189,6 +190,13 @@ export default function LiveTelemetryPage() {
                                     <div className="text-4xl font-bold text-blue-600">
                                         {logs[logs.length - 1].lf || logs[logs.length - 1].depth || 0}'
                                     </div>
+                                </div>
+                                <div className="flex justify-center py-4">
+                                    <SteeringRose
+                                        toolFace={logs[logs.length - 1].toolFace || (logs[logs.length - 1].azimuth % 360)} // Mock TF using Azimuth for now if missing
+                                        pitch={logs[logs.length - 1].pitch}
+                                        azimuth={logs[logs.length - 1].azimuth}
+                                    />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="p-4 bg-slate-100 dark:bg-slate-800 rounded-lg text-center">

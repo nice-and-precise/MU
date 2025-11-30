@@ -108,11 +108,6 @@ const ObstacleMesh = ({ obs }: { obs: Obstacle }) => {
         case 'abandoned': color = '#64748b'; break; // Slate
     }
 
-    // Rotation Logic:
-    // 1. Cylinder is Y-aligned by default.
-    // 2. Rotate 90 deg around X to make it Z-aligned (Horizontal).
-    // 3. Rotate around Y by Azimuth to point in correct compass direction.
-
     return (
         <group position={[obs.x, -obs.y, -obs.z]} rotation={[0, -obs.azimuth * (Math.PI / 180), 0]}>
             <group rotation={[Math.PI / 2, 0, 0]}>
@@ -149,26 +144,88 @@ const TargetBox = ({ target }: { target: TargetZone }) => {
     );
 };
 
-// Camera Controller Component
+const VoxelSoilLayers = () => {
+    // Voxel Grid Parameters
+    const gridSize = 20; // Size of each voxel cube
+    const rangeX = 1000; // Total width
+    const rangeZ = 1000; // Total length
+    const rangeY = 100;  // Depth
+
+    const countX = Math.ceil(rangeX / gridSize);
+    const countZ = Math.ceil(rangeZ / gridSize);
+    const countY = Math.ceil(rangeY / gridSize);
+    const totalCount = countX * countZ * countY;
+
+    const meshRef = useRef<THREE.InstancedMesh>(null);
+    const dummy = useMemo(() => new THREE.Object3D(), []);
+
+    useEffect(() => {
+        if (!meshRef.current) return;
+
+        let i = 0;
+        for (let x = 0; x < countX; x++) {
+            for (let z = 0; z < countZ; z++) {
+                for (let y = 0; y < countY; y++) {
+                    // Position
+                    const posX = (x * gridSize) - (rangeX / 2) + 500; // Center around bore
+                    const posZ = (z * gridSize) - (rangeZ / 2) - 500;
+                    const posY = -(y * gridSize); // Downwards
+
+                    // Simple Soil Logic:
+                    // Top 20ft: Clay (Brown)
+                    // 20-60ft: Sand (Yellow)
+                    // >60ft: Rock (Grey)
+
+                    const depth = y * gridSize;
+                    let color = new THREE.Color("#8B4513"); // Clay
+                    if (depth > 20 && depth <= 60) color = new THREE.Color("#F4A460"); // Sand
+                    if (depth > 60) color = new THREE.Color("#696969"); // Rock
+
+                    // Random noise for "Voxel" look
+                    if (Math.random() > 0.3) { // Only render 30% of blocks for "sparse" voxel look or performance
+                        dummy.position.set(posX, posY, posZ);
+                        dummy.scale.set(0.9, 0.9, 0.9); // Slight gap
+                        dummy.updateMatrix();
+                        meshRef.current.setMatrixAt(i, dummy.matrix);
+                        meshRef.current.setColorAt(i, color);
+                    } else {
+                        // Hide this instance
+                        dummy.scale.set(0, 0, 0);
+                        dummy.updateMatrix();
+                        meshRef.current.setMatrixAt(i, dummy.matrix);
+                    }
+                    i++;
+                }
+            }
+        }
+        meshRef.current.instanceMatrix.needsUpdate = true;
+        if (meshRef.current.instanceColor) meshRef.current.instanceColor.needsUpdate = true;
+    }, [countX, countY, countZ, dummy]);
+
+    return (
+        <instancedMesh ref={meshRef} args={[undefined, undefined, totalCount]} position={[0, -10, 0]}>
+            <boxGeometry args={[gridSize, gridSize, gridSize]} />
+            <meshStandardMaterial transparent opacity={0.4} />
+        </instancedMesh>
+    );
+};
+
 const CameraController = ({ viewMode, flyThrough, stations }: { viewMode: string, flyThrough: boolean, stations: SurveyStation[] }) => {
     const { camera, controls } = useThree();
     const progress = useRef(0);
 
-    // Create curve for the camera to follow
     const curve = useMemo(() => {
         if (stations.length < 2) return null;
         const points = stations.map(s => new THREE.Vector3(s.east, -s.tvd, -s.north));
         return new THREE.CatmullRomCurve3(points);
     }, [stations]);
 
-    // Reset progress when toggling
     useEffect(() => {
         if (flyThrough) {
             progress.current = 0;
         }
     }, [flyThrough]);
 
-    // Handle View Modes (Only when NOT flying)
     useEffect(() => {
         if (flyThrough) return;
 
@@ -180,16 +237,14 @@ const CameraController = ({ viewMode, flyThrough, stations }: { viewMode: string
         }
 
         if (viewMode === 'top') {
-            // Orthographic Top View
             camera.position.set(500, 1000, -500);
             camera.lookAt(500, 0, -500);
-            camera.rotation.set(-Math.PI / 2, 0, 0); // Force down
+            camera.rotation.set(-Math.PI / 2, 0, 0);
             if (camera.type === 'OrthographicCamera') {
                 camera.zoom = 0.5;
                 camera.updateProjectionMatrix();
             }
         } else if (viewMode === 'side') {
-            // Orthographic Side View (Looking North)
             camera.position.set(500, -50, 1500);
             camera.lookAt(500, -50, -500);
             if (camera.type === 'OrthographicCamera') {
@@ -197,43 +252,34 @@ const CameraController = ({ viewMode, flyThrough, stations }: { viewMode: string
                 camera.updateProjectionMatrix();
             }
         } else {
-            // Iso Perspective
             camera.position.set(200, 200, 200);
             camera.lookAt(500, -50, -500);
         }
     }, [viewMode, camera, controls, flyThrough]);
 
-    // Handle Fly Through Animation
     useFrame((state, delta) => {
         if (!flyThrough || !curve) return;
 
-        // Advance progress (0 to 1)
-        const duration = 15; // seconds
+        const duration = 15;
         progress.current += delta / duration;
 
         if (progress.current >= 1) {
-            progress.current = 0; // Loop
+            progress.current = 0;
         }
 
         const t = progress.current;
-
-        // Get position and tangent at t
         const position = curve.getPointAt(t);
         const tangent = curve.getTangentAt(t).normalize();
-
-        // Calculate LookAt target (ahead of current position)
         const lookAtT = Math.min(t + 0.05, 1);
         const lookAtPos = curve.getPointAt(lookAtT);
 
-        // Camera Position: Behind and slightly above
         const cameraPos = position.clone()
-            .sub(tangent.clone().multiplyScalar(30)) // 30 units behind
-            .add(new THREE.Vector3(0, 10, 0));       // 10 units up (Global Up)
+            .sub(tangent.clone().multiplyScalar(30))
+            .add(new THREE.Vector3(0, 10, 0));
 
         camera.position.copy(cameraPos);
         camera.lookAt(lookAtPos);
 
-        // Sync OrbitControls target so it doesn't snap back when stopping
         if (controls) {
             // @ts-ignore
             controls.target.copy(lookAtPos);
@@ -251,7 +297,6 @@ export default function Borehole3D({ stations, ghostPath = [], obstacles = [], t
     return (
         <div className="h-full w-full bg-slate-900 rounded-lg overflow-hidden relative">
             <Canvas>
-                {/* Switch between Perspective and Orthographic based on mode */}
                 {isOrtho ? (
                     <OrthographicCamera makeDefault position={[0, 0, 0]} zoom={10} near={-2000} far={2000} />
                 ) : (
@@ -270,6 +315,7 @@ export default function Borehole3D({ stations, ghostPath = [], obstacles = [], t
                             <BoreholeTube stations={ghostPath} color="cyan" dashed={true} diameter={0.5} />
                         )}
                         <GroundPlane />
+                        <VoxelSoilLayers />
                         <Building x={800} z={100} />
 
                         {obstacles.map(obs => (
@@ -293,7 +339,6 @@ export default function Borehole3D({ stations, ghostPath = [], obstacles = [], t
                 <OrbitControls makeDefault maxPolarAngle={Math.PI / 2} enableRotate={!isOrtho && !flyThrough} enabled={!flyThrough} />
             </Canvas>
 
-            {/* Legend Overlay */}
             <div className="absolute bottom-4 left-4 bg-black/60 p-2 rounded text-xs text-white backdrop-blur-sm pointer-events-none select-none">
                 <div className="flex items-center gap-2 mb-1"><div className="w-3 h-3 bg-orange-500 rounded-full"></div> Borehole</div>
                 <div className="flex items-center gap-2 mb-1"><div className="w-3 h-3 bg-yellow-500 rounded-full"></div> Gas Line</div>

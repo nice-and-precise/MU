@@ -15,8 +15,17 @@ const oswald = Oswald({
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "Midwest Underground",
-  description: "HDD Operations Platform",
+  title: "HDD Nexus",
+  description: "Horizontal Directional Drilling Operations Platform",
+  manifest: "/manifest.json",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false, // Prevent zooming in field app
+  themeColor: "#0f172a",
 };
 
 export default function RootLayout({

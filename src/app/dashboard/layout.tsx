@@ -45,6 +45,11 @@ export default async function DashboardLayout({
                         <span>Estimating</span>
                     </Link>
 
+                    <Link href="/dashboard/estimates/import" className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white hover:border-l-4 hover:border-yellow-500 rounded-r-lg transition-all duration-200 ml-4">
+                        <FileText className="h-5 w-5" />
+                        <span>Import Estimate</span>
+                    </Link>
+
                     <Link href="/dashboard/rod-pass" className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white hover:border-l-4 hover:border-yellow-500 rounded-r-lg transition-all duration-200">
                         <Activity className="h-5 w-5" />
                         <span>Log Rod Pass</span>
