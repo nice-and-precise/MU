@@ -10,11 +10,19 @@ A comprehensive SaaS platform for **Horizontal Directional Drilling (HDD)** oper
 
 ### Asset Management
 *Track rigs, locators, and support equipment with real-time status.*
-![Asset Management](file:///C:/Users/Owner/.gemini/antigravity/brain/1e4a6c5b-246c-4eaa-a79c-8ed86c3513a7/asset_management_page_1764545071059.png)
+![Asset Management](./docs/images/asset_management.png)
+
+### Live Dashboard Tour
+*Interactive tour of the project dashboard and linear progress tracking.*
+![Dashboard Tour](./docs/images/dashboard_tour.webp)
+
+### Landing Page
+*Public facing portal for stakeholders.*
+![Landing Page](./docs/images/landing_tour.webp)
 
 ### Linear Progress Tracking
 *Visualize bore progress by station (footage) directly on the project dashboard.*
-*(Screenshot placeholder - Feature Implemented)*
+*(See Dashboard Tour above)*
 
 ---
 
@@ -118,10 +126,13 @@ gitGraph
 
 ## 📂 Documentation Index
 
-- [Implementation Plan](./implementation_plan.md) - Recent feature specs.
-- [Walkthrough](./walkthrough.md) - Verification steps for new features.
-- [Handoff Report](./handoff.md) - Summary of previous session.
-- [Task List](./task.md) - Current roadmap.
+## 📂 Documentation Index
+
+- [Implementation Plan](./docs/implementation_plan.md) - Recent feature specs.
+- [Walkthrough](./docs/walkthrough.md) - Verification steps for new features.
+- [Handoff Report](./docs/handoff.md) - Summary of previous session.
+- [Task List](./docs/task.md) - Current roadmap.
+- [Presentation](./docs/presentation.md) - Project overview slides.
 
 ---
 
