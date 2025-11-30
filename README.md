@@ -1,69 +1,80 @@
+# HDD-Nexus - Digital Subsurface Platform
 
-# Midwest Underground - Digital Subsurface Platform
+A comprehensive SaaS platform for Horizontal Directional Drilling (HDD) operations, combining high-performance engineering with modern field management.
 
-This is a [Next.js](https://nextjs.org) project for managing HDD (Horizontal Directional Drilling) operations.
+## 🚀 Features
 
-## Features
+### 1. Core Engineering (Rust Engine)
+- **Physics Engine**: ASTM F1962 Pullback & Hydraulic Fracture modeling.
+- **Geometry**: Minimum Curvature Method (MCM) for precise 3D path calculations.
+- **Performance**: Rust-based backend (`/engine`) exposed via Axum API for real-time computation.
 
-### 1. Digital Subsurface & Geotech
-- **Geotechnical Data**: Manage soil borings, stratigraphy, and ground conditions.
-- **Deep Integration**: Engineering calculations now use specific soil layers (e.g., Sand vs Clay) at exact depths.
-- **Import**: Mock integration with Minnesota County Well Index (CWI).
+### 2. Digital Subsurface & Visualization
+- **3D Visualization**: Interactive view of bore paths and voxel-based soil layers using `Three.js` / `@react-three/fiber`.
+- **Rod Planning**: "Rod-by-Rod" planning grid with real-time 3D feedback.
+- **Geotech Integration**: Manage soil borings and stratigraphy.
 
-### 2. Engineering & Planning
-- **Bore Design**: ASTM F1962 Pullback Calculations.
-- **Fluid Planning**: Volume & Mix recommendations based on soil type and hole geometry.
-- **Frac-Out Risk**: Real-time risk analysis based on annular pressure and soil strength.
-- **3D Visualization**: Interactive 3D view of the bore path and soil layers using `Three.js`.
+### 3. Live Operations
+- **Telemetry**: Ingest WITSML data from rigs (Vermeer/DCI).
+- **Steering Rose**: Mobile-first interface for drillers.
+- **Live Dashboard**: Real-time monitoring of depth, pitch, and azimuth.
 
-### 3. Live Operations (Telemetry)
-- **Real-Time Stream**: Ingest WITSML / LWD data from rigs (Vermeer/DCI).
-- **Live Dashboard**: View raw telemetry logs (Depth, Pitch, Azimuth) and HUD.
-- **Simulator**: Built-in simulator to test the stream without a rig.
+### 4. Takeoff Intelligence
+- **AI Import**: Drag-and-drop PDF/Excel takeoffs.
+- **Extraction**: Automated parsing of line items and quantities.
 
-### 4. Automated As-Builts
-- **Generation**: Create DXF files automatically from approved Daily Report logs.
-- **Algorithm**: Uses Minimum Curvature Method for high-precision 3D path calculation.
+### 5. Offline-First PWA
+- **Field Ready**: Fully functional offline mode using Service Workers.
+- **Mobile Optimized**: Responsive design for tablets and phones.
 
-## Getting Started
+## 🛠 Tech Stack
+
+- **Frontend**: Next.js 16 (App Router), React, Tailwind CSS, Shadcn UI.
+- **Backend**: Rust (Axum, Tokio), Node.js (Next.js Server Actions).
+- **Database**: PostgreSQL 16 + PostGIS + TimescaleDB.
+- **ORM**: Prisma.
+- **Infrastructure**: Docker.
+
+## 🏁 Getting Started
 
 ### Prerequisites
 - Node.js 18+
-- SQLite (for local dev)
+- Rust Toolchain (`cargo`)
+- Docker Desktop
 
 ### Installation
 
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
+1.  **Start Infrastructure**:
+    ```bash
+    docker-compose up -d
+    ```
 
-2. Initialize Database:
-   ```bash
-   npx prisma generate
-   npx prisma db push
-   ```
+2.  **Install Frontend Dependencies**:
+    ```bash
+    npm install
+    ```
 
-3. **Seed Test Data** (Recommended):
-   Populate the database with a sample project, bore, geotech report, and telemetry logs.
-   ```bash
-   npx prisma db seed
-   ```
+3.  **Initialize Database**:
+    ```bash
+    npx prisma generate
+    npx prisma migrate dev --name init_postgres
+    ```
 
-4. Run the development server:
-   ```bash
-   npm run dev
-   ```
+4.  **Run Rust Engine**:
+    ```bash
+    cd engine
+    cargo run
+    ```
 
-5. Open [http://localhost:3000](http://localhost:3000) with your browser.
+5.  **Run Frontend**:
+    ```bash
+    # In a new terminal
+    npm run dev
+    ```
 
-## Documentation
+6.  Open [http://localhost:3000](http://localhost:3000).
 
-- **WITSML Guide**: [docs/witsml_guide.md](./docs/witsml_guide.md) - How to configure rigs for data streaming.
-- **Feature Walkthrough**: [walkthrough.md](./walkthrough.md) - Visual guide to the new features.
+## 📚 Documentation
 
-## Tech Stack
-- Next.js 14 (App Router)
-- Prisma (SQLite)
-- Tailwind CSS / Shadcn UI
-- React Three Fiber (3D Visualization)
+- **Walkthrough**: [walkthrough.md](./walkthrough.md) - Detailed guide to features and verification.
+- **Task List**: [task.md](./task.md) - Development roadmap and status.
