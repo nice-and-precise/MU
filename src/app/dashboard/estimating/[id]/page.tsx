@@ -78,199 +78,234 @@ export default function EstimateDetailPage() {
         loadEstimate();
     }
 
+    async function updateStatus(status: string) {
+        // Mock status update for now, or implement action
+        alert(`Status update to ${status} coming soon!`);
+    }
+
     if (loading) return <div className="p-8">Loading...</div>;
     if (!estimate) return <div className="p-8">Estimate not found</div>;
+
+    // Group lines by category
+    const groupedLines = estimate.lines.reduce((acc: any, line: any) => {
+        const category = line.unit === 'HR' ? 'Labor' : line.unit === 'DAY' ? 'Equipment' : 'Material';
+        if (!acc[category]) acc[category] = [];
+        acc[category].push(line);
+        return acc;
+    }, {} as Record<string, typeof estimate.lines>);
+
+    const calculateCategoryTotal = (lines: typeof estimate.lines) => lines.reduce((sum: any, line: any) => sum + line.total, 0);
 
     const selectedProject = projects.find(p => p.id === selectedProjectId);
 
     return (
-        <div className="p-8 space-y-6">
-            <div className="flex items-center space-x-4 mb-6">
-                <Link href="/dashboard/estimating">
-                    <Button variant="ghost" size="icon">
-                        <ArrowLeft className="h-4 w-4" />
-                    </Button>
-                </Link>
+        <div className="p-8 max-w-7xl mx-auto">
+            <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold">{estimate.name}</h1>
-                    <p className="text-muted-foreground text-sm">
-                        {estimate.status} • Created {new Date(estimate.createdAt).toLocaleDateString()}
-                    </p>
+                    <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
+                        <Link href="/dashboard/estimating" className="hover:text-blue-600">Estimates</Link>
+                        <span>/</span>
+                        <span>{estimate.project.name}</span>
+                    </div>
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{estimate.name}</h1>
+                </div>
+                <div className="flex gap-3">
+                    <Button variant="outline" onClick={() => alert("Export PDF feature coming soon!")}>
+                        <Download className="mr-2 h-4 w-4" />
+                        Export PDF
+                    </Button>
+                    <Button
+                        className={estimate.status === 'APPROVED' ? 'bg-green-600 hover:bg-green-700' : ''}
+                        onClick={() => updateStatus(estimate.status === 'DRAFT' ? 'SUBMITTED' : 'APPROVED')}
+                    >
+                        {estimate.status === 'DRAFT' ? 'Submit for Review' : estimate.status === 'SUBMITTED' ? 'Approve Estimate' : 'Approved'}
+                    </Button>
                 </div>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-3">
-                <Card className="md:col-span-2">
-                    <CardHeader className="flex flex-row items-center justify-between">
-                        <CardTitle>Line Items</CardTitle>
-                        <div className="flex space-x-2">
-                            <Dialog open={isImportOpen} onOpenChange={setIsImportOpen}>
-                                <DialogTrigger asChild>
-                                    <Button variant="outline" size="sm">
-                                        <Download className="mr-2 h-4 w-4" /> Import Assembly
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>Import from Bore Plan</DialogTitle>
-                                    </DialogHeader>
-                                    <div className="space-y-4 py-4">
-                                        <div className="space-y-2">
-                                            <Label>Select Project</Label>
-                                            <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Choose project..." />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {projects.map(p => (
-                                                        <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                        {selectedProject && (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Main Line Items */}
+                <div className="lg:col-span-2 space-y-6">
+                    {Object.entries(groupedLines).map(([category, lines]: [string, any]) => (
+                        <Card key={category}>
+                            <CardHeader className="bg-gray-50 dark:bg-gray-800/50 pb-2">
+                                <div className="flex justify-between items-center">
+                                    <CardTitle className="text-lg font-bold text-gray-700 dark:text-gray-200">{category}</CardTitle>
+                                    <span className="text-sm font-bold text-gray-900 dark:text-white">
+                                        ${calculateCategoryTotal(lines).toLocaleString()}
+                                    </span>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="p-0">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-[50px]">#</TableHead>
+                                            <TableHead>Description</TableHead>
+                                            <TableHead className="text-right">Qty</TableHead>
+                                            <TableHead className="text-right">Unit</TableHead>
+                                            <TableHead className="text-right">Cost</TableHead>
+                                            <TableHead className="text-right">Total</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {lines.map((line: any) => (
+                                            <TableRow key={line.id}>
+                                                <TableCell>{line.lineNumber}</TableCell>
+                                                <TableCell className="font-medium">{line.description}</TableCell>
+                                                <TableCell className="text-right">{line.quantity}</TableCell>
+                                                <TableCell className="text-right">{line.unit}</TableCell>
+                                                <TableCell className="text-right">${line.unitCost.toFixed(2)}</TableCell>
+                                                <TableCell className="text-right font-bold">${line.total.toFixed(2)}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                    ))}
+
+                    {/* Add New Line Form */}
+                    <Card className="border-dashed border-2">
+                        <CardHeader>
+                            <div className="flex justify-between items-center">
+                                <CardTitle className="text-base">Add Line Item</CardTitle>
+                                <Dialog open={isImportOpen} onOpenChange={setIsImportOpen}>
+                                    <DialogTrigger asChild>
+                                        <Button variant="ghost" size="sm">
+                                            <Download className="mr-2 h-4 w-4" /> Import Assembly
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                        <DialogHeader>
+                                            <DialogTitle>Import from Bore Plan</DialogTitle>
+                                        </DialogHeader>
+                                        <div className="space-y-4 py-4">
                                             <div className="space-y-2">
-                                                <Label>Select Bore</Label>
-                                                <Select value={selectedBoreId} onValueChange={setSelectedBoreId}>
+                                                <Label>Select Project</Label>
+                                                <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
                                                     <SelectTrigger>
-                                                        <SelectValue placeholder="Choose bore..." />
+                                                        <SelectValue placeholder="Choose project..." />
                                                     </SelectTrigger>
                                                     <SelectContent>
-                                                        {selectedProject.bores.map((b: any) => (
-                                                            <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+                                                        {projects.map(p => (
+                                                            <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
                                                         ))}
                                                     </SelectContent>
                                                 </Select>
                                             </div>
-                                        )}
-                                        <Button onClick={handleImportAssembly} disabled={!selectedBoreId} className="w-full">
-                                            Generate Items
-                                        </Button>
-                                        <p className="text-xs text-muted-foreground text-center">
-                                            This will calculate pipe, labor, rig time, and fluids based on the bore engineering plan.
-                                        </p>
+                                            {selectedProject && (
+                                                <div className="space-y-2">
+                                                    <Label>Select Bore</Label>
+                                                    <Select value={selectedBoreId} onValueChange={setSelectedBoreId}>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Choose bore..." />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {selectedProject.bores.map((b: any) => (
+                                                                <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+                                            )}
+                                            <Button onClick={handleImportAssembly} disabled={!selectedBoreId} className="w-full">
+                                                Generate Items
+                                            </Button>
+                                        </div>
+                                    </DialogContent>
+                                </Dialog>
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Description</label>
+                                        <Input
+                                            value={newLine.description}
+                                            onChange={(e) => setNewLine({ ...newLine, description: e.target.value })}
+                                            placeholder="Item description"
+                                        />
                                     </div>
-                                </DialogContent>
-                            </Dialog>
-
-                            <Dialog open={isAddLineOpen} onOpenChange={setIsAddLineOpen}>
-                                <DialogTrigger asChild>
-                                    <Button size="sm">
-                                        <Plus className="mr-2 h-4 w-4" /> Add Line
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>Add Line Item</DialogTitle>
-                                    </DialogHeader>
-                                    <div className="space-y-4 py-4">
+                                    <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label>Description</Label>
+                                            <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Quantity</label>
                                             <Input
-                                                value={newLine.description}
-                                                onChange={(e) => setNewLine({ ...newLine, description: e.target.value })}
+                                                type="number"
+                                                value={newLine.quantity}
+                                                onChange={(e) => setNewLine({ ...newLine, quantity: parseFloat(e.target.value) || 0 })}
                                             />
                                         </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="space-y-2">
-                                                <Label>Quantity</Label>
-                                                <Input
-                                                    type="number"
-                                                    value={newLine.quantity}
-                                                    onChange={(e) => setNewLine({ ...newLine, quantity: parseFloat(e.target.value) })}
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label>Unit</Label>
-                                                <Input
-                                                    value={newLine.unit}
-                                                    onChange={(e) => setNewLine({ ...newLine, unit: e.target.value })}
-                                                />
-                                            </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Unit</label>
+                                            <Input
+                                                value={newLine.unit}
+                                                onChange={(e) => setNewLine({ ...newLine, unit: e.target.value })}
+                                                placeholder="HR, EA, LF"
+                                            />
                                         </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="space-y-2">
-                                                <Label>Unit Cost ($)</Label>
-                                                <Input
-                                                    type="number"
-                                                    value={newLine.unitCost}
-                                                    onChange={(e) => setNewLine({ ...newLine, unitCost: parseFloat(e.target.value) })}
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label>Markup (%)</Label>
-                                                <Input
-                                                    type="number"
-                                                    step="0.01"
-                                                    value={newLine.markup}
-                                                    onChange={(e) => setNewLine({ ...newLine, markup: parseFloat(e.target.value) })}
-                                                />
-                                            </div>
-                                        </div>
-                                        <Button onClick={handleAddLine} className="w-full">Add Item</Button>
                                     </div>
-                                </DialogContent>
-                            </Dialog>
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-[50px]">#</TableHead>
-                                    <TableHead>Description</TableHead>
-                                    <TableHead className="text-right">Qty</TableHead>
-                                    <TableHead className="text-right">Unit</TableHead>
-                                    <TableHead className="text-right">Unit Cost</TableHead>
-                                    <TableHead className="text-right">Total</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {estimate.lines.map((line: any) => (
-                                    <TableRow key={line.id}>
-                                        <TableCell>{line.lineNumber}</TableCell>
-                                        <TableCell className="font-medium">{line.description}</TableCell>
-                                        <TableCell className="text-right">{line.quantity}</TableCell>
-                                        <TableCell className="text-right">{line.unit}</TableCell>
-                                        <TableCell className="text-right">${line.unitCost.toFixed(2)}</TableCell>
-                                        <TableCell className="text-right font-bold">${line.total.toFixed(2)}</TableCell>
-                                    </TableRow>
-                                ))}
-                                {estimate.lines.length === 0 && (
-                                    <TableRow>
-                                        <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">
-                                            No line items. Add one or import from a bore plan.
-                                        </TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                </Card>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Unit Cost ($)</label>
+                                        <Input
+                                            type="number"
+                                            value={newLine.unitCost}
+                                            onChange={(e) => setNewLine({ ...newLine, unitCost: parseFloat(e.target.value) || 0 })}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Markup (%)</label>
+                                        <Input
+                                            type="number"
+                                            step="0.01"
+                                            value={newLine.markup}
+                                            onChange={(e) => setNewLine({ ...newLine, markup: parseFloat(e.target.value) || 0 })}
+                                        />
+                                    </div>
+                                    <div className="flex items-end">
+                                        <Button onClick={handleAddLine} className="w-full">
+                                            <Plus className="mr-2 h-4 w-4" />
+                                            Add Item
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
 
+                {/* Summary Sidebar */}
                 <div className="space-y-6">
-                    <Card className="bg-gray-50 dark:bg-gray-800 border-l-4 border-yellow-500">
+                    <Card className="bg-slate-900 text-white border-slate-800">
                         <CardHeader>
-                            <CardTitle className="flex items-center">
+                            <CardTitle className="flex items-center text-white">
                                 <Calculator className="mr-2 h-5 w-5" /> Estimate Summary
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="flex justify-between text-sm">
-                                <span className="text-muted-foreground">Subtotal Cost</span>
+                            <div className="flex justify-between text-sm text-slate-400">
+                                <span>Subtotal</span>
                                 <span>${estimate.subtotal.toFixed(2)}</span>
                             </div>
-                            <div className="flex justify-between text-sm">
-                                <span className="text-muted-foreground">Markup</span>
-                                <span className="text-green-600">+${estimate.markupAmount.toFixed(2)}</span>
+                            <div className="flex justify-between text-sm text-slate-400">
+                                <span>Markup</span>
+                                <span className="text-green-400">+${estimate.markupAmount.toFixed(2)}</span>
                             </div>
-                            <div className="pt-4 border-t flex justify-between items-center">
+                            <div className="flex justify-between text-sm text-slate-400">
+                                <span>Overhead (10%)</span>
+                                <span>${(estimate.total * 0.1).toLocaleString()}</span>
+                            </div>
+                            <div className="flex justify-between text-sm text-slate-400">
+                                <span>Profit (15%)</span>
+                                <span>${(estimate.total * 0.15).toLocaleString()}</span>
+                            </div>
+                            <div className="pt-4 border-t border-slate-700 flex justify-between items-end">
                                 <span className="font-bold text-lg">Total Bid</span>
-                                <span className="font-bold text-2xl">${estimate.total.toFixed(2)}</span>
+                                <span className="font-bold text-2xl text-green-400">${estimate.total.toFixed(2)}</span>
                             </div>
-                            <Button className="w-full mt-4" variant="default">
-                                Finalize & Export
-                            </Button>
                         </CardContent>
                     </Card>
                 </div>
@@ -278,3 +313,5 @@ export default function EstimateDetailPage() {
         </div>
     );
 }
+
+

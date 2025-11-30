@@ -13,7 +13,7 @@ async function main() {
     create: {
       email: 'owner@midwestunderground.com',
       name: 'John Owner',
-      password: 'hashed_password_here', // In real app, hash this
+      password: '$2b$10$PHv0g4qkTzwRKGkeGxGPf.x1QtOOgCkKVh2Og9RCw6VfXA6XaGYT6', // password123
       role: 'OWNER',
     },
   });
@@ -24,7 +24,7 @@ async function main() {
     create: {
       email: 'super@midwestunderground.com',
       name: 'Mike Super',
-      password: 'hashed_password_here',
+      password: '$2b$10$PHv0g4qkTzwRKGkeGxGPf.x1QtOOgCkKVh2Og9RCw6VfXA6XaGYT6', // password123
       role: 'SUPER',
     },
   });
@@ -162,7 +162,104 @@ async function main() {
     }
   });
 
-  console.log('✅ Seed complete!');
+  // 8. Robust Seeding - Additional Projects & Data
+
+  // Commercial Project
+  const commercialProject = await prisma.project.create({
+    data: {
+      name: 'Willmar Industrial Park Fiber',
+      description: 'Fiber backbone for new industrial zone.',
+      status: 'PLANNING',
+      location: 'Willmar, MN',
+      customerName: 'City of Willmar',
+      createdById: owner.id,
+      startDate: new Date(Date.now() + 86400000 * 30), // Starts in 30 days
+      budget: 150000,
+    }
+  });
+
+  // Residential Project
+  const residentialProject = await prisma.project.create({
+    data: {
+      name: 'Lakeside Drive Utilities',
+      description: 'Underground power and comms for residential subdivision.',
+      status: 'COMPLETED',
+      location: 'Spicer, MN',
+      customerName: 'Xcel Energy',
+      createdById: owner.id,
+      startDate: new Date(Date.now() - 86400000 * 60), // Started 60 days ago
+      budget: 45000,
+    }
+  });
+
+  // Additional Cost Items
+  const subCat = await prisma.costCategory.upsert({ where: { name: 'Subcontractor' }, update: {}, create: { name: 'Subcontractor' } });
+
+  const robustItems = [
+    { categoryId: subCat.id, code: 'SUB-001', name: 'Traffic Control', unit: 'DAY', unitCost: 1200.00 },
+    { categoryId: subCat.id, code: 'SUB-002', name: 'Restoration Crew', unit: 'SQFT', unitCost: 8.50 },
+    { categoryId: equipCat.id, code: 'EQP-005', name: 'Mud Mixing System', unit: 'DAY', unitCost: 450.00 },
+    { categoryId: equipCat.id, code: 'EQP-006', name: 'Excavator (Mini)', unit: 'DAY', unitCost: 550.00 },
+    { categoryId: equipCat.id, code: 'EQP-007', name: 'Vac Truck (Large)', unit: 'DAY', unitCost: 1800.00 },
+    { categoryId: matCat.id, code: 'MAT-004', name: 'Drill Bit (Dirt)', unit: 'EA', unitCost: 850.00 },
+    { categoryId: matCat.id, code: 'MAT-005', name: 'Drill Bit (Rock)', unit: 'EA', unitCost: 2500.00 },
+    { categoryId: matCat.id, code: 'MAT-006', name: '2" HDPE SDR11', unit: 'LF', unitCost: 2.25 },
+    { categoryId: matCat.id, code: 'MAT-007', name: '6" HDPE SDR11', unit: 'LF', unitCost: 8.50 },
+    { categoryId: matCat.id, code: 'MAT-008', name: 'Tracer Wire (Copper)', unit: 'LF', unitCost: 0.18 },
+    { categoryId: laborCat.id, code: 'LAB-003', name: 'Laborer', unit: 'HR', unitCost: 45.00 },
+    { categoryId: laborCat.id, code: 'LAB-004', name: 'Foreman', unit: 'HR', unitCost: 95.00 },
+  ];
+
+  for (const item of robustItems) {
+    await prisma.costItem.upsert({
+      where: { code: item.code },
+      update: {},
+      create: item
+    });
+  }
+
+  // Add Bores to Commercial Project
+  await prisma.bore.create({
+    data: {
+      projectId: commercialProject.id,
+      name: 'Bore C-1 (Road Crossing)',
+      status: 'PLANNED',
+      totalLength: 320,
+      diameterIn: 4,
+      productMaterial: 'HDPE',
+      borePlan: {
+        create: {
+          totalLength: 320,
+          pipeDiameter: 4,
+          pipeMaterial: 'HDPE',
+          designMethod: 'PRCI',
+          safetyFactor: 2.5,
+          notes: 'Watch for existing gas line at station 1+50'
+        }
+      }
+    }
+  });
+
+  // Add Estimate to Commercial Project
+  await prisma.estimate.create({
+    data: {
+      projectId: commercialProject.id,
+      name: 'Initial Bid',
+      status: 'SENT',
+      createdById: owner.id,
+      lines: {
+        create: [
+          { lineNumber: 1, description: 'Mob/Demob', quantity: 1, unit: 'LS', unitCost: 2500.00, subtotal: 2500, total: 2500 },
+          { lineNumber: 2, description: 'Directional Drill 4" HDPE', quantity: 320, unit: 'LF', unitCost: 35.00, subtotal: 11200, total: 11200 },
+          { lineNumber: 3, description: 'Traffic Control', quantity: 2, unit: 'DAY', unitCost: 1200.00, subtotal: 2400, total: 2400 },
+          { lineNumber: 4, description: 'Potholing Utilities', quantity: 8, unit: 'HR', unitCost: 250.00, subtotal: 2000, total: 2000 },
+        ]
+      },
+      total: 18100
+    }
+  });
+
+  console.log('✅ Robust Seed complete!');
 }
 
 main()

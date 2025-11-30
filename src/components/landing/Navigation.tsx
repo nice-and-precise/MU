@@ -53,15 +53,13 @@ export default function Navigation() {
                     ))}
 
                     {/* Client Portal Button */}
-                    <a
-                        href="https://portal.midwestunderground.com"
-                        target="_blank"
-                        rel="noopener noreferrer"
+                    <Link
+                        href="/dashboard"
                         className="group flex items-center space-x-2 px-5 py-2 border border-white/30 rounded-full text-white hover:bg-white hover:text-charcoal transition-all duration-300"
                     >
                         <Lock className="w-4 h-4" />
                         <span className="font-sans text-sm font-medium">Client Portal</span>
-                    </a>
+                    </Link>
                 </div>
 
                 {/* Mobile Menu Toggle */}
@@ -90,15 +88,14 @@ export default function Navigation() {
                                 {link.name}
                             </Link>
                         ))}
-                        <a
-                            href="https://portal.midwestunderground.com"
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <Link
+                            href="/dashboard"
                             className="flex items-center space-x-2 px-8 py-3 border border-white/30 rounded-full text-white hover:bg-white hover:text-charcoal transition-all duration-300"
+                            onClick={() => setIsMobileMenuOpen(false)}
                         >
                             <Lock className="w-5 h-5" />
                             <span className="font-sans text-lg font-medium">Client Portal</span>
-                        </a>
+                        </Link>
                     </motion.div>
                 )}
             </div>

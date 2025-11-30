@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { LogOut, User, LayoutDashboard, HardHat, FileText, Settings, Activity, Calculator } from "lucide-react";
+import { LogOut, User, LayoutDashboard, HardHat, FileText, Settings, Activity, Calculator, Globe } from "lucide-react";
 
 export default async function DashboardLayout({
     children,
@@ -12,7 +12,7 @@ export default async function DashboardLayout({
     const session = await getServerSession(authOptions);
 
     if (!session) {
-        redirect("/");
+        redirect("/login");
     }
 
     return (
@@ -33,6 +33,11 @@ export default async function DashboardLayout({
                     <Link href="/dashboard/projects" className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white hover:border-l-4 hover:border-yellow-500 rounded-r-lg transition-all duration-200">
                         <HardHat className="h-5 w-5" />
                         <span>Projects</span>
+                    </Link>
+
+                    <Link href="/dashboard/map" className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white hover:border-l-4 hover:border-yellow-500 rounded-r-lg transition-all duration-200">
+                        <Globe className="h-5 w-5" />
+                        <span>3D Maps</span>
                     </Link>
 
                     <Link href="/dashboard/reports" className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white hover:border-l-4 hover:border-yellow-500 rounded-r-lg transition-all duration-200">

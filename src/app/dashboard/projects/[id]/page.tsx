@@ -56,6 +56,12 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
                 >
                     Engineering
                 </Link>
+                <Link
+                    href={`/dashboard/projects/${project.id}/3d`}
+                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors"
+                >
+                    3D View
+                </Link>
             </div>
 
             {/* Stats Grid */}

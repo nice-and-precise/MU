@@ -13,6 +13,7 @@ const oswald = Oswald({
 });
 
 import { Providers } from "./providers";
+import { FeedbackWidget } from "@/components/FeedbackWidget";
 
 export const metadata: Metadata = {
   title: "HDD Nexus",
@@ -37,9 +38,12 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         suppressHydrationWarning
-        className={`${inter.variable} ${oswald.variable} antialiased`}
+        className={`${inter.variable} ${oswald.variable} antialiased relative`}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          {(process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_SHOW_FEEDBACK === 'true') && <FeedbackWidget />}
+        </Providers>
       </body>
     </html>
   );

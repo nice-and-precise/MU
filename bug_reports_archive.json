@@ -1,0 +1,95 @@
+[
+  {
+    "id": "1764513477515",
+    "timestamp": "2025-11-30T14:37:45.329Z",
+    "description": "Test bug report",
+    "element": null,
+    "path": "/",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "screenSize": "1920x911",
+    "screenshot": null
+  },
+  {
+    "id": "1764514609843",
+    "timestamp": "2025-11-30T14:56:35.432Z",
+    "description": "Test bug report with console logs",
+    "element": "h1.font-heading.text-6xl.md:text-8xl.lg:text-9xl.font-bold.text-white.uppercase.tracking-tighter.mb-6 (PRECISION\nBENEATH)",
+    "path": "/",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "screenSize": "1920x911",
+    "consoleLogs": [
+      "[LOG] [Fast Refresh] done in 12514ms",
+      "[LOG] [Fast Refresh] rebuilding"
+    ],
+    "userInfo": null,
+    "screenshot": "/bug_reports/bug-1764514609801.png"
+  },
+  {
+    "id": "1764516160283",
+    "timestamp": "2025-11-30T15:22:37.984Z",
+    "description": "we need to change this text to something more SEO friendly ",
+    "element": "h2.font-heading.text-4xl.md:text-6xl.text-white.mb-20.text-center.uppercase (EXPLODED SERVICE VIEWS)",
+    "path": "/",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "screenSize": "1920x911",
+    "consoleLogs": [
+      "[LOG] [Fast Refresh] done in 2166ms",
+      "[LOG] [Fast Refresh] done in 689ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] rebuilding"
+    ],
+    "userInfo": null,
+    "screenshot": "/bug_reports/bug-1764516160272.png"
+  },
+  {
+    "id": "1764516605831",
+    "timestamp": "2025-11-30T15:30:02.957Z",
+    "description": "this needs to scroll left or right before it scrolls down. for example if I wanted to view the Spicer Water Main\nSpicer, MN\n\nDirectional boring under Green Lake access road. card I want to make it scroll left or right before it scrolls too far down that I can't click it because the screen moves underneath it and I only see the bottom of the card",
+    "element": "div.sticky.top-0.flex.h-screen.items-center.overflow-hidden (PROJECT\nORBIT\n\nNavigating complex subterranean env...)",
+    "path": "/",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "screenSize": "1920x911",
+    "consoleLogs": [
+      "[LOG] [Fast Refresh] done in 2314ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[WARN] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly."
+    ],
+    "userInfo": null,
+    "screenshot": "/bug_reports/bug-1764516605821.png"
+  },
+  {
+    "id": "1764516770916",
+    "timestamp": "2025-11-30T15:32:50.731Z",
+    "description": "there is lots of empty space underneath this, maybe it is related to the scroll function not working well before but it should be addressed. research website layouts and best practices for google SEO and make any adjustments needed if they haven't already been made",
+    "element": "section.relative.h-[400vh].bg-charcoal (PROJECT\nORBIT\n\nNavigating complex subterranean env...)",
+    "path": "/",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "screenSize": "1920x911",
+    "consoleLogs": [
+      "[LOG] [Fast Refresh] done in 3149ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 1274ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 2314ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[WARN] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly."
+    ],
+    "userInfo": null,
+    "screenshot": "/bug_reports/bug-1764516770914.png"
+  },
+  {
+    "id": "1764516957029",
+    "timestamp": "2025-11-30T15:35:55.413Z",
+    "description": "we need something behind this text as well as the text underneath it- \"Next-Generation Directional Boring & Utility Infrastructure for Minnesota. Engineering the digital ecosystem of the heavy civil sector.\" so that the contrast is a little better and easier to read without making blocking the background picture too much. use some scrolling animations and best practices to make it really pop and impress the end user when the webpage loads\n",
+    "element": "h1.font-heading.text-6xl.md:text-8xl.lg:text-9xl.font-bold.text-white.uppercase.tracking-tighter.mb-6 (PRECISION\nBENEATH)",
+    "path": "/",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "screenSize": "1920x911",
+    "consoleLogs": [
+      "[LOG] [Fast Refresh] done in 1306ms",
+      "[LOG] [Fast Refresh] rebuilding"
+    ],
+    "userInfo": null,
+    "screenshot": "/bug_reports/bug-1764516957021.png"
+  }
+]

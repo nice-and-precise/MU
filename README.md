@@ -76,5 +76,4 @@ A comprehensive SaaS platform for Horizontal Directional Drilling (HDD) operatio
 
 ## 📚 Documentation
 
-- **Walkthrough**: [walkthrough.md](./walkthrough.md) - Detailed guide to features and verification.
 - **Task List**: [task.md](./task.md) - Development roadmap and status.

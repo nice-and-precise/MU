@@ -39,7 +39,7 @@ export default function Services() {
                     viewport={{ once: true }}
                     className="font-heading text-4xl md:text-6xl text-white mb-20 text-center uppercase"
                 >
-                    Exploded Service Views
+                    Premier Underground Utility & HDD Solutions
                 </motion.h2>
 
                 <div className="space-y-32">

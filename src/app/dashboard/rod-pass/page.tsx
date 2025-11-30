@@ -5,7 +5,9 @@ const prisma = new PrismaClient();
 
 async function getActiveBores() {
   return await prisma.bore.findMany({
-    where: { status: "IN_PROGRESS" },
+    where: {
+      status: { in: ["IN_PROGRESS", "PLANNED"] }
+    },
     include: { project: { select: { name: true } } },
   });
 }

@@ -156,6 +156,11 @@ model RodPass {
   fluidVolumeGal  Float?
   pitch           Float?    // Degrees
   azimuth         Float?    // Degrees
+  depth           Float?    // Feet
+  viscosity       Float?    // Marsh Funnel seconds
+  mudWeight       Float?    // lb/gal
+  reamerDiameter  Float?    // Inches (if reaming)
+  steeringToolFace Float?   // Degrees (0-360)
   startedAt       DateTime?
   completedAt     DateTime?
   notes           String?

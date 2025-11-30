@@ -1,0 +1,14 @@
+[
+  {
+    "id": "1764518500491",
+    "timestamp": "2025-11-30T16:01:35.984Z",
+    "description": "this button should bring the user to a login page and then the dashboard based on the roles and access. right now the button isn't working\n",
+    "element": "a.group.flex.items-center.space-x-2.px-5.py-2.border.border-white/30.rounded-full.text-white.hover:bg-white.hover:text-charcoal.transition-all.duration-300 (Client Portal)",
+    "path": "/",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "screenSize": "1920x911",
+    "consoleLogs": [],
+    "userInfo": null,
+    "screenshot": "/bug_reports/bug-1764518500472.png"
+  }
+]

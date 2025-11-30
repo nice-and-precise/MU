@@ -7,13 +7,14 @@ import * as bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 export const authOptions: NextAuthOptions = {
-    adapter: PrismaAdapter(prisma),
+    // adapter: PrismaAdapter(prisma), // Removed: Not needed for Credentials/JWT and causes schema errors
     session: {
         strategy: "jwt",
     },
     secret: process.env.NEXTAUTH_SECRET,
+    debug: true, // Enable NextAuth debugging
     pages: {
-        signIn: "/",
+        signIn: "/login",
     },
     providers: [
         CredentialsProvider({
