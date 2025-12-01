@@ -14,9 +14,27 @@ export async function POST(req: NextRequest) {
         if (contentType?.includes('application/json')) {
             data = await req.json();
         } else if (contentType?.includes('text/xml') || contentType?.includes('application/xml')) {
-            // TODO: Implement XML parsing for WITSML
-            // For now, return not implemented for XML
-            return NextResponse.json({ success: false, error: 'XML support pending' }, { status: 501 });
+            const text = await req.text();
+            const { parseWitsmlLog } = await import('@/lib/drilling/witsml/parser');
+            const parsedLogs = parseWitsmlLog(text);
+
+            if (parsedLogs.length > 0) {
+                // Map to expected format
+                // Need boreId from somewhere. Usually in header <nameWellbore> or passed as query param?
+                // For now, let's check query param or default to a placeholder if not in XML.
+                const url = new URL(req.url);
+                const boreId = url.searchParams.get('boreId') || 'UNKNOWN_BORE';
+
+                data = parsedLogs.map(l => ({
+                    timestamp: l.timestamp,
+                    boreId: boreId,
+                    depth: l.depth,
+                    pitch: l.pitch,
+                    azimuth: l.azimuth
+                }));
+            } else {
+                return NextResponse.json({ success: false, error: 'No valid log data found in WITSML' }, { status: 400 });
+            }
         } else {
             // Assume CSV or raw text
             const text = await req.text();

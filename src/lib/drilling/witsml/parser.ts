@@ -49,3 +49,49 @@ export const parseWitsmlTrajectory = (xml: string): WitsmlTrajectoryStation[] =>
         return [];
     }
 };
+
+/**
+ * Parses a WITSML 1.4.1.1 Log XML string into a list of data points.
+ * Handles 'log' objects with 'logData'.
+ */
+export const parseWitsmlLog = (xml: string): any[] => {
+    try {
+        const jsonObj = parser.parse(xml);
+        const root = jsonObj.logs || jsonObj.log;
+        if (!root) throw new Error("Invalid WITSML: No logs root found");
+
+        const log = Array.isArray(root.log) ? root.log[0] : root.log;
+        if (!log) throw new Error("Invalid WITSML: No log object found");
+
+        // Parse mnemonics to find indices
+        // <logCurveInfo><mnemonic>MD</mnemonic>...</logCurveInfo>
+        const curveInfos = Array.isArray(log.logCurveInfo) ? log.logCurveInfo : [log.logCurveInfo];
+        const mnemonics = curveInfos.map((c: any) => c.mnemonic);
+
+        const mdIdx = mnemonics.findIndex((m: string) => ['MD', 'DEPTH'].includes(m.toUpperCase()));
+        const incIdx = mnemonics.findIndex((m: string) => ['INC', 'INCL', 'PITCH'].includes(m.toUpperCase()));
+        const aziIdx = mnemonics.findIndex((m: string) => ['AZI', 'AZIM', 'DIR'].includes(m.toUpperCase()));
+
+        if (mdIdx === -1) return []; // MD is required
+
+        const logData = log.logData;
+        if (!logData || !logData.data) return [];
+
+        const dataRows = Array.isArray(logData.data) ? logData.data : [logData.data];
+
+        return dataRows.map((row: string) => {
+            const parts = row.split(',').map(p => p.trim());
+            return {
+                depth: parseFloat(parts[mdIdx]),
+                pitch: incIdx !== -1 ? parseFloat(parts[incIdx]) : 0,
+                azimuth: aziIdx !== -1 ? parseFloat(parts[aziIdx]) : 0,
+                // Add timestamp if available, or current time
+                timestamp: new Date().toISOString()
+            };
+        }).filter((d: any) => !isNaN(d.depth));
+
+    } catch (e) {
+        console.error("Error parsing WITSML Log:", e);
+        return [];
+    }
+};

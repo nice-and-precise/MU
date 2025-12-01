@@ -4,21 +4,8 @@ import React, { useMemo, useRef, useEffect, useState } from 'react';
 import { Canvas, useLoader, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Grid, Center, Text, PerspectiveCamera, OrthographicCamera } from '@react-three/drei';
 import * as THREE from 'three';
-import { SurveyStation } from '../../lib/drilling/types';
+import { SurveyStation, Obstacle } from '../../lib/drilling/types';
 
-interface Obstacle {
-    id: string;
-    name: string;
-    type: string;
-    startX: number;
-    startY: number;
-    startZ: number;
-    endX?: number | null;
-    endY?: number | null;
-    endZ?: number | null;
-    diameter?: number | null;
-    safetyBuffer: number;
-}
 
 interface TargetZone {
     id: string;

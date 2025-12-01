@@ -18,12 +18,13 @@ export default function DailyReportForm({ projects }: { projects: any[] }) {
         setLoading(true);
 
         try {
-            // TODO: Call Server Action to save report
-            console.log("Submitting report:", formData);
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Mock delay
+            const { createDailyReport } = await import("@/app/actions/reports");
+            await createDailyReport(formData);
             router.push("/dashboard/reports");
-        } catch (error) {
+            router.refresh();
+        } catch (error: any) {
             console.error("Error submitting report:", error);
+            alert(error.message || "Failed to create report");
         } finally {
             setLoading(false);
         }

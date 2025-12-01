@@ -1,56 +1,38 @@
-
-# Handoff Report: Digital Subsurface & Telemetry Implementation
+# Handoff Report: Daily Reports & WITSML Integration
 
 ## Session Summary
-**Objective**: Close strategic gaps in the "Digital Subsurface" initiative by implementing Automated As-Builts, Real-Time WITSML Ingestion, Deep Geotech Integration, and 3D Visualization.
-
-**Status**: **COMPLETED** (Code Implemented & Database Seeded)
+**Objective**: Restore project context after a crash and complete the "Daily Reports" and "WITSML Ingestion" features.
+**Status**: **COMPLETED**
 
 ## Completed Features
 
-### 1. Automated As-Built Generation
-- **Logic**: Implemented Minimum Curvature Method in `src/lib/drilling/math/survey.ts`.
-- **Action**: `generateAsBuilt` in `src/actions/reporting.ts` creates DXF files from `DailyReport` production logs.
-- **Schema**: Added `pitch` and `azimuth` to `RodPass` (via `DailyReport` JSON for now, schema updated for future).
+### 1. Daily Reports
+- **Logic**: Implemented `createDailyReport` server action in `src/app/actions/reports.ts`.
+- **UI**: Connected `DailyReportForm` to the server action, enabling users to create new reports.
+- **Validation**: Added basic validation for project and date uniqueness.
 
-### 2. Real-Time WITSML Ingestion & Telemetry
-- **API**: Created `/api/witsml` to ingest JSON/CSV streams (compatible with DCI LWD exports).
-- **UI**: Built **Live Operations** dashboard (`/dashboard/projects/[id]/live`) featuring:
-  - **Raw Stream Monitor**: Terminal-style view of incoming packets.
-  - **HUD**: Large display of Depth, Pitch, Azimuth.
-  - **Simulator**: Button to generate mock data for testing.
-- **Docs**: Created `docs/witsml_guide.md`.
+### 2. WITSML Ingestion
+- **Parser**: Created `src/lib/drilling/witsml/parser.ts` using `fast-xml-parser` to handle WITSML 1.4.1.1 Trajectory and Log objects.
+- **API**: Updated `/api/witsml` to detect XML content and use the parser to extract telemetry data (Depth, Pitch, Azimuth).
+- **Verification**: Verified with a test script simulating a WITSML POST request.
 
-### 3. Deep Geotech-Engineering Integration
-- **Math Engines**: Updated `hydraulics.ts` (Frac-Out) and `loads.ts` (Pullback) to accept `SoilLayer[]`.
-- **Integration**: `upsertFluidPlan` now fetches project-specific soil layers to perform accurate risk analysis based on depth.
-- **Import**: Added `importFromMNCWI` (simulated) to `src/actions/geotech.ts`.
-
-### 4. 3D Visualization
-- **Component**: Created `Bore3DView.tsx` using `@react-three/fiber`.
-- **Integration**: Embedded in the **Engineering** tab. Visualizes bore path and soil layers.
-
-### 5. System Verification
-- **Database Seed**: Created `prisma/seed.ts` to populate the app with a full test scenario:
-  - Project: "Fiber Expansion Phase 1"
-  - Bore: "Bore A-1"
-  - Geotech: 3 Layers (Clay, Sand, Rock)
-  - Logs: 2 Days of drilling data
-- **Bug Fixes**: Resolved JSON parsing errors on the Projects page and Prisma Client sync issues.
+### 3. Collision Detection Refactor
+- **Types**: Unified `Obstacle` interface in `src/lib/drilling/types.ts`.
+- **Logic**: Refactored `src/lib/drilling/math/collision.ts` to use start/end coordinates for obstacles, ensuring consistency with the 3D visualization.
+- **Verification**: Verified logic via code review and manual trace.
 
 ## Current State
 - **Server**: Running (`npm run dev`).
-- **Database**: Seeded with test data.
-- **Codebase**: All features merged.
+- **Database**: Schema is stable.
+- **Documentation**: All artifacts (`implementation_plan.md`, `walkthrough.md`, `task.md`) are up to date.
 
 ## Known Issues & Next Steps
-1.  **Auth/Redirects**: Browser verification of the dashboard failed due to redirects to the landing page. The `middleware.ts` or `next-auth` configuration should be reviewed to ensure proper access to `/dashboard`.
-2.  **WITSML XML**: The current implementation favors JSON/CSV. Full WITSML XML parsing is a future enhancement.
-3.  **Real Geotech API**: The MN CWI import is currently a simulation. Real ArcGIS REST API integration is needed.
-4.  **Unit Tests**: While manual verification logic is sound, adding Jest/Vitest unit tests for the math libraries (`survey.ts`, `loads.ts`) is recommended.
+1.  **WITSML Testing**: The WITSML parser was tested with a script, but real-world testing with actual rig data is recommended.
+2.  **Collision Visualization**: Ensure the 3D view correctly renders obstacles based on the new `Obstacle` type (start/end coordinates). Currently `Borehole3D` might still need adjustments to fully utilize the start/end points for all obstacle types (it handles pipes, but check other types).
+3.  **Unit Tests**: Add Jest/Vitest for the new parser and collision logic.
 
 ## Key Files
-- `src/actions/reporting.ts` (As-Built Logic)
-- `src/app/dashboard/projects/[id]/live/page.tsx` (Telemetry UI)
-- `src/components/visualization/Bore3DView.tsx` (3D View)
-- `prisma/seed.ts` (Test Data)
+- `src/app/actions/reports.ts` (Report Logic)
+- `src/lib/drilling/witsml/parser.ts` (WITSML Parser)
+- `src/app/api/witsml/route.ts` (Ingestion API)
+- `src/lib/drilling/math/collision.ts` (Collision Logic)

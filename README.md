@@ -126,7 +126,6 @@ gitGraph
 
 ## 📂 Documentation Index
 
-## 📂 Documentation Index
 
 - [Implementation Plan](./docs/implementation_plan.md) - Recent feature specs.
 - [Walkthrough](./docs/walkthrough.md) - Verification steps for new features.

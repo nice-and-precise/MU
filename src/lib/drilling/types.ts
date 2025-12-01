@@ -51,3 +51,17 @@ export interface WitsmlTrajectoryStation {
   azi: number;
   dls?: number;
 }
+
+export interface Obstacle {
+  id: string;
+  name: string;
+  type: string; // 'gas', 'water', etc.
+  startX: number;
+  startY: number; // Depth (TVD)
+  startZ: number; // North/South
+  endX?: number | null;
+  endY?: number | null;
+  endZ?: number | null;
+  diameter?: number | null;
+  safetyBuffer?: number;
+}

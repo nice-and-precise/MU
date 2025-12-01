@@ -5,12 +5,12 @@ import Borehole3D from '@/components/drilling/Borehole3D';
 import BoreholeControls from '@/components/drilling/BoreholeControls';
 import StripLog from '@/components/drilling/StripLog';
 import SteeringGauge from '@/components/drilling/SteeringGauge';
-import { SurveyStation } from '@/lib/drilling/types';
+import { SurveyStation, Obstacle } from '@/lib/drilling/types';
 import { calculatePathWithRust } from '@/lib/api/rustEngine';
 
 interface Project3DViewerProps {
     initialStations: SurveyStation[];
-    obstacles?: any[];
+    obstacles?: Obstacle[];
     targets?: any[];
 }
 
