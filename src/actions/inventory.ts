@@ -77,7 +77,7 @@ export async function recordTransaction(data: z.infer<typeof TransactionSchema>)
                     quantity: validated.quantity,
                     projectId: validated.projectId,
                     notes: validated.notes,
-                    performedById: validated.performedById,
+                    userId: validated.performedById,
                 },
             }),
             prisma.inventoryItem.update({

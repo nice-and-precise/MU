@@ -38,22 +38,50 @@ export async function importSurveyData(formData: FormData) {
         // Ideally we'd have a separate Survey table, but RodPass works for now as "As-Drilled" data
 
         // First, verify project exists
-        const project = await prisma.project.findUnique({ where: { id: projectId } });
+        const project = await prisma.project.findUnique({
+            where: { id: projectId },
+            include: { bores: true }
+        });
         if (!project) return { success: false, error: 'Project not found' };
+
+        // Find or create a default bore for this import
+        // If the file has a bore name, we could use it. For now, use the first bore or create "Imported Bore"
+        let boreId = project.bores[0]?.id;
+
+        if (!boreId) {
+            const newBore = await prisma.bore.create({
+                data: {
+                    projectId,
+                    name: `Imported Survey ${new Date().toLocaleDateString()}`,
+                    status: 'PLANNED'
+                }
+            });
+            boreId = newBore.id;
+        }
 
         // Transaction to ensure atomicity
         await prisma.$transaction(async (tx) => {
             // Optional: Clear existing "As-Drilled" data if this is a full replace?
             // For now, we'll just append.
 
+            // Get current user ID (mock for now, or passed in form data if needed)
+            // In a real app, we'd get this from the session.
+            // We'll need to fetch a valid user ID or make loggedById optional/default.
+            // Looking at schema: loggedById is required.
+            // Let's fetch the project creator as a fallback.
+            const userId = project.createdById;
+
             for (const p of points) {
                 await tx.rodPass.create({
                     data: {
-                        projectId,
-                        index: Math.floor(p.md / 15), // Approx index
-                        length: 15, // Standard rod
-                        pitch: p.inc - 90, // Convert Inc (0=Down) to Pitch (0=Horizontal)
-                        azimuth: p.azi,
+                        boreId,
+                        sequence: Math.floor(p.md / 15), // Approx sequence
+                        passNumber: 1, // Pilot
+                        linearFeet: 15, // Standard rod
+                        pitch: p.inc ? p.inc - 90 : 0, // Convert Inc (0=Down) to Pitch (0=Horizontal)
+                        azimuth: p.azi || 0,
+                        depth: p.tvd || 0,
+                        loggedById: userId
                         // We don't have exact coordinates from just MD/Inc/Az without calculation
                         // But if the file provided coords (WITSML often does), we could use them
                         // For now, we just store the raw telemetry

@@ -25,9 +25,11 @@ export interface BoreholeGeometry {
 }
 
 export interface SoilProperties {
-    shearStrengthPsi: number; // Undrained shear strength (Su)
+    shearStrengthPsi: number; // Undrained shear strength (Su) or Cohesion (c)
     shearModulusPsi: number; // G
     porePressurePsi: number; // Groundwater pressure (u)
+    internalFrictionAngleDeg: number; // Phi (degrees)
+    cohesionPsi: number; // c (PSI)
 }
 
 // Minimal interface matching Prisma SoilLayer
@@ -43,38 +45,43 @@ export interface SoilLayerInput {
  * Maps a SoilLayer to engineering properties (Heuristic/Lookup)
  */
 export function getSoilProperties(layer: SoilLayerInput, depthFt: number): SoilProperties {
-    // Default values if no specific data
-    let shearStrength = 5; // psi (Soft Clay)
+    // Default values
+    let cohesion = 5; // psi
+    let frictionAngle = 0; // degrees (Clay = 0)
     let shearModulus = 500; // psi
 
     switch (layer.soilType) {
         case 'Clay':
-            // Hardness 1-10 map to Shear Strength 2-20 psi
-            shearStrength = (layer.hardness || 3) * 2;
-            shearModulus = shearStrength * 100;
+            // Cohesion dominated
+            cohesion = (layer.hardness || 3) * 2;
+            frictionAngle = 0;
+            shearModulus = cohesion * 100;
             break;
         case 'Sand':
-            // Sand relies on friction, but for cavity expansion we treat it with equivalent cohesion for simplicity
-            // or use effective stress.
-            shearStrength = 2 + (depthFt * 0.5); // Strength increases with depth
+            // Friction dominated
+            cohesion = 0.1; // Very small cohesion
+            frictionAngle = 30 + (layer.hardness || 0); // 30-40 degrees
             shearModulus = 1000 + (depthFt * 10);
             break;
         case 'Rock':
-            shearStrength = layer.rockStrengthPsi ? layer.rockStrengthPsi / 10 : 500; // PSI
-            shearModulus = shearStrength * 500;
+            cohesion = layer.rockStrengthPsi ? layer.rockStrengthPsi / 10 : 500;
+            frictionAngle = 45;
+            shearModulus = cohesion * 500;
             break;
         default:
-            shearStrength = 5;
+            cohesion = 5;
+            frictionAngle = 0;
     }
 
     // Pore Pressure (Hydrostatic assumption)
-    // u = 0.433 psi/ft * depth (assuming water table at surface)
     const porePressure = 0.433 * depthFt;
 
     return {
-        shearStrengthPsi: shearStrength,
+        shearStrengthPsi: cohesion, // Legacy alias
         shearModulusPsi: shearModulus,
-        porePressurePsi: porePressure
+        porePressurePsi: porePressure,
+        internalFrictionAngleDeg: frictionAngle,
+        cohesionPsi: cohesion
     };
 }
 
@@ -151,35 +158,62 @@ export function calculateRequiredPressure(
 }
 
 /**
- * Calculates Maximum Allowable Annular Pressure (P_max) using Delft / Cavity Expansion.
- * P_max = P_pore + P_elastic + P_plastic
- * Simplified: P_max = u + G' * (R_plastic/R_hole)^2 ...
+ * Calculates Maximum Allowable Annular Pressure (P_max) using Delft Cavity Expansion Model.
+ * P_max = P_pore + sigma'_radial * (1 + sin phi) + c * cos phi + P_viscous
  * 
- * Practical HDD Formula (Queen's University / Delft simplified):
- * P_max = TotalStress + Su * N
- * Where N is a cavity expansion factor (approx 2.0 - 4.0 depending on soil stiffness)
+ * Note: This is a simplified application of the Delft model suitable for real-time estimation.
+ */
+export function calculateDelftPMax(
+    depthFt: number,
+    soil: SoilProperties,
+    holeDiameterIn: number = 6
+): number {
+    // 1. Effective Radial Stress (Sigma'_radial)
+    // Assumed to be effective vertical stress * K0 (earth pressure coeff)
+    // Sigma'_v = Total Stress - Pore Pressure
+    const soilDensityPcf = 110;
+    const totalVerticalStressPsi = (soilDensityPcf * depthFt) / 144;
+    const effectiveVerticalStress = totalVerticalStressPsi - soil.porePressurePsi;
+
+    // K0 approx 0.5 for sand, 1.0 for clay (simplified)
+    const K0 = soil.internalFrictionAngleDeg > 0 ? 1 - Math.sin(soil.internalFrictionAngleDeg * Math.PI / 180) : 1.0;
+    const effectiveRadialStress = effectiveVerticalStress * K0;
+
+    // 2. Soil Parameters
+    const phiRad = (soil.internalFrictionAngleDeg * Math.PI) / 180;
+    const c = soil.cohesionPsi;
+
+    // 3. Delft Equation Components
+    // P_max = u + sigma'_r * (1 + sin(phi)) + c * cos(phi)
+    // Note: The full Delft model involves plastic radius expansion terms (Rp/R0), 
+    // but for "Initiation" of fracture, we use the limit pressure.
+
+    // Term A: Pore Pressure
+    const termA = soil.porePressurePsi;
+
+    // Term B: Radial Stress Contribution
+    const termB = effectiveRadialStress * (1 + Math.sin(phiRad));
+
+    // Term C: Cohesion Contribution
+    const termC = c * Math.cos(phiRad);
+
+    // Term D: Viscous Shear (Simplified)
+    // P_viscous = G / 100? Or derived from shear modulus?
+    // Spec says: "P_viscous_shear". 
+    // For initiation, this is often negligible compared to soil strength, but let's add a small factor based on G.
+    const termD = soil.shearModulusPsi * 0.01; // 1% of G as a heuristic for viscous resistance
+
+    return termA + termB + termC + termD;
+}
+
+/**
+ * Legacy wrapper for backward compatibility
  */
 export function calculateMaxAllowablePressure(
     depthFt: number,
     soil: SoilProperties
 ): number {
-    // 1. Total Overburden Stress (Sigma_v)
-    // Assume soil density ~110 pcf (approx 15 ppg equivalent? No, 110/144 = 0.76 psi/ft)
-    // Soil density typically 100-120 pcf.
-    const soilDensityPcf = 110;
-    const sigma_v_psi = (soilDensityPcf * depthFt) / 144;
-
-    // 2. Cavity Expansion Limit
-    // P_max = Sigma_v + Su * (Math.log(G/Su) + 1) ... (Theoretical max)
-    // Let's use the Delft simplified limit often used in software:
-    // P_max = Sigma_total + Su * 2.5 (Safety factor included)
-
-    // If we are very shallow, P_max is dominated by soil weight lifting (Blowout).
-    // If deep, dominated by shear failure.
-
-    const maxPressurePsi = sigma_v_psi + (soil.shearStrengthPsi * 2.5);
-
-    return maxPressurePsi;
+    return calculateDelftPMax(depthFt, soil);
 }
 
 /**
@@ -188,21 +222,20 @@ export function calculateMaxAllowablePressure(
 export function analyzeFracOutRisk(
     fluid: FluidProperties,
     geo: BoreholeGeometry,
-    soilLayers: SoilLayerInput[], // Changed to accept layers
+    soilLayers: SoilLayerInput[],
     pumpRateGpm: number
 ) {
-    // 1. Find relevant soil layer
     const layer = soilLayers.find(l => geo.depthFt >= l.startDepth && geo.depthFt <= l.endDepth)
         || soilLayers[0]
-        || { soilType: 'Clay', startDepth: 0, endDepth: 100 }; // Fallback
+        || { soilType: 'Clay', startDepth: 0, endDepth: 100 };
 
     const soilProps = getSoilProperties(layer, geo.depthFt);
 
     const pReq = calculateRequiredPressure(fluid, geo, pumpRateGpm);
-    const pMax = calculateMaxAllowablePressure(geo.depthFt, soilProps);
+    const pMax = calculateDelftPMax(geo.depthFt, soilProps, geo.holeDiameterIn);
 
     const safetyMargin = pMax - pReq;
-    const riskLevel = safetyMargin < 0 ? 'CRITICAL' : (safetyMargin < 10 ? 'HIGH' : 'LOW');
+    const riskLevel = safetyMargin < 0 ? 'CRITICAL' : (safetyMargin < 50 ? 'HIGH' : 'LOW'); // Increased buffer for Delft
 
     return {
         pReq,

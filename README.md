@@ -86,18 +86,26 @@ gitGraph
 - **Activity Logging**: Log specific activities (Pilot, Ream, Pullback).
 - **Visual Dashboard**: Progress bars and completion stats per project.
 
-### 3. 🧮 Core Engineering (Rust Engine)
-- **Physics Engine**: ASTM F1962 Pullback & Hydraulic Fracture modeling.
-- **Geometry**: Minimum Curvature Method (MCM) for precise 3D path calculations.
-- **Performance**: Rust-based backend (`/engine`) exposed via Axum API.
+### 3. 🧮 Core Engineering (Physics Engine)
+- **Pullback Force**: ASTM F1962 with Capstan Effect (Friction at bends).
+- **Hydraulics**: Delft Cavity Expansion Model for Frac-Out Prediction (P_max).
+- **Magnetic Compensation**: True Azimuth calculation with Declination and Interference scaling.
+- **Rod Planner**: Integrated physics-based planning tool.
 
 ### 4. 🌍 Digital Subsurface
 - **3D Visualization**: Interactive view of bore paths and soil layers.
 - **Geotech Integration**: Manage soil borings and stratigraphy.
+- **Collision Detection**: Real-time alerts for utility proximity.
 
-### 5. 📡 Live Operations
-- **Telemetry**: Ingest WITSML data from rigs.
-- **Live Dashboard**: Real-time monitoring of depth, pitch, and azimuth.
+### 5. 📡 Live Operations (WITSML)
+- **Real-Time Telemetry**: Ingest WITSML 1.4.1.1 data streams.
+- **Live Dashboard**: "Tactical Dashboard" with High Contrast Day Mode.
+- **Steering Rose**: Traffic Light system for deviation alerts.
+
+### 6. 📱 Field Mobility (PWA)
+- **Offline-First**: Progressive Web App with Service Worker caching.
+- **Installable**: Home screen installation on iOS/Android.
+- **Responsive**: Optimized for field tablets and rugged devices.
 
 ---
 

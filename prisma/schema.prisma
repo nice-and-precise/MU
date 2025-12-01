@@ -132,6 +132,7 @@ model Bore {
   events          Event[]
   photos          Photo[]
   borePlan        BorePlan?
+  telemetryLogs   TelemetryLog[]
 
   @@index([projectId])
   @@index([status])
@@ -179,6 +180,27 @@ model RodPass {
   @@index([boreId])
   @@index([sequence])
   @@index([loggedById])
+}
+
+model TelemetryLog {
+  id            String   @id @default(cuid())
+  boreId        String
+  timestamp     DateTime
+  depth         Float    // Measured Depth (MD)
+  pitch         Float?
+  azimuth       Float?
+  toolFace      Float?
+  rpm           Float?
+  wob           Float?   // Weight on Bit
+  torque        Float?
+  pumpPressure  Float?
+  flowRate      Float?
+  createdAt     DateTime @default(now())
+
+  bore          Bore     @relation(fields: [boreId], references: [id], onDelete: Cascade)
+
+  @@index([boreId])
+  @@index([timestamp])
 }
 
 // ============================================================================

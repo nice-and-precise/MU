@@ -6,6 +6,13 @@ const parser = new XMLParser({
     attributeNamePrefix: "@_",
 });
 
+const getValue = (node: any): any => {
+    if (typeof node === 'object' && node !== null && '#text' in node) {
+        return node['#text'];
+    }
+    return node;
+};
+
 /**
  * Parses a WITSML 1.4.1.1 Trajectory XML string into a list of stations.
  * @param xml WITSML XML string
@@ -36,11 +43,11 @@ export const parseWitsmlTrajectory = (xml: string): WitsmlTrajectoryStation[] =>
             // <azi uom="dega">45.0</azi>
 
             return {
-                md: parseFloat(st.md),
-                tvd: parseFloat(st.tvd),
-                incl: parseFloat(st.incl),
-                azi: parseFloat(st.azi),
-                dls: st.dls ? parseFloat(st.dls) : undefined,
+                md: parseFloat(getValue(st.md)),
+                tvd: parseFloat(getValue(st.tvd)),
+                incl: parseFloat(getValue(st.incl)),
+                azi: parseFloat(getValue(st.azi)),
+                dls: st.dls ? parseFloat(getValue(st.dls)) : undefined,
             };
         }).sort((a: WitsmlTrajectoryStation, b: WitsmlTrajectoryStation) => a.md - b.md);
 

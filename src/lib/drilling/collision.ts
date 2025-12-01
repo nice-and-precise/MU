@@ -42,8 +42,8 @@ export function checkCollision(path: SurveyStation[], obstacles: Obstacle[]): Co
         // Convert station coordinates to 3D point (assuming local grid relative to entry)
         // In a real app, we'd need to handle coordinate systems (Lat/Lon vs Local Grid)
         // Here we assume station.easting, station.northing, station.tvd are in the same units as obstacle coords
-        const pX = station.easting;
-        const pY = station.northing;
+        const pX = station.east;
+        const pY = station.north;
         const pZ = station.tvd; // True Vertical Depth (positive down usually, but check convention)
 
         for (const obstacle of obstacles) {

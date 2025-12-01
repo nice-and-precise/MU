@@ -9,125 +9,78 @@ import { prisma } from '@/lib/prisma';
 export async function POST(req: NextRequest) {
     try {
         const contentType = req.headers.get('content-type');
-        let data: any;
+        let data: any[] = [];
 
         if (contentType?.includes('application/json')) {
-            data = await req.json();
+            const body = await req.json();
+            data = Array.isArray(body) ? body : [body];
         } else if (contentType?.includes('text/xml') || contentType?.includes('application/xml')) {
             const text = await req.text();
             const { parseWitsmlLog } = await import('@/lib/drilling/witsml/parser');
             const parsedLogs = parseWitsmlLog(text);
 
-            if (parsedLogs.length > 0) {
-                // Map to expected format
-                // Need boreId from somewhere. Usually in header <nameWellbore> or passed as query param?
-                // For now, let's check query param or default to a placeholder if not in XML.
-                const url = new URL(req.url);
-                const boreId = url.searchParams.get('boreId') || 'UNKNOWN_BORE';
-
-                data = parsedLogs.map(l => ({
-                    timestamp: l.timestamp,
-                    boreId: boreId,
-                    depth: l.depth,
-                    pitch: l.pitch,
-                    azimuth: l.azimuth
-                }));
-            } else {
-                return NextResponse.json({ success: false, error: 'No valid log data found in WITSML' }, { status: 400 });
-            }
-        } else {
-            // Assume CSV or raw text
-            const text = await req.text();
-            // Simple CSV parser
-            // Expected format: timestamp,boreId,depth,pitch,azimuth
-            const lines = text.split('\n');
-            data = lines.map(line => {
-                const [timestamp, boreId, depth, pitch, azimuth] = line.split(',');
-                return { timestamp, boreId, depth, pitch, azimuth };
-            });
+            // Map WITSML to Telemetry format
+            data = parsedLogs.map(l => ({
+                boreId: 'UNKNOWN', // Placeholder, logic below will fix
+                timestamp: l.timestamp,
+                depth: l.depth,
+                pitch: l.pitch,
+                azimuth: l.azimuth,
+                toolFace: l.toolFace,
+                rpm: l.rpm,
+                wob: l.wob,
+                torque: l.torque,
+                pumpPressure: l.pumpPressure,
+                flowRate: l.flowRate
+            }));
         }
 
-        // Process Data
-        // We expect an array of log entries
-        const entries = Array.isArray(data) ? data : [data];
         const results = [];
+        const url = new URL(req.url);
+        const queryBoreId = url.searchParams.get('boreId');
 
-        for (const entry of entries) {
-            if (!entry.boreId || !entry.depth) continue;
+        for (const entry of data) {
+            // Determine Bore ID
+            // 1. Query Param
+            // 2. Entry data
+            // 3. Default/Fallback
+            const boreId = queryBoreId || entry.boreId;
 
-            // Find or Create Daily Report for today
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-
-            const bore = await prisma.bore.findUnique({
-                where: { id: entry.boreId },
-                include: { project: true }
-            });
-
-            if (!bore) {
-                results.push({ error: `Bore ${entry.boreId} not found` });
+            if (!boreId || boreId === 'UNKNOWN') {
+                // Try to find an active bore? 
+                // For now, skip or log error.
+                results.push({ error: 'Missing boreId' });
                 continue;
             }
 
-            // Find/Create Report
-            let report = await prisma.dailyReport.findUnique({
-                where: {
-                    projectId_reportDate: {
-                        projectId: bore.projectId,
-                        reportDate: today
-                    }
+            // Ensure Bore Exists
+            const bore = await prisma.bore.findUnique({ where: { id: boreId } });
+            if (!bore) {
+                results.push({ error: `Bore ${boreId} not found` });
+                continue;
+            }
+
+            // Create Telemetry Log
+            const log = await prisma.telemetryLog.create({
+                data: {
+                    boreId: bore.id,
+                    timestamp: new Date(entry.timestamp || new Date()),
+                    depth: typeof entry.depth === 'string' ? parseFloat(entry.depth) : entry.depth,
+                    pitch: entry.pitch ? parseFloat(entry.pitch) : null,
+                    azimuth: entry.azimuth ? parseFloat(entry.azimuth) : null,
+                    toolFace: entry.toolFace ? parseFloat(entry.toolFace) : null,
+                    rpm: entry.rpm ? parseFloat(entry.rpm) : null,
+                    wob: entry.wob ? parseFloat(entry.wob) : null,
+                    torque: entry.torque ? parseFloat(entry.torque) : null,
+                    pumpPressure: entry.pumpPressure ? parseFloat(entry.pumpPressure) : null,
+                    flowRate: entry.flowRate ? parseFloat(entry.flowRate) : null
                 }
             });
 
-            if (!report) {
-                // Find a user to attribute to (System or First Admin)
-                const user = await prisma.user.findFirst(); // simplified
-                if (!user) throw new Error('No user found');
-
-                report = await prisma.dailyReport.create({
-                    data: {
-                        projectId: bore.projectId,
-                        reportDate: today,
-                        createdById: user.id,
-                        crew: '[]',
-                        status: 'DRAFT'
-                    }
-                });
-            }
-
-            // Append to Production Log
-            const currentLogs = JSON.parse(report.production as string || '[]');
-
-            // Check if this depth already exists to avoid dupes
-            const exists = currentLogs.some((l: any) => l.lf === entry.depth && l.boreId === entry.boreId);
-
-            if (!exists) {
-                const newLog = {
-                    boreId: entry.boreId,
-                    activity: 'Drill',
-                    lf: parseFloat(entry.depth), // This should be incremental LF, but input might be total depth. 
-                    // For simplicity, assuming input is "Rod Length" or we calculate delta.
-                    // Let's assume entry.depth is the rod length added.
-                    pitch: parseFloat(entry.pitch),
-                    azimuth: parseFloat(entry.azimuth),
-                    startTime: new Date().toISOString().split('T')[1].substring(0, 5), // HH:MM
-                    endTime: new Date().toISOString().split('T')[1].substring(0, 5)
-                };
-
-                currentLogs.push(newLog);
-
-                await prisma.dailyReport.update({
-                    where: { id: report.id },
-                    data: { production: JSON.stringify(currentLogs) }
-                });
-
-                results.push({ success: true, id: report.id });
-            } else {
-                results.push({ skipped: true, reason: 'Duplicate' });
-            }
+            results.push({ success: true, id: log.id });
         }
 
-        return NextResponse.json({ success: true, results });
+        return NextResponse.json({ success: true, count: results.filter(r => r.success).length, results });
 
     } catch (error) {
         console.error('WITSML Ingestion Error:', error);

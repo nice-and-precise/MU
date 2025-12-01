@@ -83,13 +83,85 @@ export default function DrillingDashboard() {
 
     // Mock Environment Data
     const obstacles = [
-        { id: 'obs1', type: 'gas' as const, x: 200, y: 15, z: 100, diameter: 2, length: 500, azimuth: 90 },
-        { id: 'obs2', type: 'water' as const, x: 500, y: 25, z: 300, diameter: 4, length: 500, azimuth: 45 },
-        { id: 'obs3', type: 'fiber' as const, x: 800, y: 5, z: 50, diameter: 1, length: 200, azimuth: 0 },
+        {
+            id: 'obs1',
+            name: 'Gas Line',
+            type: 'gas',
+            startX: 200,
+            startY: 15,
+            startZ: 100,
+            endX: 700,
+            endY: 15,
+            endZ: 100,
+            diameter: 2,
+            safetyBuffer: 2
+        },
+        {
+            id: 'obs2',
+            name: 'Water Main',
+            type: 'water',
+            startX: 500,
+            startY: 25,
+            startZ: 300,
+            endX: 850,
+            endY: 25,
+            endZ: 650,
+            diameter: 4,
+            safetyBuffer: 2
+        },
+        {
+            id: 'obs3',
+            name: 'Fiber Optic',
+            type: 'fiber',
+            startX: 800,
+            startY: 5,
+            startZ: 50,
+            endX: 800,
+            endY: 5,
+            endZ: 250,
+            diameter: 1,
+            safetyBuffer: 2
+        },
         // New Dense Utilities
-        { id: 'obs4', type: 'sewer' as const, x: 600, y: 40, z: 400, diameter: 6, length: 600, azimuth: 135 },
-        { id: 'obs5', type: 'electric' as const, x: 300, y: 10, z: 150, diameter: 1.5, length: 400, azimuth: 90 },
-        { id: 'obs6', type: 'abandoned' as const, x: 700, y: 30, z: 500, diameter: 3, length: 300, azimuth: 20 },
+        {
+            id: 'obs4',
+            name: 'Sewer Line',
+            type: 'sewer',
+            startX: 600,
+            startY: 40,
+            startZ: 400,
+            endX: 1000,
+            endY: 40,
+            endZ: 0,
+            diameter: 6,
+            safetyBuffer: 2
+        },
+        {
+            id: 'obs5',
+            name: 'Electric',
+            type: 'electric',
+            startX: 300,
+            startY: 10,
+            startZ: 150,
+            endX: 700,
+            endY: 10,
+            endZ: 150,
+            diameter: 1.5,
+            safetyBuffer: 2
+        },
+        {
+            id: 'obs6',
+            name: 'Abandoned Pipe',
+            type: 'abandoned',
+            startX: 700,
+            startY: 30,
+            startZ: 500,
+            endX: 800,
+            endY: 30,
+            endZ: 800,
+            diameter: 3,
+            safetyBuffer: 2
+        },
     ];
 
     const targets = [

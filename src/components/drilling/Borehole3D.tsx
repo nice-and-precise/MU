@@ -102,11 +102,11 @@ const ObstacleMesh = ({ obs }: { obs: Obstacle }) => {
     // Wait, in BoreholeTube we used: new THREE.Vector3(s.east, -s.tvd, -s.north)
     // So: X=East, Y=-TVD(Depth), Z=-North
     // In DB: startX, startY, startZ. Let's assume X=East, Y=North, Z=Depth(TVD)
-    const p1 = new THREE.Vector3(obs.startX, -obs.startZ, -obs.startY);
+    const p1 = new THREE.Vector3(obs.startX, -obs.startY, -obs.startZ);
 
     let p2: THREE.Vector3;
     if (obs.endX !== null && obs.endX !== undefined) {
-        p2 = new THREE.Vector3(obs.endX, -(obs.endZ || obs.startZ), -(obs.endY || obs.startY));
+        p2 = new THREE.Vector3(obs.endX, -(obs.endY || obs.startY), -(obs.endZ || obs.startZ));
     } else {
         // Point obstacle (e.g. manhole) - make it a small vertical cylinder or sphere
         p2 = p1.clone().add(new THREE.Vector3(0, 5, 0)); // 5ft tall marker
