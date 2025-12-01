@@ -1,6 +1,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { parseWitsmlLog, parseWitsmlTrajectory } from '@/lib/drilling/witsml/parser';
 
 /**
  * API Route for Real-Time WITSML / Drilling Data Ingestion
@@ -16,8 +17,38 @@ export async function POST(req: NextRequest) {
             data = Array.isArray(body) ? body : [body];
         } else if (contentType?.includes('text/xml') || contentType?.includes('application/xml')) {
             const text = await req.text();
-            const { parseWitsmlLog } = await import('@/lib/drilling/witsml/parser');
-            const parsedLogs = parseWitsmlLog(text);
+
+            // Try parsing as Log first
+            let parsedLogs = parseWitsmlLog(text);
+
+            // If no logs found, try parsing as Trajectory
+            if (parsedLogs.length === 0) {
+                const stations = parseWitsmlTrajectory(text);
+                parsedLogs = stations.map(s => ({
+                    timestamp: new Date().toISOString(), // Trajectory usually doesn't have timestamps per station, use current
+                    depth: s.md,
+                    // Note: WITSML Trajectory uses Inclination. Telemetry uses Pitch? 
+                    // TelemetryLog has 'pitch'. If we store Inc as Pitch, we might confuse things.
+                    // But 'pitch' in TelemetryLog usually means Inclination in some contexts or actual Pitch.
+                    // Let's assume for now we map Inc -> Pitch.
+                    // Ideally we should convert: Pitch = 90 - Inc (if Inc is 0-180).
+                    // But let's check what TelemetryLog expects. 
+                    // 'LiveTelemetryPage' displays Pitch. 
+                    // If we send Inc (e.g. 90 for horizontal), and display it as Pitch, it's fine if the user expects Inc.
+                    // But 'SteeringRose' expects Pitch (-90 to +90).
+                    // So we should convert.
+                    // Inc 90 -> Pitch 0. Inc 100 -> Pitch -10. Inc 80 -> Pitch +10.
+                    // Pitch = 90 - Inc.
+                    pitch: (90 - s.incl).toFixed(2),
+                    azimuth: s.azi,
+                    toolFace: 0, // Trajectory doesn't usually have toolface
+                    rpm: 0,
+                    wob: 0,
+                    torque: 0,
+                    pumpPressure: 0,
+                    flowRate: 0
+                }));
+            }
 
             // Map WITSML to Telemetry format
             data = parsedLogs.map(l => ({

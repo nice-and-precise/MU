@@ -214,7 +214,18 @@ export default function EngineeringPage() {
 
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Calculated Loads (ASTM F1962)</CardTitle>
+                                    <CardTitle>
+                                        Calculated Loads
+                                        {engineeringData?.notes ? (
+                                            <span className="ml-2 text-xs font-normal text-muted-foreground">
+                                                ({engineeringData.notes})
+                                            </span>
+                                        ) : (
+                                            <span className="ml-2 text-xs font-normal text-muted-foreground">
+                                                (ASTM F1962)
+                                            </span>
+                                        )}
+                                    </CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     {engineeringData ? (

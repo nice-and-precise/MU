@@ -44,6 +44,46 @@ graph TD
     end
 ```
 
+### 📡 WITSML Data Flow
+
+```mermaid
+sequenceDiagram
+    participant Rig as Drilling Rig
+    participant API as /api/witsml
+    participant Parser as WITSML Parser
+    participant DB as PostgreSQL
+    participant UI as Live Dashboard
+    
+    Rig->>API: POST WITSML XML
+    API->>Parser: Parse Log/Trajectory
+    Parser-->>API: JSON Telemetry
+    API->>DB: Store TelemetryLog
+    UI->>DB: Poll for Updates
+    DB-->>UI: New Telemetry Data
+    UI->>UI: Update Steering Rose
+```
+
+### 🧮 Physics Engine Logic
+
+```mermaid
+classDiagram
+    class Bore {
+        +id: String
+        +rodPasses: RodPass[]
+    }
+    class Trajectory {
+        +stations: SurveyStation[]
+        +calculate()
+    }
+    class Physics {
+        +calculatePullback(traj)
+        +calculateFracOut(traj, soil)
+    }
+    
+    Bore --> Trajectory : Converts to
+    Trajectory --> Physics : Input for
+```
+
 ---
 
 ## 📜 Development History (Cinematic)

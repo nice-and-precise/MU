@@ -61,36 +61,64 @@ export async function upsertBorePlan(data: z.infer<typeof BorePlanSchema>) {
     try {
         const validated = BorePlanSchema.parse(data);
 
-        // Fetch Soil Layers
-        const soilLayers = await getProjectSoilLayers(validated.boreId);
+        // Fetch Soil Layers & Bore Data for Trajectory
+        const [soilLayers, boreData] = await Promise.all([
+            getProjectSoilLayers(validated.boreId),
+            prisma.bore.findUnique({
+                where: { id: validated.boreId },
+                include: { rodPasses: true }
+            })
+        ]);
 
-        // Calculate theoretical pullback force (Simplified ASTM F1962)
-        const estimatedPullback = calculatePullbackForce(
-            validated.totalLength,
-            validated.pipeDiameter,
-            validated.pipeMaterial as any,
-            soilLayers.length > 0 ? soilLayers : 'Clay',
-            validated.safetyFactor || 1.5
-        );
+        let estimatedPullback = 0;
+        let calculationMethod = 'ASTM F1962 (Simplified)';
+
+        // Try detailed calculation (Capstan Effect) if trajectory exists
+        if (boreData) {
+            const { convertBoreToTrajectory } = await import('@/lib/drilling/utils');
+            const { calculateDetailedPullback } = await import('@/lib/drilling/math/loads');
+
+            const trajectory = convertBoreToTrajectory({
+                rodPasses: boreData.rodPasses,
+                borePlan: validated as any
+            });
+
+            if (trajectory && trajectory.length > 1) {
+                estimatedPullback = calculateDetailedPullback(
+                    trajectory,
+                    validated.pipeDiameter,
+                    validated.pipeMaterial as any,
+                    soilLayers.length > 0 ? soilLayers : 'Clay'
+                );
+                calculationMethod = 'ASTM F1962 (Detailed / Capstan)';
+            } else {
+                // Fallback to simplified
+                estimatedPullback = calculatePullbackForce(
+                    validated.totalLength,
+                    validated.pipeDiameter,
+                    validated.pipeMaterial as any,
+                    soilLayers.length > 0 ? soilLayers : 'Clay',
+                    validated.safetyFactor || 1.5
+                );
+            }
+        }
 
         const plan = await prisma.borePlan.upsert({
             where: { boreId: validated.boreId },
             update: {
                 ...validated,
                 pullbackForce: estimatedPullback,
+                notes: calculationMethod // Optional: store method in notes or separate field? Schema has 'notes'.
             },
             create: {
                 ...validated,
                 pullbackForce: estimatedPullback,
+                notes: calculationMethod
             },
         });
 
         // Get project ID for revalidation
-        const bore = await prisma.bore.findUnique({
-            where: { id: validated.boreId },
-            select: { projectId: true },
-        });
-        if (bore) revalidatePath(`/dashboard/projects/${bore.projectId}`);
+        if (boreData) revalidatePath(`/dashboard/projects/${boreData.projectId}`);
 
         return { success: true, data: plan };
     } catch (error) {

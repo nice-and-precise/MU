@@ -21,15 +21,25 @@
 - **Logic**: Refactored `src/lib/drilling/math/collision.ts` to use start/end coordinates for obstacles, ensuring consistency with the 3D visualization.
 - **Verification**: Verified logic via code review and manual trace.
 
+### 4. Physics Engine Integration
+- **Logic**: Created `src/lib/drilling/utils.ts` to convert Bore data to Physics Trajectory.
+- **Integration**: Updated `src/actions/engineering.ts` to use `calculateDetailedPullback` (Capstan Effect) when rod data is available.
+- **UI**: Updated Engineering Dashboard to display the calculation method used (Detailed vs Simplified).
+
+### 5. WITSML Verification
+- **Script**: Created `scripts/test_witsml.ts` to simulate WITSML ingestion.
+- **API**: Updated `/api/witsml` to support `parseWitsmlTrajectory` and map Inclination to Pitch.
+- **Status**: **VERIFIED**. Successfully ingested `sample_survey.witsml` (3 records).
+
 ## Current State
-- **Server**: Running (`npm run dev`).
-- **Database**: Schema is stable.
-- **Documentation**: All artifacts (`implementation_plan.md`, `walkthrough.md`, `task.md`) are up to date.
+- **Server**: Running (`npm run dev`) and healthy.
+- **Database**: Schema is valid and Client is up-to-date.
+- **Documentation**: All artifacts are up to date.
 
 ## Known Issues & Next Steps
-1.  **WITSML Testing**: The WITSML parser was tested with a script, but real-world testing with actual rig data is recommended.
-2.  **Collision Visualization**: Ensure the 3D view correctly renders obstacles based on the new `Obstacle` type (start/end coordinates). Currently `Borehole3D` might still need adjustments to fully utilize the start/end points for all obstacle types (it handles pipes, but check other types).
-3.  **Unit Tests**: Add Jest/Vitest for the new parser and collision logic.
+1.  **Field Interface**: Refine "Steering Rose" with real-time animations (currently mocked).
+2.  **Office Interface**: Enhance `RodPlanningGrid` with drag-and-drop reordering.
+3.  **Deployment**: Prepare Docker container for production deployment.
 
 ## Key Files
 - `src/app/actions/reports.ts` (Report Logic)
