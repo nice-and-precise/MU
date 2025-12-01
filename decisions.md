@@ -19,3 +19,23 @@
 ## 2025-11-30: 3D Coordinate System
 - **Decision**: Enforce `x=East`, `y=Depth(TVD)`, `z=North` mapping in `Borehole3D` for Obstacles.
 - **Rationale**: Matches the `BoreholeTube` rendering and `collision.ts` logic. Previous implementation swapped Y and Z.
+
+## 2025-12-01: Sequential Startup for Low-Resource Stability
+- **Decision**: Adopt a **Sequential Startup Protocol** (Kill -> Reset DB -> Start Server) instead of parallel execution.
+- **Rationale**: Prevent system lock-ups on 16GB RAM machines by isolating heavy processes (DB seeding vs. Next.js compilation).
+
+## 2025-12-01: Migration to Supabase
+- **Decision**: Migrate PostgreSQL database from local Docker container to Supabase (Cloud).
+- **Rationale**: Offload resource usage from the local development machine (16GB RAM) to improve performance and stability. Local Docker containers were causing system lock-ups.
+
+## 2025-12-01: Low-Spec Development Mode
+- **Decision**: Create `scripts/dev_low_spec.ps1` to automate stopping Docker and cleaning processes.
+- **Rationale**: Ensure the development environment remains responsive on i5/16GB hardware by aggressively freeing resources.
+
+## 2025-12-01: WITSML Ingestion Strategy
+- **Decision**: Use `fast-xml-parser` to parse WITSML logs and store directly in `TelemetryLog` table.
+- **Rationale**: Provides a lightweight, real-time ingestion pipeline without the overhead of a full WITSML server.
+
+## 2025-12-01: Live Dashboard Polling
+- **Decision**: Use client-side polling (5s interval) for the Live Dashboard instead of WebSockets.
+- **Rationale**: Simpler to implement and sufficient for the current update frequency (drilling data updates every 10-30s). WebSockets can be added later if sub-second latency is required.

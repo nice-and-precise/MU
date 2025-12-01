@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import { motion } from 'framer-motion';
 
 interface SteeringRoseProps {
     toolFace: number; // 0-360
@@ -19,9 +20,6 @@ export default function SteeringRose({
     status = 'normal',
     highContrast = false
 }: SteeringRoseProps) {
-    // Calculate rotation for the needle
-    const needleRotation = toolFace;
-
     // Traffic Light Colors
     const statusColors = {
         normal: highContrast ? 'bg-green-600' : 'bg-green-500',
@@ -45,13 +43,21 @@ export default function SteeringRose({
     const centerText = highContrast ? 'text-black' : 'text-white';
 
     return (
-        <div className={`relative w-64 h-64 flex items-center justify-center rounded-full border-4 shadow-2xl transition-colors duration-300 ${bgClass} ${borderClass} ${statusBorder[status]}`}>
+        <motion.div
+            className={`relative w-64 h-64 flex items-center justify-center rounded-full border-4 shadow-2xl ${bgClass} ${borderClass}`}
+            animate={{ borderColor: highContrast ? (status === 'critical' ? '#991b1b' : '#000') : (status === 'critical' ? 'rgba(239, 68, 68, 0.5)' : 'rgba(51, 65, 85, 1)') }}
+            transition={{ duration: 0.5 }}
+        >
             {/* Compass Rose Background */}
             <div className={`absolute inset-0 rounded-full border-2 opacity-50 ${highContrast ? 'border-black' : 'border-slate-600'}`}></div>
 
             {/* Traffic Light Halo (Pulse if critical) */}
             {status === 'critical' && (
-                <div className="absolute inset-0 rounded-full bg-red-500/20 animate-pulse"></div>
+                <motion.div
+                    className="absolute inset-0 rounded-full bg-red-500/20"
+                    animate={{ opacity: [0.2, 0.5, 0.2] }}
+                    transition={{ duration: 1, repeat: Infinity }}
+                />
             )}
 
             {/* Ticks */}
@@ -73,34 +79,47 @@ export default function SteeringRose({
 
             {/* Target Indicator (Ghost Needle) */}
             {targetToolFace !== undefined && (
-                <div
-                    className="absolute w-full h-full flex justify-center items-start transition-transform duration-500"
-                    style={{ transform: `rotate(${targetToolFace}deg)` }}
+                <motion.div
+                    className="absolute w-full h-full flex justify-center items-start"
+                    animate={{ rotate: targetToolFace }}
+                    transition={{ type: "spring", stiffness: 50, damping: 20 }}
                 >
                     <div className={`w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[16px] mt-4 ${ghostClass}`}></div>
-                </div>
+                </motion.div>
             )}
 
             {/* Tool Face Needle */}
-            <div
-                className="absolute w-full h-full flex justify-center items-start transition-transform duration-300 ease-out"
-                style={{ transform: `rotate(${needleRotation}deg)` }}
+            <motion.div
+                className="absolute w-full h-full flex justify-center items-start"
+                animate={{ rotate: toolFace }}
+                transition={{ type: "spring", stiffness: 60, damping: 15, mass: 1 }}
             >
                 {/* Needle Head */}
                 <div className={`w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[20px] mt-2 drop-shadow-lg ${needleClass}`}></div>
-            </div>
+            </motion.div>
 
             {/* Center Info Hub */}
             <div className={`absolute w-32 h-32 rounded-full flex flex-col items-center justify-center border-2 z-10 ${centerBg} ${highContrast ? 'border-black' : 'border-slate-600'}`}>
                 <div className={`text-xs uppercase tracking-wider ${textClass}`}>Pitch</div>
-                <div className={`text-2xl font-bold ${centerText}`}>{pitch.toFixed(1)}°</div>
+                <motion.div
+                    key={pitch} // Trigger animation on change
+                    initial={{ scale: 0.8, opacity: 0.5 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className={`text-2xl font-bold ${centerText}`}
+                >
+                    {pitch.toFixed(1)}°
+                </motion.div>
                 <div className={`w-16 h-[1px] my-1 ${highContrast ? 'bg-black' : 'bg-slate-600'}`}></div>
                 <div className={`text-xs uppercase tracking-wider ${textClass}`}>TF</div>
                 <div className={`text-xl font-bold ${highContrast ? 'text-black' : 'text-orange-400'}`}>{Math.round(toolFace)}°</div>
 
                 {/* Status Indicator Dot */}
-                <div className={`mt-1 w-3 h-3 rounded-full ${statusColors[status]}`}></div>
+                <motion.div
+                    className={`mt-1 w-3 h-3 rounded-full ${statusColors[status]}`}
+                    animate={{ scale: status === 'critical' ? [1, 1.5, 1] : 1 }}
+                    transition={{ duration: 0.5, repeat: status === 'critical' ? Infinity : 0 }}
+                />
             </div>
-        </div>
+        </motion.div>
     );
 }

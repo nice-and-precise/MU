@@ -35,8 +35,8 @@ graph TD
     NextJS -->|API| RustEngine[Rust Math Engine]
     
     subgraph "Data Layer"
-        Prisma --> Postgres[(PostgreSQL + PostGIS)]
-        Prisma --> Timescale[(TimescaleDB)]
+        Prisma --> Supabase[(Supabase PostgreSQL)]
+        Supabase --> PostGIS[(PostGIS Extension)]
     end
     
     subgraph "Compute Layer"
@@ -156,19 +156,47 @@ gitGraph
 | **Frontend** | Next.js 16 | App Router, Server Actions, React Server Components |
 | **UI** | Tailwind + Shadcn | Modern, responsive, accessible components |
 | **Backend** | Rust (Axum) | High-performance math and physics calculations |
-| **Database** | PostgreSQL 16 | With PostGIS (Spatial) and TimescaleDB (Time-series) |
+| **Database** | Supabase (PostgreSQL 16) | Cloud-hosted with PostGIS (Spatial) and TimescaleDB |
 | **ORM** | Prisma | Type-safe database access |
-| **DevOps** | Docker | Containerized development and deployment |
+| **DevOps** | Docker | Containerized development (optional) |
 
 ---
 
 ## 🏁 Getting Started
 
-1.  **Start Infrastructure**: `docker-compose up -d`
-2.  **Install Dependencies**: `npm install`
+1.  **Install Dependencies**: `npm install`
+2.  **Configure Environment**: Ensure `.env` has valid Supabase credentials.
 3.  **Sync Database**: `npx prisma db push`
 4.  **Run Dev Server**: `npm run dev`
 5.  **Run Rust Engine**: `cd engine && cargo run`
+
+## ⚡ Low-Spec Development Mode (Recommended)
+
+For systems with limited RAM (e.g., 16GB) or older CPUs, use the optimized startup script. This script automatically:
+1.  **Stops Docker Desktop** (Saves ~4GB RAM).
+2.  **Cleans Node processes**.
+3.  **Enables Turbopack** (Faster compilation).
+
+To run:
+```powershell
+./scripts/dev_low_spec.ps1
+```
+
+---
+
+## 🔧 Troubleshooting
+
+If you experience issues:
+
+1.  **Kill Lingering Processes**:
+    ```powershell
+    taskkill /F /IM node.exe
+    ```
+2.  **Start Server (Standard)**:
+    ```powershell
+    npm run dev
+    ```
+
 
 ---
 
