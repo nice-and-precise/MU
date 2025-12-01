@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<trajectorys xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+  <trajectory uidWell="W-123" uidWellbore="WB-123" uid="TRAJ-123">
+    <nameWell>Midwest Underground Test Well</nameWell>
+    <nameWellbore>Pilot Hole</nameWellbore>
+    <name>Plan 1</name>
+    <trajectoryStation uid="stn-1">
+      <md uom="ft">0</md>
+      <tvd uom="ft">0</tvd>
+      <incl uom="dega">0</incl>
+      <azi uom="dega">90</azi>
+      <dispNs uom="ft">0</dispNs>
+      <dispEw uom="ft">0</dispEw>
+    </trajectoryStation>
+    <trajectoryStation uid="stn-2">
+      <md uom="ft">15</md>
+      <tvd uom="ft">14.8</tvd>
+      <incl uom="dega">5</incl>
+      <azi uom="dega">92</azi>
+      <dispNs uom="ft">0.5</dispNs>
+      <dispEw uom="ft">14.9</dispEw>
+    </trajectoryStation>
+    <trajectoryStation uid="stn-3">
+      <md uom="ft">30</md>
+      <tvd uom="ft">29.5</tvd>
+      <incl uom="dega">8</incl>
+      <azi uom="dega">95</azi>
+      <dispNs uom="ft">1.2</dispNs>
+      <dispEw uom="ft">29.8</dispEw>
+    </trajectoryStation>
+  </trajectory>
+</trajectorys>

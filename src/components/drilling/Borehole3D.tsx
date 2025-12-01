@@ -8,13 +8,16 @@ import { SurveyStation } from '../../lib/drilling/types';
 
 interface Obstacle {
     id: string;
-    type: 'gas' | 'water' | 'electric' | 'fiber' | 'sewer' | 'abandoned';
-    x: number;
-    y: number;
-    z: number;
-    diameter: number;
-    length: number;
-    azimuth: number;
+    name: string;
+    type: string;
+    startX: number;
+    startY: number;
+    startZ: number;
+    endX?: number | null;
+    endY?: number | null;
+    endZ?: number | null;
+    diameter?: number | null;
+    safetyBuffer: number;
 }
 
 interface TargetZone {
@@ -99,33 +102,59 @@ const Building = ({ x, z }: { x: number, z: number }) => {
 
 const ObstacleMesh = ({ obs }: { obs: Obstacle }) => {
     let color = 'orange';
-    switch (obs.type) {
-        case 'gas': color = 'yellow'; break;
-        case 'water': color = 'blue'; break;
-        case 'electric': color = 'red'; break;
-        case 'fiber': color = 'red'; break;
-        case 'sewer': color = '#4d7c0f'; break; // Green/Brown
-        case 'abandoned': color = '#64748b'; break; // Slate
+    const typeLower = obs.type.toLowerCase();
+    if (typeLower.includes('gas')) color = 'yellow';
+    else if (typeLower.includes('water')) color = 'blue';
+    else if (typeLower.includes('electric')) color = 'red';
+    else if (typeLower.includes('fiber')) color = 'red';
+    else if (typeLower.includes('sewer')) color = '#4d7c0f';
+    else if (typeLower.includes('abandoned')) color = '#64748b';
+
+    // Calculate geometry from start/end points
+    const start = new THREE.Vector3(obs.startX, -obs.startY, -obs.startZ); // Assuming Y is depth in DB? No, Z is depth usually.
+    // Wait, in BoreholeTube we used: new THREE.Vector3(s.east, -s.tvd, -s.north)
+    // So: X=East, Y=-TVD(Depth), Z=-North
+    // In DB: startX, startY, startZ. Let's assume X=East, Y=North, Z=Depth(TVD)
+    const p1 = new THREE.Vector3(obs.startX, -obs.startZ, -obs.startY);
+
+    let p2: THREE.Vector3;
+    if (obs.endX !== null && obs.endX !== undefined) {
+        p2 = new THREE.Vector3(obs.endX, -(obs.endZ || obs.startZ), -(obs.endY || obs.startY));
+    } else {
+        // Point obstacle (e.g. manhole) - make it a small vertical cylinder or sphere
+        p2 = p1.clone().add(new THREE.Vector3(0, 5, 0)); // 5ft tall marker
     }
 
+    const direction = new THREE.Vector3().subVectors(p2, p1);
+    const length = direction.length();
+
+    // Position is midpoint
+    const position = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
+
+    // Orientation
+    const quaternion = new THREE.Quaternion();
+    const up = new THREE.Vector3(0, 1, 0);
+    quaternion.setFromUnitVectors(up, direction.normalize());
+
+    const diameter = obs.diameter ? obs.diameter / 12 : 1; // Convert inches to ft, default 1ft
+    const safetyRadius = (obs.safetyBuffer || 2) + (diameter / 2);
+
     return (
-        <group position={[obs.x, -obs.y, -obs.z]} rotation={[0, -obs.azimuth * (Math.PI / 180), 0]}>
-            <group rotation={[Math.PI / 2, 0, 0]}>
-                {/* The Pipe */}
-                <mesh>
-                    <cylinderGeometry args={[obs.diameter / 2, obs.diameter / 2, obs.length, 16]} />
-                    <meshStandardMaterial color={color} opacity={0.8} transparent />
-                </mesh>
+        <group position={position} quaternion={quaternion}>
+            {/* The Pipe/Obstacle */}
+            <mesh>
+                <cylinderGeometry args={[diameter / 2, diameter / 2, length, 16]} />
+                <meshStandardMaterial color={color} opacity={0.8} transparent />
+            </mesh>
 
-                {/* Safety Ring (Warning Zone - e.g. 10ft radius) */}
-                <mesh>
-                    <cylinderGeometry args={[10, 10, obs.length, 16]} />
-                    <meshBasicMaterial color="red" opacity={0.1} transparent depthWrite={false} side={THREE.DoubleSide} />
-                </mesh>
-            </group>
+            {/* Safety Ring (Warning Zone) */}
+            <mesh>
+                <cylinderGeometry args={[safetyRadius, safetyRadius, length, 16]} />
+                <meshBasicMaterial color="red" opacity={0.1} transparent depthWrite={false} side={THREE.DoubleSide} />
+            </mesh>
 
-            <Text position={[0, 15, 0]} fontSize={10} color="white" anchorX="center" anchorY="bottom">
-                {obs.type.toUpperCase()}
+            <Text position={[0, diameter + 2, 0]} fontSize={5} color="white" anchorX="center" anchorY="bottom" rotation={[0, 0, 0]}>
+                {obs.name}
             </Text>
         </group>
     );

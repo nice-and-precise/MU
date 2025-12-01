@@ -5,10 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Trash2, Save, Loader2 } from "lucide-react";
+import { Plus, Trash2, Save, Loader2, AlertTriangle } from "lucide-react";
 import Borehole3D from '../drilling/Borehole3D';
 import { SurveyStation } from '@/lib/drilling/types';
 import { calculatePathWithRust } from '@/lib/api/engine';
+import { checkCollision, CollisionResult, Obstacle } from '@/lib/drilling/collision';
+import { getProjectObstacles } from '@/actions/obstacles';
+import { useParams } from 'next/navigation';
 
 // Simple types for the planner
 interface PlannedRod {
@@ -19,11 +22,29 @@ interface PlannedRod {
 }
 
 export default function RodPlanningGrid() {
+    const params = useParams();
+    const projectId = params.id as string;
+
     const [rods, setRods] = useState<PlannedRod[]>([
         { id: '1', length: 15, pitch: -12, azimuth: 90 } // Entry rod
     ]);
     const [calculatedPath, setCalculatedPath] = useState<SurveyStation[]>([]);
+    const [obstacles, setObstacles] = useState<Obstacle[]>([]);
+    const [collisionResult, setCollisionResult] = useState<CollisionResult | null>(null);
     const [isCalculating, setIsCalculating] = useState(false);
+
+    // Fetch obstacles on mount
+    useEffect(() => {
+        if (projectId) {
+            getProjectObstacles(projectId).then(res => {
+                if (res.success && res.data) {
+                    // Map Prisma Obstacle to our internal Obstacle type if needed
+                    // Prisma types match our interface mostly, but we need to ensure types align
+                    setObstacles(res.data as unknown as Obstacle[]);
+                }
+            });
+        }
+    }, [projectId]);
 
     useEffect(() => {
         const calculate = async () => {
@@ -43,15 +64,18 @@ export default function RodPlanningGrid() {
                 });
 
                 // Add surface point if not implicit
-                // Rust engine expects survey points.
-                // If we send just the rod ends, it will calculate from there.
-                // Let's ensure we have a start point.
                 if (inputs.length > 0 && inputs[0].md > 0) {
                     inputs.unshift({ md: 0, pitch: 0, az: rods[0].azimuth });
                 }
 
                 const result = await calculatePathWithRust(inputs);
                 setCalculatedPath(result);
+
+                // Check for collisions
+                if (obstacles.length > 0) {
+                    const collision = checkCollision(result, obstacles);
+                    setCollisionResult(collision);
+                }
             } catch (error) {
                 console.error("Calculation failed", error);
             } finally {
@@ -61,7 +85,7 @@ export default function RodPlanningGrid() {
 
         const debounce = setTimeout(calculate, 500);
         return () => clearTimeout(debounce);
-    }, [rods]);
+    }, [rods, obstacles]);
 
     const addRod = () => {
         const lastRod = rods[rods.length - 1];
@@ -153,14 +177,43 @@ export default function RodPlanningGrid() {
             <Card className="lg:col-span-2 flex flex-col h-full overflow-hidden">
                 <CardHeader className="pb-2 flex flex-row justify-between items-center">
                     <CardTitle>3D Preview</CardTitle>
-                    {isCalculating && <Loader2 className="w-4 h-4 animate-spin text-slate-400" />}
+                    <div className="flex items-center gap-4">
+                        {collisionResult?.hasCollision && (
+                            <div className="flex items-center text-red-600 animate-pulse font-bold">
+                                <AlertTriangle className="w-5 h-5 mr-2" />
+                                COLLISION DETECTED
+                            </div>
+                        )}
+                        {collisionResult?.riskLevel === 'WARNING' && (
+                            <div className="flex items-center text-orange-500 font-bold">
+                                <AlertTriangle className="w-5 h-5 mr-2" />
+                                PROXIMITY WARNING
+                            </div>
+                        )}
+                        {isCalculating && <Loader2 className="w-4 h-4 animate-spin text-slate-400" />}
+                    </div>
                 </CardHeader>
                 <CardContent className="flex-1 p-0 relative min-h-[400px]">
                     <Borehole3D
                         stations={calculatedPath}
-                        ghostPath={[]} // Could show actual vs plan here later
+                        ghostPath={[]}
                         viewMode="iso"
+                        obstacles={obstacles} // Pass obstacles to 3D view
                     />
+
+                    {/* Collision Warnings Overlay */}
+                    {collisionResult && collisionResult.warnings.length > 0 && (
+                        <div className="absolute bottom-4 left-4 right-4 bg-black/80 text-white p-4 rounded-md max-h-[150px] overflow-y-auto z-10">
+                            <h4 className="font-bold mb-2 text-sm uppercase tracking-wider">Safety Alerts</h4>
+                            <ul className="space-y-1 text-sm">
+                                {collisionResult.warnings.map((w, i) => (
+                                    <li key={i} className={w.includes('CRITICAL') ? 'text-red-400' : 'text-orange-300'}>
+                                        {w}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>

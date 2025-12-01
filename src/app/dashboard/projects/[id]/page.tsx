@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { MapPin, Calendar, DollarSign, Activity, FileText, AlertCircle } from "lucide-react";
 import { LinearProgressBar } from "@/components/projects/LinearProgressBar";
+import DataImportDropzone from "@/components/import/DataImportDropzone";
 
 export default async function ProjectDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -122,8 +123,13 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Bores List */}
+                {/* Main Content Column */}
                 <div className="lg:col-span-2 space-y-6">
+
+                    {/* Data Import Section */}
+                    <DataImportDropzone projectId={project.id} />
+
+                    {/* Bores List */}
                     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Bores</h2>
                         <div className="space-y-4">
