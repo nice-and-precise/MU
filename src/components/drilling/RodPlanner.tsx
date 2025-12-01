@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { Calculator, ArrowRight, Compass } from 'lucide-react';
 import { generateRodPlan } from '../../lib/drilling/math/planning';
 import { RodPlanInput, RodPlanStep, SurveyStation } from '../../lib/drilling/types';
@@ -30,6 +31,15 @@ export default function RodPlanner({ onPlanGenerated }: RodPlannerProps) {
     });
 
     const [plan, setPlan] = useState<(RodPlanStep & { pullback: number; pMax: number })[]>([]);
+
+    const parentRef = useRef<HTMLDivElement>(null);
+
+    const rowVirtualizer = useVirtualizer({
+        count: plan.length,
+        getScrollElement: () => parentRef.current,
+        estimateSize: () => 35, // Approximate row height
+        overscan: 5,
+    });
 
     const handleCalculate = () => {
         const steps = generateRodPlan(input);
@@ -214,41 +224,52 @@ export default function RodPlanner({ onPlanGenerated }: RodPlannerProps) {
             </div>
 
             {/* Results Table */}
-            <div className="flex-1 overflow-auto border rounded-lg">
-                <table className="w-full text-xs text-left">
-                    <thead className="bg-slate-50 text-slate-500 sticky top-0">
-                        <tr>
-                            <th className="p-2 border-b">Rod</th>
-                            <th className="p-2 border-b">Pitch</th>
-                            <th className="p-2 border-b">Depth</th>
-                            <th className="p-2 border-b">Pullback</th>
-                            <th className="p-2 border-b">P_max</th>
-                            <th className="p-2 border-b">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {plan.map((row) => (
-                            <tr key={row.rodNumber} className="border-b last:border-0 hover:bg-slate-50">
-                                <td className="p-2 font-mono">{row.rodNumber}</td>
-                                <td className="p-2 font-mono">{row.pitch.toFixed(1)}°</td>
-                                <td className="p-2 font-mono">{row.depth.toFixed(1)}'</td>
-                                <td className="p-2 font-mono text-blue-600 font-bold">{Math.round(row.pullback).toLocaleString()} lbs</td>
-                                <td className="p-2 font-mono text-purple-600 font-bold">{Math.round(row.pMax).toLocaleString()} psi</td>
-                                <td className={`p-2 font-bold ${row.action.includes('Steer') ? 'text-orange-600' : 'text-slate-600'
-                                    }`}>
-                                    {row.action}
-                                </td>
-                            </tr>
-                        ))}
+            <div className="flex-1 overflow-hidden border rounded-lg flex flex-col">
+                <div className="bg-slate-50 text-slate-500 flex text-xs font-bold uppercase tracking-wider border-b">
+                    <div className="p-2 w-1/6">Rod</div>
+                    <div className="p-2 w-1/6">Pitch</div>
+                    <div className="p-2 w-1/6">Depth</div>
+                    <div className="p-2 w-1/6">Pullback</div>
+                    <div className="p-2 w-1/6">P_max</div>
+                    <div className="p-2 w-1/6">Action</div>
+                </div>
+                <div ref={parentRef} className="flex-1 overflow-y-auto">
+                    <div
+                        style={{
+                            height: `${rowVirtualizer.getTotalSize()}px`,
+                            width: '100%',
+                            position: 'relative',
+                        }}
+                    >
+                        {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                            const row = plan[virtualRow.index];
+                            return (
+                                <div
+                                    key={row.rodNumber}
+                                    className="absolute top-0 left-0 w-full flex text-xs border-b last:border-0 hover:bg-slate-50"
+                                    style={{
+                                        height: `${virtualRow.size}px`,
+                                        transform: `translateY(${virtualRow.start}px)`,
+                                    }}
+                                >
+                                    <div className="p-2 w-1/6 font-mono">{row.rodNumber}</div>
+                                    <div className="p-2 w-1/6 font-mono">{row.pitch.toFixed(1)}°</div>
+                                    <div className="p-2 w-1/6 font-mono">{row.depth.toFixed(1)}'</div>
+                                    <div className="p-2 w-1/6 font-mono text-blue-600 font-bold">{Math.round(row.pullback).toLocaleString()} lbs</div>
+                                    <div className="p-2 w-1/6 font-mono text-purple-600 font-bold">{Math.round(row.pMax).toLocaleString()} psi</div>
+                                    <div className={`p-2 w-1/6 font-bold ${row.action.includes('Steer') ? 'text-orange-600' : 'text-slate-600'}`}>
+                                        {row.action}
+                                    </div>
+                                </div>
+                            );
+                        })}
                         {plan.length === 0 && (
-                            <tr>
-                                <td colSpan={6} className="p-8 text-center text-slate-400 italic">
-                                    No plan generated yet.
-                                </td>
-                            </tr>
+                            <div className="p-8 text-center text-slate-400 italic">
+                                No plan generated yet.
+                            </div>
                         )}
-                    </tbody>
-                </table>
+                    </div>
+                </div>
             </div>
         </div>
     );

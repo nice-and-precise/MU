@@ -17,7 +17,7 @@ taskkill /F /IM node.exe /T 2>$null
 Write-Host "✅ Cleanup complete." -ForegroundColor Green
 
 # 3. Set Memory Limits for Node
-$env:NODE_OPTIONS="--max-old-space-size=4096"
+$env:NODE_OPTIONS="--max-old-space-size=6144 --expose-gc --optimize-for-size"
 Write-Host "🧠 Node memory limit set to 4GB." -ForegroundColor Green
 
 # 4. Start Next.js (Standard Webpack - More Stable)

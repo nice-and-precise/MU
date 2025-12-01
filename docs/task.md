@@ -1,16 +1,14 @@
-# Task List
+# Performance Optimization Tasks
 
-- [x] Review existing handoff and walkthrough documentation <!-- id: 0 -->
-- [x] Research Procore features and identify gaps <!-- id: 1 -->
-- [x] Create Implementation Plan for new features based on research <!-- id: 2 -->
-- [x] Implement selected features <!-- id: 3 -->
-    - [x] Database Schema Updates (Assets, StationProgress) <!-- id: 4 -->
-    - [x] Asset Management UI & Actions <!-- id: 5 -->
-    - [x] Linear Progress Tracking UI <!-- id: 6 -->
-- [x] Verify new features <!-- id: 7 -->
-- [x] Documentation & Visualization Audit <!-- id: 8 -->
-    - [x] Capture screenshots of Asset Management & Progress Tracking <!-- id: 9 -->
-    - [x] Create Mermaid charts for README <!-- id: 10 -->
-    - [x] Implement/Run gitlogue for history visualization <!-- id: 11 -->
-    - [x] Update README.md with banners, charts, and visuals <!-- id: 12 -->
-    - [x] Audit and sync all documentation <!-- id: 13 -->
+- [x] Enable Next.js Turbo Mode <!-- id: 0 -->
+- [x] Optimize Node.js Memory Settings <!-- id: 1 -->
+- [x] Add Database Indexes <!-- id: 2 -->
+- [x] Implement Lazy Loading for 3D Components <!-- id: 3 -->
+- [x] Optimize Database Queries <!-- id: 4 -->
+- [x] Implement Code Splitting <!-- id: 5 -->
+- [x] Replace Recharts with Lightweight Library <!-- id: 6 -->
+- [x] Implement Virtual Scrolling <!-- id: 7 -->
+- [ ] Move Read-Heavy Operations to Edge Functions <!-- id: 8 -->
+- [x] Implement SSE for Live Data <!-- id: 9 -->
+- [x] Optimize Image and Asset Loading <!-- id: 10 -->
+- [ ] Optimize XML Parsing <!-- id: 11 -->

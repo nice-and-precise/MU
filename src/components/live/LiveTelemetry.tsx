@@ -4,8 +4,28 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { simulateDrillingData } from '@/app/actions/simulate';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Activity, ArrowUp, ArrowDown, Play, RefreshCw } from 'lucide-react';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+);
 
 interface TelemetryLog {
     depth: number;
@@ -50,12 +70,37 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
     };
 
     useEffect(() => {
-        // Initial fetch
-        fetchData();
+        // Initial fetch via SSE
+        const eventSource = new EventSource(`/api/witsml/stream?boreId=${boreId}`);
 
-        // Poll every 5 seconds
-        const interval = setInterval(fetchData, 5000);
-        return () => clearInterval(interval);
+        eventSource.onmessage = (event) => {
+            try {
+                const log = JSON.parse(event.data);
+                if (log) {
+                    setData(log);
+                    setLastUpdated(new Date());
+
+                    setHistory(prev => {
+                        if (prev.length > 0 && prev[prev.length - 1].timestamp === log.timestamp) {
+                            return prev;
+                        }
+                        const newHistory = [...prev, log].slice(-20);
+                        return newHistory;
+                    });
+                }
+            } catch (e) {
+                console.error("Error parsing SSE data", e);
+            }
+        };
+
+        eventSource.onerror = (err) => {
+            console.error("SSE Error:", err);
+            eventSource.close();
+        };
+
+        return () => {
+            eventSource.close();
+        };
     }, [boreId]);
 
     const handleSimulate = async () => {
@@ -63,6 +108,47 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
         await simulateDrillingData(boreId);
         await fetchData(); // Immediate update
         setIsSimulating(false);
+    };
+
+    const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                type: 'linear' as const,
+                title: { display: true, text: 'Depth (ft)' },
+            },
+            y: {
+                title: { display: true, text: 'Degrees' },
+            }
+        },
+        plugins: {
+            legend: { display: false },
+        }
+    };
+
+    const pitchData = {
+        datasets: [
+            {
+                label: 'Pitch',
+                data: history.map(h => ({ x: h.depth, y: h.pitch })),
+                borderColor: '#fbbf24',
+                backgroundColor: '#fbbf24',
+                tension: 0.1,
+            },
+        ],
+    };
+
+    const azimuthData = {
+        datasets: [
+            {
+                label: 'Azimuth',
+                data: history.map(h => ({ x: h.depth, y: h.azimuth })),
+                borderColor: '#c084fc',
+                backgroundColor: '#c084fc',
+                tension: 0.1,
+            },
+        ],
     };
 
     return (
@@ -129,15 +215,7 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
                         <CardTitle>Pitch Trend</CardTitle>
                     </CardHeader>
                     <CardContent className="h-[300px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={history}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="depth" label={{ value: 'Depth (ft)', position: 'insideBottom', offset: -5 }} />
-                                <YAxis domain={['auto', 'auto']} />
-                                <Tooltip />
-                                <Line type="monotone" dataKey="pitch" stroke="#fbbf24" strokeWidth={2} dot={false} />
-                            </LineChart>
-                        </ResponsiveContainer>
+                        <Line options={commonOptions} data={pitchData} />
                     </CardContent>
                 </Card>
 
@@ -146,15 +224,7 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
                         <CardTitle>Azimuth Trend</CardTitle>
                     </CardHeader>
                     <CardContent className="h-[300px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={history}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="depth" label={{ value: 'Depth (ft)', position: 'insideBottom', offset: -5 }} />
-                                <YAxis domain={['auto', 'auto']} />
-                                <Tooltip />
-                                <Line type="monotone" dataKey="azimuth" stroke="#c084fc" strokeWidth={2} dot={false} />
-                            </LineChart>
-                        </ResponsiveContainer>
+                        <Line options={commonOptions} data={azimuthData} />
                     </CardContent>
                 </Card>
             </div>

@@ -2,7 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { PlayCircle, Upload } from 'lucide-react';
-import Borehole3D from '../../../../components/drilling/Borehole3D';
+import dynamic from 'next/dynamic';
+const Borehole3D = dynamic(() => import('../../../../components/drilling/Borehole3D'), { 
+    ssr: false,
+    loading: () => <div className="h-full w-full bg-slate-900 animate-pulse flex items-center justify-center text-slate-500">Loading 3D Engine...</div>
+});
 import BoreholeControls from '../../../../components/drilling/BoreholeControls';
 import StripLog from '../../../../components/drilling/StripLog';
 import SteeringGauge from '../../../../components/drilling/SteeringGauge';

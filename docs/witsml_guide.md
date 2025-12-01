@@ -40,4 +40,4 @@ Example:
 3.  **Upload**: Use the "Import Data" feature in the Midwest Underground Dashboard, or use a custom script to POST the file to the API endpoint above.
 
 ## Future WITSML Support
-Native WITSML XML support (v1.3.1 / v1.4.1) is currently in development. When available, you will be able to point your rig's WITSML client directly to our server URL.
+Native WITSML XML support (v1.3.1 / v1.4.1) is partially supported via the `/api/witsml` endpoint (POST XML). Full TCP listener support is planned.

@@ -2,6 +2,7 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import Image from "next/image";
 
 export default function Hero() {
     const { scrollY } = useScroll();
@@ -15,11 +16,18 @@ export default function Hero() {
                 className="absolute inset-0 z-0"
                 style={{ y: y1 }}
             >
+                import Image from "next/image";
+
+                // ...
+
                 <div className="absolute inset-0 bg-black/60 z-10" /> {/* Overlay */}
-                <img
+                <Image
                     src="/images/Willmar_Work.jpg"
                     alt="Excavator Background"
-                    className="w-full h-full object-cover scale-110"
+                    fill
+                    priority
+                    className="object-cover scale-110"
+                    sizes="100vw"
                 />
             </motion.div>
 

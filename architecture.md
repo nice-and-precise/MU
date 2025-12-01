@@ -21,8 +21,8 @@
     -   **Parser**: `fast-xml-parser` extracts Depth, Pitch, Azimuth.
     -   **Storage**: `TelemetryLog` table in Supabase.
 3.  **Live Operations Dashboard**:
-    -   **Polling**: Client-side polling (5s interval) of `/api/witsml/latest`.
-    -   **Visualization**: Recharts for trend lines, HUD for real-time values.
+    -   **Polling**: Server-Sent Events (SSE) via `/api/witsml/stream` for real-time updates.
+    -   **Visualization**: Chart.js for high-performance rendering of trend lines.
 4.  **Collision Detection**: 3D math logic to detect wellbore intersections.
 5.  **Physics Engine**:
     -   `loads.ts`: Pullback force with Capstan Effect.

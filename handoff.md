@@ -1,20 +1,29 @@
-# Handoff Report
+# Handoff Document
 
 ## Session Summary
-This session focused on stabilizing the development environment and implementing real-time data features.
+Focused on critical performance optimizations for low-spec hardware (i5-6500, 16GB RAM).
 
-### 1. Supabase Migration ☁️
-- **Goal**: Offload database from local Docker to Cloud.
-- **Status**: **Complete**.
-- **Details**: App now connects to Supabase (`us-west-2`). `DATABASE_URL` and `DIRECT_URL` updated in `.env`.
+## Completed Tasks
+1.  **Turbo Mode**: Enabled `next dev --turbo` by default.
+2.  **Node Memory**: Increased to 6GB with GC optimization in `dev_low_spec.ps1`.
+3.  **Database**: Added indexes to `StationProgress` and optimized `getProject` query.
+4.  **Lazy Loading**: Implemented for `Borehole3D` and `Project3DViewer`.
+5.  **Charts**: Replaced Recharts with Chart.js in `StripLog` and `LiveTelemetry`.
+6.  **Virtual Scrolling**: Implemented for Reports table and Rod Planner.
+7.  **Real-time**: Implemented SSE for WITSML data stream.
+8.  **Assets**: Configured Image Optimization and updated Hero image.
 
-### 2. Optimization (Low-Spec Mode) ⚡
-- **Goal**: Improve performance on i5/16GB hardware.
-- **Status**: **Complete**.
-- **Details**: Created `scripts/dev_low_spec.ps1`.
-    -   Stops Docker Desktop.
-    -   Kills lingering Node processes.
-    -   Starts Next.js in standard mode (Webpack) for stability.
+## Next Steps
+1.  **Edge Functions**: Move read-heavy operations to Supabase Edge Functions.
+2.  **XML Parsing**: Implement Web Workers for large WITSML files.
+3.  **Testing**: Verify performance on target hardware.
+
+## Known Issues
+- None currently.
+
+## Environment
+- Run `npm run dev` (uses Turbo).
+- Use `scripts/dev_low_spec.ps1` for low-memory environments.lity.
 
 ### 3. WITSML Ingestion 📡
 - **Goal**: Ingest real-time drilling data.

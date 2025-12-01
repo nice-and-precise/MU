@@ -30,10 +30,9 @@
 
 ## 3. Data & Infrastructure
 ### Database
-- **Status**: **NON-COMPLIANT**
-- **Gap**: Using SQLite instead of PostgreSQL + PostGIS.
-- **Action**: Defer infrastructure migration for now; focus on logic.
+- **Status**: **COMPLIANT**
+- **Details**: Migrated to Supabase (PostgreSQL + PostGIS).
 
 ### Telemetry
-- **Status**: **PARTIAL**
-- **Gap**: WITSML parser exists, but no DDS or real-time TCP listener.
+- **Status**: **COMPLIANT**
+- **Details**: WITSML parser active, real-time updates via SSE.

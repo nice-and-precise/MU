@@ -36,6 +36,14 @@
 - **Decision**: Use `fast-xml-parser` to parse WITSML logs and store directly in `TelemetryLog` table.
 - **Rationale**: Provides a lightweight, real-time ingestion pipeline without the overhead of a full WITSML server.
 
-## 2025-12-01: Live Dashboard Polling
-- **Decision**: Use client-side polling (5s interval) for the Live Dashboard instead of WebSockets.
-- **Rationale**: Simpler to implement and sufficient for the current update frequency (drilling data updates every 10-30s). WebSockets can be added later if sub-second latency is required.
+## 2025-12-01: Live Dashboard Polling (Superseded)
+- **Decision**: Use client-side polling (5s interval) for the Live Dashboard.
+- **Rationale**: Initial simple implementation. *Superseded by SSE implementation for better performance.*
+
+## 2025-12-01: Server-Sent Events (SSE) for Telemetry
+- **Decision**: Implement SSE (`/api/witsml/stream`) for real-time WITSML data updates.
+- **Rationale**: Replaces polling to reduce server load and latency, providing a "live" feel without the complexity of full WebSockets.
+
+## 2025-12-01: Charting Library Replacement
+- **Decision**: Replace Recharts with Chart.js.
+- **Rationale**: Recharts was contributing significantly to bundle size and rendering overhead. Chart.js offers better performance (Canvas-based) and a smaller footprint for the required trend lines.

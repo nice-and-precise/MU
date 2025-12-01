@@ -1,7 +1,11 @@
 "use client";
 
 import React, { useState } from 'react';
-import Borehole3D from '@/components/drilling/Borehole3D';
+import dynamic from 'next/dynamic';
+const Borehole3D = dynamic(() => import('@/components/drilling/Borehole3D'), {
+    ssr: false,
+    loading: () => <div className="h-full w-full bg-slate-900 animate-pulse" />
+});
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { SurveyStation } from '@/lib/drilling/types';

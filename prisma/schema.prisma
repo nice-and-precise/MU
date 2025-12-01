@@ -696,6 +696,7 @@ model StationProgress {
 
   @@index([projectId])
   @@index([date])
+  @@index([status])
 }
 
 model Tooling {
