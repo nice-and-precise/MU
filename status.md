@@ -10,8 +10,10 @@
 - [x] **Real-time**: SSE implemented for WITSML.
 
 ## Active Task: Handoff
-Preparing documentation and syncing with GitHub.
+Session complete. Ready for next session.
 
 ## Next Steps
-- [ ] **Rod Planning**: Implement the UI for the rod planner.
-- [ ] **3D Visualization**: Connect `LiveTelemetry` to the 3D engine.
+- [x] **Rod Planning**: Implement the UI for the rod planner.
+- [x] **3D Visualization**: Connect `LiveTelemetry` to the 3D engine.
+- [ ] **Edge Functions**: Move read-heavy operations to Supabase Edge Functions.
+- [ ] **XML Parsing**: Implement Web Workers for large WITSML files.

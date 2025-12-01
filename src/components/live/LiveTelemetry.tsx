@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { simulateDrillingData } from '@/app/actions/simulate';
@@ -16,6 +16,9 @@ import {
     Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import dynamic from 'next/dynamic';
+import { calculateTrajectory } from '@/lib/drilling/math/mcm';
+import { SurveyStation } from '@/lib/drilling/types';
 
 ChartJS.register(
     CategoryScale,
@@ -26,6 +29,11 @@ ChartJS.register(
     Tooltip,
     Legend
 );
+
+const Borehole3D = dynamic(() => import('../drilling/Borehole3D'), {
+    ssr: false,
+    loading: () => <div className="h-full w-full bg-slate-900 animate-pulse flex items-center justify-center text-slate-500">Loading 3D Engine...</div>
+});
 
 interface TelemetryLog {
     depth: number;
@@ -151,6 +159,10 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
         ],
     };
 
+    const trajectory = useMemo(() => {
+        return calculateTrajectory(history.map(h => ({ md: h.depth, inc: h.pitch, azi: h.azimuth })));
+    }, [history]);
+
     return (
         <div className="space-y-6">
             {/* HUD Section */}
@@ -208,23 +220,38 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
                 </div>
             </div>
 
-            {/* Charts */}
+            {/* Charts & 3D View */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Pitch Trend</CardTitle>
-                    </CardHeader>
-                    <CardContent className="h-[300px]">
-                        <Line options={commonOptions} data={pitchData} />
-                    </CardContent>
-                </Card>
+                <div className="space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Pitch Trend</CardTitle>
+                        </CardHeader>
+                        <CardContent className="h-[250px]">
+                            <Line options={commonOptions} data={pitchData} />
+                        </CardContent>
+                    </Card>
 
-                <Card>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Azimuth Trend</CardTitle>
+                        </CardHeader>
+                        <CardContent className="h-[250px]">
+                            <Line options={commonOptions} data={azimuthData} />
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* 3D View */}
+                <Card className="overflow-hidden flex flex-col h-[600px] lg:h-auto">
                     <CardHeader>
-                        <CardTitle>Azimuth Trend</CardTitle>
+                        <CardTitle>Real-Time 3D View</CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[300px]">
-                        <Line options={commonOptions} data={azimuthData} />
+                    <CardContent className="flex-1 p-0 relative min-h-[400px]">
+                        <Borehole3D
+                            stations={trajectory}
+                            viewMode="iso"
+                        />
                     </CardContent>
                 </Card>
             </div>

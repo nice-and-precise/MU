@@ -29,6 +29,7 @@ export interface Wellbore {
 
 export interface RodPlanInput {
   targetDepth: number;
+  targetDistance: number;
   entryAngle: number;
   rodLength: number;
   maxBend: number; // degrees per rod or % pitch change

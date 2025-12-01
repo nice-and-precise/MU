@@ -39,58 +39,60 @@ export const calculateCurveDepth = (radius: number, entryAngleDeg: number): numb
  * This is a simplified "build to horizontal" planner.
  */
 export const generateRodPlan = (input: RodPlanInput): RodPlanStep[] => {
-    const { targetDepth, entryAngle, rodLength, maxBend } = input;
+    const { targetDepth, targetDistance, entryAngle, rodLength, maxBend } = input;
     const plan: RodPlanStep[] = [];
 
     let currentDepth = 0;
     let currentDistance = 0;
-    let currentPitch = entryAngle; // Degrees. Positive usually means pointing down in HDD context, but standard is Inc.
-    // HDD Convention: 0 is horizontal, -deg is up, +deg is down? Or Entry is usually 10-20 deg down.
-    // Let's assume +Pitch is DOWN (Inc 90 + pitch? No, usually just pitch relative to horizon).
-    // Standard Drilling: Inc 0 = Vertical, Inc 90 = Horizontal.
-    // HDD: Pitch 0 = Horizontal. Entry 12 deg = pointing down 12 deg.
-    // Let's use HDD Pitch convention: + is Down, - is Up.
-
+    let currentPitch = entryAngle; // Degrees. Positive is DOWN.
     let rodCount = 0;
+    const steerRate = maxBend; // degrees per rod
 
-    // 1. Straight tangent if needed? Or start building immediately?
-    // Usually start building immediately to level out.
+    // Safety limit
+    const maxRods = Math.ceil((targetDistance * 1.5) / rodLength) + 20;
 
-    // Max pitch change per rod.
-    // If maxBend is e.g. 5% pitch, that's approx 2.8 degrees.
-    // Let's assume maxBend is degrees per rod for simplicity of this function.
-    const steerRate = maxBend;
-
-    while (currentDepth < targetDepth && rodCount < 1000) { // Safety break
+    while (currentDistance < targetDistance && rodCount < maxRods) {
         rodCount++;
 
-        // Logic: Steer UP until Pitch is 0.
+        // 1. Calculate Angle to Target
+        const dy = targetDepth - currentDepth;
+        const dx = targetDistance - currentDistance;
+
+        // If we are very close, just hold?
+        let desiredPitch = 0;
+        if (dx > 0.1) {
+            // atan2 returns radians. Convert to degrees.
+            // dy is positive DOWN. dx is positive RIGHT.
+            // So atan2(dy, dx) gives positive angle for Down.
+            desiredPitch = toDeg(Math.atan2(dy, dx));
+        } else {
+            desiredPitch = currentPitch; // Hold last pitch
+        }
+
+        // 2. Determine Action
         let action = "Hold";
         let deltaPitch = 0;
 
-        if (currentPitch > 0) {
-            // We are pointing down, need to steer up to level out.
-            action = "Steer Up";
-            deltaPitch = -steerRate;
+        const pitchDiff = desiredPitch - currentPitch;
 
-            // Don't overshoot 0
-            if (currentPitch + deltaPitch < 0) {
-                deltaPitch = -currentPitch;
-                action = "Feather Up";
-            }
-        } else if (currentPitch < 0) {
-            // Pointing up, steer down? (Rare for entry leg)
-            action = "Steer Down";
-            deltaPitch = steerRate;
-        } else {
-            // Horizontal
-            action = "Push";
+        if (Math.abs(pitchDiff) < 0.1) {
+            // On target
+            action = "Push"; // or Hold
             deltaPitch = 0;
+        } else if (pitchDiff > 0) {
+            // Need to increase pitch (Steer Down)
+            action = "Steer Down";
+            deltaPitch = Math.min(pitchDiff, steerRate);
+        } else {
+            // Need to decrease pitch (Steer Up)
+            action = "Steer Up";
+            deltaPitch = Math.max(pitchDiff, -steerRate);
         }
 
+        // 3. Apply Change
         currentPitch += deltaPitch;
 
-        // Calculate position change
+        // 4. Calculate new position
         // dDepth = L * sin(pitch)
         // dDist = L * cos(pitch)
         const pitchRad = toRad(currentPitch);
@@ -108,16 +110,6 @@ export const generateRodPlan = (input: RodPlanInput): RodPlanStep[] => {
             distance: currentDistance,
             action
         });
-
-        // If we are horizontal and at/past target depth, stop?
-        // Or if we are just "building to horizontal", we stop when pitch is 0.
-        // But we might not be at target depth yet.
-
-        if (currentPitch === 0 && currentDepth < targetDepth) {
-            // We leveled out too shallow!
-            // This planner is naive. Real planner needs to calculate required steer rate.
-            // For this task, we just simulate the "Steer Up" phase.
-        }
     }
 
     return plan;

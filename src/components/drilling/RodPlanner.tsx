@@ -21,6 +21,7 @@ export default function RodPlanner({ onPlanGenerated }: RodPlannerProps) {
         declination: number;
     }>({
         targetDepth: 50,
+        targetDistance: 500,
         entryAngle: 12, // degrees down
         rodLength: 15, // ft
         maxBend: 4, // deg/rod
@@ -129,6 +130,18 @@ export default function RodPlanner({ onPlanGenerated }: RodPlannerProps) {
                         />
                     </div>
                     <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Target Dist (ft)</label>
+                        <input
+                            type="number"
+                            value={input.targetDistance}
+                            onChange={e => setInput({ ...input, targetDistance: Number(e.target.value) })}
+                            className="w-full p-2 border border-slate-300 rounded font-mono text-sm"
+                        />
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                    <div>
                         <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Entry Angle (°)</label>
                         <input
                             type="number"
@@ -137,9 +150,6 @@ export default function RodPlanner({ onPlanGenerated }: RodPlannerProps) {
                             className="w-full p-2 border border-slate-300 rounded font-mono text-sm"
                         />
                     </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2">
                     <div>
                         <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Rod Len (ft)</label>
                         <input
@@ -149,79 +159,80 @@ export default function RodPlanner({ onPlanGenerated }: RodPlannerProps) {
                             className="w-full p-2 border border-slate-300 rounded font-mono text-sm"
                         />
                     </div>
-                    <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Steer Rate (°)</label>
-                        <input
-                            type="number"
-                            value={input.maxBend}
-                            onChange={e => setInput({ ...input, maxBend: Number(e.target.value) })}
-                            className="w-full p-2 border border-slate-300 rounded font-mono text-sm"
-                        />
-                    </div>
                 </div>
-
-                <div className="grid grid-cols-3 gap-2">
-                    <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Diameter (in)</label>
-                        <input
-                            type="number"
-                            value={input.diameter}
-                            onChange={e => setInput({ ...input, diameter: Number(e.target.value) })}
-                            className="w-full p-2 border border-slate-300 rounded font-mono text-sm"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Material</label>
-                        <select
-                            value={input.material}
-                            onChange={e => setInput({ ...input, material: e.target.value as any })}
-                            className="w-full p-2 border border-slate-300 rounded font-mono text-sm"
-                        >
-                            <option value="HDPE">HDPE</option>
-                            <option value="Steel">Steel</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Soil</label>
-                        <select
-                            value={input.soil}
-                            onChange={e => setInput({ ...input, soil: e.target.value as any })}
-                            className="w-full p-2 border border-slate-300 rounded font-mono text-sm"
-                        >
-                            <option value="Clay">Clay</option>
-                            <option value="Sand">Sand</option>
-                            <option value="Rock">Rock</option>
-                        </select>
-                    </div>
+                <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Steer Rate (°)</label>
+                    <input
+                        type="number"
+                        value={input.maxBend}
+                        onChange={e => setInput({ ...input, maxBend: Number(e.target.value) })}
+                        className="w-full p-2 border border-slate-300 rounded font-mono text-sm"
+                    />
                 </div>
-
-                {/* Magnetic Declination */}
-                <div className="p-3 bg-slate-50 rounded border border-slate-200">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Compass size={14} className="text-slate-500" />
-                        <label className="text-xs font-bold text-slate-500 uppercase">Mag Declination (°)</label>
-                    </div>
-                    <div className="flex gap-2 items-center">
-                        <input
-                            type="number"
-                            value={input.declination}
-                            onChange={e => setInput({ ...input, declination: Number(e.target.value) })}
-                            className="w-full p-2 border border-slate-300 rounded font-mono text-sm"
-                            placeholder="e.g. -5.2"
-                        />
-                        <span className="text-xs text-slate-400 whitespace-nowrap">
-                            {input.declination > 0 ? 'East (+)' : input.declination < 0 ? 'West (-)' : 'None'}
-                        </span>
-                    </div>
-                </div>
-
-                <button
-                    onClick={handleCalculate}
-                    className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold flex items-center justify-center gap-2 transition-colors"
-                >
-                    Generate Plan <ArrowRight size={16} />
-                </button>
             </div>
+
+            <div className="grid grid-cols-3 gap-2">
+                <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Diameter (in)</label>
+                    <input
+                        type="number"
+                        value={input.diameter}
+                        onChange={e => setInput({ ...input, diameter: Number(e.target.value) })}
+                        className="w-full p-2 border border-slate-300 rounded font-mono text-sm"
+                    />
+                </div>
+                <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Material</label>
+                    <select
+                        value={input.material}
+                        onChange={e => setInput({ ...input, material: e.target.value as any })}
+                        className="w-full p-2 border border-slate-300 rounded font-mono text-sm"
+                    >
+                        <option value="HDPE">HDPE</option>
+                        <option value="Steel">Steel</option>
+                    </select>
+                </div>
+                <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Soil</label>
+                    <select
+                        value={input.soil}
+                        onChange={e => setInput({ ...input, soil: e.target.value as any })}
+                        className="w-full p-2 border border-slate-300 rounded font-mono text-sm"
+                    >
+                        <option value="Clay">Clay</option>
+                        <option value="Sand">Sand</option>
+                        <option value="Rock">Rock</option>
+                    </select>
+                </div>
+            </div>
+
+            {/* Magnetic Declination */}
+            <div className="p-3 bg-slate-50 rounded border border-slate-200">
+                <div className="flex items-center gap-2 mb-2">
+                    <Compass size={14} className="text-slate-500" />
+                    <label className="text-xs font-bold text-slate-500 uppercase">Mag Declination (°)</label>
+                </div>
+                <div className="flex gap-2 items-center">
+                    <input
+                        type="number"
+                        value={input.declination}
+                        onChange={e => setInput({ ...input, declination: Number(e.target.value) })}
+                        className="w-full p-2 border border-slate-300 rounded font-mono text-sm"
+                        placeholder="e.g. -5.2"
+                    />
+                    <span className="text-xs text-slate-400 whitespace-nowrap">
+                        {input.declination > 0 ? 'East (+)' : input.declination < 0 ? 'West (-)' : 'None'}
+                    </span>
+                </div>
+            </div>
+
+            <button
+                onClick={handleCalculate}
+                className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold flex items-center justify-center gap-2 transition-colors"
+            >
+                Generate Plan <ArrowRight size={16} />
+            </button>
+
 
             {/* Results Table */}
             <div className="flex-1 overflow-hidden border rounded-lg flex flex-col">
@@ -271,6 +282,6 @@ export default function RodPlanner({ onPlanGenerated }: RodPlannerProps) {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
