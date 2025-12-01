@@ -5,13 +5,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Trash2, Save, Loader2, AlertTriangle } from "lucide-react";
+import { Plus, Trash2, Save, Loader2, AlertTriangle, Settings2 } from "lucide-react";
 import Borehole3D from '../drilling/Borehole3D';
-import { SurveyStation } from '@/lib/drilling/types';
+import { SurveyStation, Obstacle } from '@/lib/drilling/types';
 import { calculatePathWithRust } from '@/lib/api/engine';
-import { checkCollision, CollisionResult, Obstacle } from '@/lib/drilling/collision';
+import { checkCollision, CollisionResult } from '@/lib/drilling/math/collision';
 import { getProjectObstacles } from '@/actions/obstacles';
 import { useParams } from 'next/navigation';
+import { calculateDetailedPullback } from '@/lib/drilling/math/loads';
+import { calculateDelftPMax, getSoilProperties } from '@/lib/drilling/math/hydraulics';
+import { calculateTrueAzimuth } from '@/lib/drilling/math/magnetic';
+import PDFExportButton from './PDFExportButton';
 
 // Simple types for the planner
 interface PlannedRod {
@@ -19,6 +23,15 @@ interface PlannedRod {
     length: number; // ft
     pitch: number; // degrees (slope)
     azimuth: number; // degrees (compass)
+    pullback?: number;
+    pMax?: number;
+}
+
+interface PlanSettings {
+    diameter: number;
+    material: 'HDPE' | 'Steel';
+    soil: 'Clay' | 'Sand' | 'Rock';
+    declination: number;
 }
 
 export default function RodPlanningGrid() {
@@ -28,18 +41,24 @@ export default function RodPlanningGrid() {
     const [rods, setRods] = useState<PlannedRod[]>([
         { id: '1', length: 15, pitch: -12, azimuth: 90 } // Entry rod
     ]);
+    const [settings, setSettings] = useState<PlanSettings>({
+        diameter: 4,
+        material: 'HDPE',
+        soil: 'Clay',
+        declination: 0
+    });
+
     const [calculatedPath, setCalculatedPath] = useState<SurveyStation[]>([]);
     const [obstacles, setObstacles] = useState<Obstacle[]>([]);
-    const [collisionResult, setCollisionResult] = useState<CollisionResult | null>(null);
+    const [collisionResults, setCollisionResults] = useState<CollisionResult[]>([]);
     const [isCalculating, setIsCalculating] = useState(false);
+    const [showSettings, setShowSettings] = useState(false);
 
     // Fetch obstacles on mount
     useEffect(() => {
         if (projectId) {
             getProjectObstacles(projectId).then(res => {
                 if (res.success && res.data) {
-                    // Map Prisma Obstacle to our internal Obstacle type if needed
-                    // Prisma types match our interface mostly, but we need to ensure types align
                     setObstacles(res.data as unknown as Obstacle[]);
                 }
             });
@@ -50,31 +69,79 @@ export default function RodPlanningGrid() {
         const calculate = async () => {
             setIsCalculating(true);
             try {
-                // Prepare input for Rust Engine
-                const inputs = rods.map((rod, index) => {
-                    // Simple accumulation for MD
-                    let md = 0;
-                    for (let i = 0; i <= index; i++) md += rods[i].length;
+                // 1. Calculate Trajectory (Geometry)
+                const path: SurveyStation[] = [];
+                let currentMd = 0;
+                let currentTvd = 0;
+                let currentNorth = 0;
+                let currentEast = 0;
 
-                    return {
-                        md,
-                        pitch: rod.pitch,
-                        az: rod.azimuth
-                    };
+                // Initial station (Surface)
+                path.push({
+                    md: 0,
+                    inc: rods[0].pitch + 90, // Convert pitch to inc
+                    azi: calculateTrueAzimuth(rods[0].azimuth, settings.declination),
+                    tvd: 0,
+                    north: 0,
+                    east: 0,
+                    dls: 0
                 });
 
-                // Add surface point if not implicit
-                if (inputs.length > 0 && inputs[0].md > 0) {
-                    inputs.unshift({ md: 0, pitch: 0, az: rods[0].azimuth });
+                const enrichedRods = [...rods];
+
+                // Calculate path step-by-step
+                for (let i = 0; i < rods.length; i++) {
+                    const rod = rods[i];
+                    const inc = rod.pitch + 90; // Pitch 0 = 90 Inc
+                    const azi = calculateTrueAzimuth(rod.azimuth, settings.declination);
+
+                    const radInc = (inc * Math.PI) / 180;
+                    const radAzi = (azi * Math.PI) / 180;
+
+                    const dMd = rod.length;
+                    const dTvd = dMd * Math.cos(radInc);
+                    const dNorth = dMd * Math.sin(radInc) * Math.cos(radAzi);
+                    const dEast = dMd * Math.sin(radInc) * Math.sin(radAzi);
+
+                    currentMd += dMd;
+                    currentTvd += dTvd;
+                    currentNorth += dNorth;
+                    currentEast += dEast;
+
+                    path.push({
+                        md: currentMd,
+                        inc: inc,
+                        azi: azi,
+                        tvd: currentTvd,
+                        north: currentNorth,
+                        east: currentEast,
+                        dls: 0
+                    });
+
+                    // 2. Physics & Hydraulics
+                    const pullback = calculateDetailedPullback(
+                        path,
+                        settings.diameter,
+                        settings.material,
+                        settings.soil
+                    );
+
+                    const layerInput = { soilType: settings.soil, startDepth: 0, endDepth: 10000 };
+                    const soilProps = getSoilProperties(layerInput, currentTvd);
+                    const pMax = calculateDelftPMax(currentTvd, soilProps);
+
+                    enrichedRods[i] = { ...rod, pullback, pMax };
                 }
 
-                const result = await calculatePathWithRust(inputs);
-                setCalculatedPath(result);
+                setRods(enrichedRods);
+                setCalculatedPath(path);
 
-                // Check for collisions
+                // 3. Check for collisions
                 if (obstacles.length > 0) {
-                    const collision = checkCollision(result, obstacles);
-                    setCollisionResult(collision);
+                    const results = checkCollision(path, obstacles);
+                    setCollisionResults(results);
+                } else {
+                    setCollisionResults([]);
                 }
             } catch (error) {
                 console.error("Calculation failed", error);
@@ -85,14 +152,18 @@ export default function RodPlanningGrid() {
 
         const debounce = setTimeout(calculate, 500);
         return () => clearTimeout(debounce);
-    }, [rods, obstacles]);
+    }, [
+        JSON.stringify(rods.map(r => ({ l: r.length, p: r.pitch, a: r.azimuth }))),
+        settings,
+        obstacles
+    ]);
 
     const addRod = () => {
         const lastRod = rods[rods.length - 1];
         setRods([...rods, {
             id: Math.random().toString(36).substr(2, 9),
-            length: 15, // Standard rod
-            pitch: lastRod ? lastRod.pitch : 0, // Continue previous pitch
+            length: 15,
+            pitch: lastRod ? lastRod.pitch : -12,
             azimuth: lastRod ? lastRod.azimuth : 90
         }]);
     };
@@ -109,61 +180,122 @@ export default function RodPlanningGrid() {
         setRods(newRods);
     };
 
+    const hasCollision = collisionResults.some(r => r.isCollision);
+    const hasWarning = collisionResults.some(r => r.isWarning);
+
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-100px)]">
             {/* Left: Grid Editor */}
             <Card className="lg:col-span-1 flex flex-col h-full">
-                <CardHeader>
+                <CardHeader className="pb-2">
                     <CardTitle className="flex justify-between items-center">
                         <span>Rod Plan</span>
                         <div className="flex gap-2">
+                            <Button size="sm" variant="ghost" onClick={() => setShowSettings(!showSettings)}>
+                                <Settings2 className="w-4 h-4" />
+                            </Button>
                             <Button size="sm" variant="outline" onClick={addRod}><Plus className="w-4 h-4" /></Button>
+                            <PDFExportButton rods={rods} settings={settings} projectName={`Project ${projectId}`} />
                             <Button size="sm" onClick={() => console.log("Save Plan", rods)}><Save className="w-4 h-4" /></Button>
                         </div>
                     </CardTitle>
+
+                    {showSettings && (
+                        <div className="bg-slate-50 p-3 rounded-md border text-sm grid grid-cols-2 gap-2 mt-2 animate-in slide-in-from-top-2">
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500">Diameter (in)</label>
+                                <Input
+                                    type="number"
+                                    value={settings.diameter}
+                                    onChange={e => setSettings({ ...settings, diameter: Number(e.target.value) })}
+                                    className="h-7"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500">Declination</label>
+                                <Input
+                                    type="number"
+                                    value={settings.declination}
+                                    onChange={e => setSettings({ ...settings, declination: Number(e.target.value) })}
+                                    className="h-7"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500">Material</label>
+                                <select
+                                    value={settings.material}
+                                    onChange={e => setSettings({ ...settings, material: e.target.value as any })}
+                                    className="w-full h-7 text-xs border rounded px-1"
+                                >
+                                    <option value="HDPE">HDPE</option>
+                                    <option value="Steel">Steel</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500">Soil</label>
+                                <select
+                                    value={settings.soil}
+                                    onChange={e => setSettings({ ...settings, soil: e.target.value as any })}
+                                    className="w-full h-7 text-xs border rounded px-1"
+                                >
+                                    <option value="Clay">Clay</option>
+                                    <option value="Sand">Sand</option>
+                                    <option value="Rock">Rock</option>
+                                </select>
+                            </div>
+                        </div>
+                    )}
                 </CardHeader>
                 <CardContent className="flex-1 overflow-auto p-0">
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="w-[50px]">#</TableHead>
-                                <TableHead>Len (ft)</TableHead>
-                                <TableHead>Pitch (°)</TableHead>
-                                <TableHead>Azimuth</TableHead>
+                                <TableHead className="w-[40px]">#</TableHead>
+                                <TableHead className="w-[60px]">Len</TableHead>
+                                <TableHead className="w-[60px]">Pitch</TableHead>
+                                <TableHead className="w-[60px]">Azi</TableHead>
+                                <TableHead className="w-[80px]">Pull (lb)</TableHead>
+                                <TableHead className="w-[80px]">P_max</TableHead>
                                 <TableHead className="w-[40px]"></TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {rods.map((rod, i) => (
                                 <TableRow key={rod.id}>
-                                    <TableCell>{i + 1}</TableCell>
-                                    <TableCell>
+                                    <TableCell className="p-2 text-center">{i + 1}</TableCell>
+                                    <TableCell className="p-1">
                                         <Input
                                             type="number"
                                             value={rod.length}
                                             onChange={(e) => updateRod(i, 'length', parseFloat(e.target.value))}
-                                            className="h-8 w-16"
+                                            className="h-7 w-full px-1 text-center"
                                         />
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell className="p-1">
                                         <Input
                                             type="number"
                                             value={rod.pitch}
                                             onChange={(e) => updateRod(i, 'pitch', parseFloat(e.target.value))}
-                                            className="h-8 w-16"
+                                            className="h-7 w-full px-1 text-center"
                                         />
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell className="p-1">
                                         <Input
                                             type="number"
                                             value={rod.azimuth}
                                             onChange={(e) => updateRod(i, 'azimuth', parseFloat(e.target.value))}
-                                            className="h-8 w-16"
+                                            className="h-7 w-full px-1 text-center"
                                         />
                                     </TableCell>
-                                    <TableCell>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500" onClick={() => removeRod(i)}>
-                                            <Trash2 className="w-4 h-4" />
+                                    <TableCell className="p-2 text-xs font-mono text-blue-600 font-bold text-right">
+                                        {rod.pullback ? Math.round(rod.pullback).toLocaleString() : '-'}
+                                    </TableCell>
+                                    <TableCell className="p-2 text-xs font-mono text-purple-600 font-bold text-right">
+                                        {rod.pMax ? Math.round(rod.pMax).toLocaleString() : '-'}
+                                    </TableCell>
+                                    <TableCell className="p-1">
+                                        <Button variant="ghost" size="icon" className="h-7 w-7 text-red-500" onClick={() => removeRod(i)}>
+                                            <Trash2 className="w-3 h-3" />
                                         </Button>
                                     </TableCell>
                                 </TableRow>
@@ -178,13 +310,13 @@ export default function RodPlanningGrid() {
                 <CardHeader className="pb-2 flex flex-row justify-between items-center">
                     <CardTitle>3D Preview</CardTitle>
                     <div className="flex items-center gap-4">
-                        {collisionResult?.hasCollision && (
+                        {hasCollision && (
                             <div className="flex items-center text-red-600 animate-pulse font-bold">
                                 <AlertTriangle className="w-5 h-5 mr-2" />
                                 COLLISION DETECTED
                             </div>
                         )}
-                        {collisionResult?.riskLevel === 'WARNING' && (
+                        {!hasCollision && hasWarning && (
                             <div className="flex items-center text-orange-500 font-bold">
                                 <AlertTriangle className="w-5 h-5 mr-2" />
                                 PROXIMITY WARNING
@@ -202,13 +334,14 @@ export default function RodPlanningGrid() {
                     />
 
                     {/* Collision Warnings Overlay */}
-                    {collisionResult && collisionResult.warnings.length > 0 && (
+                    {collisionResults.length > 0 && (
                         <div className="absolute bottom-4 left-4 right-4 bg-black/80 text-white p-4 rounded-md max-h-[150px] overflow-y-auto z-10">
                             <h4 className="font-bold mb-2 text-sm uppercase tracking-wider">Safety Alerts</h4>
                             <ul className="space-y-1 text-sm">
-                                {collisionResult.warnings.map((w, i) => (
-                                    <li key={i} className={w.includes('CRITICAL') ? 'text-red-400' : 'text-orange-300'}>
-                                        {w}
+                                {collisionResults.map((r, i) => (
+                                    <li key={i} className={r.isCollision ? 'text-red-400' : 'text-orange-300'}>
+                                        {r.isCollision ? 'CRITICAL: ' : 'WARNING: '}
+                                        {r.minDistance.toFixed(1)}ft from {r.obstacleType} at {r.stationMd.toFixed(0)}ft MD
                                     </li>
                                 ))}
                             </ul>

@@ -47,3 +47,7 @@
 ## 2025-12-01: Charting Library Replacement
 - **Decision**: Replace Recharts with Chart.js.
 - **Rationale**: Recharts was contributing significantly to bundle size and rendering overhead. Chart.js offers better performance (Canvas-based) and a smaller footprint for the required trend lines.
+
+## 2025-12-01: Full TypeScript Implementation
+- **Decision**: Prioritize TypeScript implementation for all core logic (Physics, Math) over Rust.
+- **Rationale**: Faster iteration, easier deployment (Vercel/Next.js compatible), and sufficient performance for current scale. Rust remains an option for specific heavy compute tasks if needed.

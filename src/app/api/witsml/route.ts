@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Try parsing as Log first (Telemetry)
-        const logData = parseWitsmlLog(xmlContent);
+        const logData = await parseWitsmlLog(xmlContent);
 
         if (logData.length > 0) {
             // Save to TelemetryLog
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
         }
 
         // If not log, try Trajectory (Survey)
-        const trajData = parseWitsmlTrajectory(xmlContent);
+        const trajData = await parseWitsmlTrajectory(xmlContent);
         if (trajData.length > 0) {
             // For now, we might just log it or save to RodPass if needed.
             // But TelemetryLog is for real-time data.

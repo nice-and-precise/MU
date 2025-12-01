@@ -11,8 +11,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calculator, Droplets, ArrowRight, Box } from 'lucide-react';
+import { Calculator, Droplets, ArrowRight, Box, LineChart } from 'lucide-react';
 import Bore3DView from '@/components/visualization/Bore3DView';
+import FracChart from '@/components/engineering/FracChart';
+import { calculateRequiredPressure, calculateDelftPMax, getSoilProperties, FluidProperties, BoreholeGeometry } from '@/lib/drilling/math/hydraulics';
 
 export default function EngineeringPage() {
     const params = useParams();
@@ -21,6 +23,7 @@ export default function EngineeringPage() {
     const [selectedBoreId, setSelectedBoreId] = useState<string | null>(null);
     const [engineeringData, setEngineeringData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [fracData, setFracData] = useState<any[]>([]);
 
     // Form states
     const [borePlan, setBorePlan] = useState({
@@ -75,6 +78,8 @@ export default function EngineeringPage() {
                     fluidType: res.data.fluidPlan.fluidType || 'Bentonite',
                     cleaningRate: res.data.fluidPlan.cleaningRate || 1.5,
                 });
+                // Calculate chart data if we have enough info
+                calculatePressures(res.data.totalLength, res.data.pipeDiameter, res.data.fluidPlan);
             }
         } else {
             // Reset to defaults or pull from Bore basic info if available
@@ -87,6 +92,7 @@ export default function EngineeringPage() {
                 safetyFactor: 1.5,
             });
             setEngineeringData(null);
+            setFracData([]);
         }
     }
 
@@ -116,6 +122,57 @@ export default function EngineeringPage() {
             totalVolume: totalVol,
         });
         loadEngineeringData(selectedBoreId);
+    }
+
+    function calculatePressures(length: number, pipeDiam: number, fluid: any) {
+        if (!length || !pipeDiam) return;
+
+        const points = [];
+        const steps = 20;
+        const stepSize = length / steps;
+        const holeDiam = pipeDiam * 1.5;
+
+        // Fluid Properties (Approximation based on type)
+        const fluidProps: FluidProperties = {
+            density: 9.0, // ppg
+            viscosity: 15, // cP
+            yieldPoint: 20 // lb/100ft2
+        };
+
+        // Soil Layer (Mock for now, should come from Geotech)
+        const soilLayer = {
+            startDepth: 0,
+            endDepth: 1000,
+            soilType: fluid.soilType || 'Clay',
+            hardness: 1
+        };
+
+        for (let i = 0; i <= steps; i++) {
+            const l = i * stepSize;
+            // Simple depth profile: Entry (0) -> Deepest (Length/5) -> Exit (0)
+            // Parabolic profile
+            const depth = 4 * (length / 10) * (l / length) * (1 - l / length);
+
+            const geo: BoreholeGeometry = {
+                holeDiameterIn: holeDiam,
+                pipeDiameterIn: pipeDiam,
+                lengthFt: l,
+                depthFt: depth
+            };
+
+            const pReq = calculateRequiredPressure(fluidProps, geo, fluid.pumpRate || 50);
+            const soilProps = getSoilProperties(soilLayer, depth);
+            const pMax = calculateDelftPMax(depth, soilProps, holeDiam);
+            const hydrostatic = 0.052 * fluidProps.density * depth;
+
+            points.push({
+                depth: depth,
+                hydrostatic: hydrostatic,
+                pReq: pReq,
+                pMax: pMax
+            });
+        }
+        setFracData(points);
     }
 
     if (loading) return <div className="p-8">Loading...</div>;
@@ -419,6 +476,20 @@ export default function EngineeringPage() {
                                 </CardContent>
                             </Card>
                         </div>
+
+                        {/* Fracture Chart */}
+                        {fracData.length > 0 && (
+                            <Card className="mt-6">
+                                <CardHeader>
+                                    <CardTitle className="flex items-center">
+                                        <LineChart className="mr-2 h-5 w-5" /> Downhole Pressure Analysis
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="h-[400px]">
+                                    <FracChart data={fracData} />
+                                </CardContent>
+                            </Card>
+                        )}
                     </TabsContent>
 
                     <TabsContent value="3d">

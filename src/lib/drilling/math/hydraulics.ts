@@ -39,6 +39,8 @@ export interface SoilLayerInput {
     soilType: string;
     hardness?: number | null;
     rockStrengthPsi?: number | null;
+    shearModulus?: number | null;
+    poissonRatio?: number | null;
 }
 
 /**
@@ -72,6 +74,9 @@ export function getSoilProperties(layer: SoilLayerInput, depthFt: number): SoilP
             cohesion = 5;
             frictionAngle = 0;
     }
+
+    // Override with DB values if present
+    if (layer.shearModulus) shearModulus = layer.shearModulus;
 
     // Pore Pressure (Hydrostatic assumption)
     const porePressure = 0.433 * depthFt;

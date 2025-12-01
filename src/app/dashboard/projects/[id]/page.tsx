@@ -1,15 +1,20 @@
 import { getProject } from "@/app/actions/projects";
+import { getProjectSummary } from "@/actions/closeout";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { MapPin, Calendar, DollarSign, Activity, FileText, AlertCircle } from "lucide-react";
+import { MapPin, Calendar, DollarSign, Activity, FileText, AlertCircle, ShieldCheck, CheckSquare, HardHat } from "lucide-react";
 import { LinearProgressBar } from "@/components/projects/LinearProgressBar";
 import DataImportDropzone from "@/components/import/DataImportDropzone";
+import CloseoutModal from "@/components/closeout/CloseoutModal";
 
 export default async function ProjectDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const project = await getProject(id);
+    const [project, summary] = await Promise.all([
+        getProject(id),
+        getProjectSummary(id)
+    ]);
 
-    if (!project) {
+    if (!project || !summary) {
         notFound();
     }
 
@@ -30,7 +35,9 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
                     <span
                         className={`px-3 py-1 rounded-full text-sm font-medium ${project.status === "IN_PROGRESS"
                             ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                            : "bg-gray-100 text-gray-700"
+                            : project.status === "ARCHIVED"
+                                ? "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400"
+                                : "bg-blue-100 text-blue-700"
                             }`}
                     >
                         {project.status.replace("_", " ")}
@@ -39,34 +46,58 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
             </div>
 
             {/* Navigation Tabs */}
-            <div className="flex space-x-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg mb-8 w-fit">
+            <div className="flex space-x-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg mb-8 w-fit overflow-x-auto">
                 <Link
                     href={`/dashboard/projects/${project.id}`}
-                    className="px-4 py-2 text-sm font-medium rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
+                    className="px-4 py-2 text-sm font-medium rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm whitespace-nowrap"
                 >
                     Overview
                 </Link>
                 <Link
-                    href={`/dashboard/projects/${project.id}/geotech`}
-                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors"
+                    href={`/dashboard/projects/${project.id}/production`}
+                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors whitespace-nowrap"
                 >
-                    Geotech
+                    Production
                 </Link>
                 <Link
-                    href={`/dashboard/projects/${project.id}/engineering`}
-                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors"
+                    href={`/dashboard/projects/${project.id}/financials`}
+                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors whitespace-nowrap"
                 >
-                    Engineering
+                    Financials
+                </Link>
+                <Link
+                    href={`/dashboard/projects/${project.id}/safety`}
+                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors whitespace-nowrap"
+                >
+                    Safety
+                </Link>
+                <Link
+                    href={`/dashboard/projects/${project.id}/qc`}
+                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors whitespace-nowrap"
+                >
+                    QC
+                </Link>
+                <Link
+                    href={`/dashboard/projects/${project.id}/changes`}
+                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors whitespace-nowrap"
+                >
+                    Changes
+                </Link>
+                <Link
+                    href={`/dashboard/projects/${project.id}/invoicing`}
+                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors whitespace-nowrap"
+                >
+                    Invoicing
                 </Link>
                 <Link
                     href={`/dashboard/projects/${project.id}/3d`}
-                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors"
+                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors whitespace-nowrap"
                 >
                     3D View
                 </Link>
                 <Link
                     href={`/dashboard/projects/${project.id}/live`}
-                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors"
+                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors whitespace-nowrap"
                 >
                     Live Ops
                 </Link>
@@ -77,45 +108,42 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center text-gray-500 mb-2">
                         <DollarSign className="h-4 w-4 mr-2" />
-                        <span className="text-sm font-medium">Budget</span>
+                        <span className="text-sm font-medium">Financials</span>
                     </div>
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                        ${project.budget?.toLocaleString() || "0"}
+                        {summary.financials.percentBilled.toFixed(1)}%
                     </p>
+                    <p className="text-xs text-muted-foreground">Invoiced of Budget</p>
                 </div>
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center text-gray-500 mb-2">
-                        <Calendar className="h-4 w-4 mr-2" />
-                        <span className="text-sm font-medium">Start Date</span>
+                        <HardHat className="h-4 w-4 mr-2" />
+                        <span className="text-sm font-medium">Production</span>
                     </div>
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                        {project.startDate ? new Date(project.startDate).toLocaleDateString() : "TBD"}
+                        {summary.production.totalFootage.toLocaleString()} LF
                     </p>
+                    <p className="text-xs text-muted-foreground">{summary.production.activeBores} Active Bores</p>
                 </div>
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center text-gray-500 mb-2">
-                        <MapPin className="h-4 w-4 mr-2" />
-                        <span className="text-sm font-medium">Location</span>
+                        <ShieldCheck className="h-4 w-4 mr-2" />
+                        <span className="text-sm font-medium">Safety</span>
                     </div>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white truncate">
-                        {(() => {
-                            try {
-                                return project.location ? JSON.parse(project.location).city : "N/A";
-                            } catch (e) {
-                                return project.location || "N/A";
-                            }
-                        })()}
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                        {summary.safety.meetings}
                     </p>
+                    <p className="text-xs text-muted-foreground">Safety Meetings</p>
                 </div>
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center text-gray-500 mb-2">
-                        <Activity className="h-4 w-4 mr-2" />
-                        <span className="text-sm font-medium">Progress</span>
+                        <CheckSquare className="h-4 w-4 mr-2" />
+                        <span className="text-sm font-medium">QC Items</span>
                     </div>
-                    <p className="text-2xl font-bold text-blue-600">
-                        {/* Mock progress calculation */}
-                        {project.bores.length > 0 ? "45%" : "0%"}
+                    <p className={`text-2xl font-bold ${summary.qc.openPunchItems > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                        {summary.qc.openPunchItems}
                     </p>
+                    <p className="text-xs text-muted-foreground">Open Punch Items</p>
                 </div>
             </div>
 
@@ -211,17 +239,19 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
                     <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 border border-blue-100 dark:border-blue-800">
                         <h3 className="font-bold text-blue-900 dark:text-blue-100 mb-2">Quick Actions</h3>
                         <div className="space-y-2">
-                            <button className="w-full text-left px-4 py-2 bg-white dark:bg-gray-800 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors shadow-sm">
-                                + New Daily Report
-                            </button>
-                            <button className="w-full text-left px-4 py-2 bg-white dark:bg-gray-800 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors shadow-sm">
+                            <Link href={`/dashboard/projects/${project.id}/safety`} className="block w-full text-left px-4 py-2 bg-white dark:bg-gray-800 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors shadow-sm">
+                                + Safety Meeting
+                            </Link>
+                            <Link href={`/dashboard/projects/${project.id}/production`} className="block w-full text-left px-4 py-2 bg-white dark:bg-gray-800 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors shadow-sm">
                                 + Add Bore
-                            </button>
-                            <button className="w-full text-left px-4 py-2 bg-white dark:bg-gray-800 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors shadow-sm">
-                                + Log Incident
-                            </button>
+                            </Link>
+                            <Link href={`/dashboard/projects/${project.id}/qc`} className="block w-full text-left px-4 py-2 bg-white dark:bg-gray-800 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors shadow-sm">
+                                + Log Punch Item
+                            </Link>
                         </div>
                     </div>
+
+                    <CloseoutModal projectId={project.id} summary={summary} />
                 </div>
             </div>
         </div>

@@ -4,7 +4,8 @@ import { useEffect, useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { simulateDrillingData } from '@/app/actions/simulate';
-import { Activity, ArrowUp, ArrowDown, Play, RefreshCw } from 'lucide-react';
+import { getBore, saveImportedLogs } from '@/app/actions/drilling';
+import { Activity, ArrowUp, ArrowDown, Play, RefreshCw, Sun, Moon, Upload, AlertTriangle } from 'lucide-react';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -18,7 +19,12 @@ import {
 import { Line } from 'react-chartjs-2';
 import dynamic from 'next/dynamic';
 import { calculateTrajectory } from '@/lib/drilling/math/mcm';
-import { SurveyStation } from '@/lib/drilling/types';
+import { calculateTrueAzimuth } from '@/lib/drilling/math/magnetic';
+import { checkCollision, CollisionResult } from '@/lib/drilling/math/collision';
+import { SurveyStation, Obstacle } from '@/lib/drilling/types';
+import SteeringRose from '../drilling/SteeringRose';
+import ImportModal from '../drilling/ImportModal';
+import CollisionWarning from '../drilling/CollisionWarning';
 
 ChartJS.register(
     CategoryScale,
@@ -39,6 +45,7 @@ interface TelemetryLog {
     depth: number;
     pitch: number;
     azimuth: number;
+    toolFace?: number;
     timestamp: string;
 }
 
@@ -52,12 +59,38 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
     const [history, setHistory] = useState<TelemetryLog[]>([]);
     const [isSimulating, setIsSimulating] = useState(false);
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+    const [dayMode, setDayMode] = useState(false);
+    const [magneticParams, setMagneticParams] = useState({ dip: 0, declination: 0 });
+    const [obstacles, setObstacles] = useState<Obstacle[]>([]);
+    const [collisions, setCollisions] = useState<CollisionResult[]>([]);
+    const [isImportOpen, setIsImportOpen] = useState(false);
+
+    useEffect(() => {
+        // Fetch bore details for magnetic params and obstacles
+        getBore(boreId).then((bore: any) => {
+            if (bore) {
+                setMagneticParams({ dip: bore.dip || 0, declination: bore.declination || 0 });
+                if (bore.project && bore.project.obstacles) {
+                    setObstacles(bore.project.obstacles as unknown as Obstacle[]);
+                }
+            }
+        });
+    }, [boreId]);
 
     const fetchData = async () => {
         try {
-            const res = await fetch(`/api/witsml/latest?boreId=${boreId}`);
+            // Use Edge Function if available, otherwise fallback to Next.js API
+            const edgeUrl = process.env.NEXT_PUBLIC_EDGE_FUNCTION_URL;
+            const url = edgeUrl
+                ? `${edgeUrl}/witsml-logs?boreId=${boreId}`
+                : `/api/witsml/latest?boreId=${boreId}`;
+
+            const res = await fetch(url);
             if (res.ok) {
-                const log = await res.json();
+                const data = await res.json();
+                // Edge function returns { logs: [...] }, local API returns { ...log }
+                const log = edgeUrl ? data.logs[0] : data;
+
                 if (log) {
                     setData(log);
                     setLastUpdated(new Date());
@@ -67,7 +100,7 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
                         if (prev.length > 0 && prev[prev.length - 1].timestamp === log.timestamp) {
                             return prev;
                         }
-                        const newHistory = [...prev, log].slice(-20); // Keep last 20 points
+                        const newHistory = [...prev, log].slice(-50); // Keep last 50 points for better history
                         return newHistory;
                     });
                 }
@@ -79,7 +112,12 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
 
     useEffect(() => {
         // Initial fetch via SSE
-        const eventSource = new EventSource(`/api/witsml/stream?boreId=${boreId}`);
+        const edgeUrl = process.env.NEXT_PUBLIC_EDGE_FUNCTION_URL;
+        const streamUrl = edgeUrl
+            ? `${edgeUrl}/witsml-stream?boreId=${boreId}`
+            : `/api/witsml/stream?boreId=${boreId}`;
+
+        const eventSource = new EventSource(streamUrl);
 
         eventSource.onmessage = (event) => {
             try {
@@ -92,7 +130,7 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
                         if (prev.length > 0 && prev[prev.length - 1].timestamp === log.timestamp) {
                             return prev;
                         }
-                        const newHistory = [...prev, log].slice(-20);
+                        const newHistory = [...prev, log].slice(-50);
                         return newHistory;
                     });
                 }
@@ -118,6 +156,32 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
         setIsSimulating(false);
     };
 
+    const handleImport = async (stations: SurveyStation[]) => {
+        // Convert stations back to logs (approximate) or just save them
+        // We need to save them to the DB so they persist
+        // Stations have md, inc, azi.
+        const logs = stations.map(s => ({
+            md: s.md,
+            inc: s.inc,
+            azi: s.azi
+        }));
+
+        await saveImportedLogs(boreId, logs);
+
+        // Refresh data
+        // For now, just manually update history to show it immediately
+        const newLogs = logs.map(l => ({
+            depth: l.md,
+            pitch: l.inc,
+            azimuth: l.azi,
+            timestamp: new Date().toISOString()
+        }));
+        setHistory(newLogs as TelemetryLog[]);
+        if (newLogs.length > 0) {
+            setData(newLogs[newLogs.length - 1] as TelemetryLog);
+        }
+    };
+
     const commonOptions = {
         responsive: true,
         maintainAspectRatio: false,
@@ -125,9 +189,13 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
             x: {
                 type: 'linear' as const,
                 title: { display: true, text: 'Depth (ft)' },
+                grid: { color: dayMode ? '#e5e7eb' : '#374151' },
+                ticks: { color: dayMode ? '#374151' : '#9ca3af' }
             },
             y: {
                 title: { display: true, text: 'Degrees' },
+                grid: { color: dayMode ? '#e5e7eb' : '#374151' },
+                ticks: { color: dayMode ? '#374151' : '#9ca3af' }
             }
         },
         plugins: {
@@ -151,7 +219,7 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
         datasets: [
             {
                 label: 'Azimuth',
-                data: history.map(h => ({ x: h.depth, y: h.azimuth })),
+                data: history.map(h => ({ x: h.depth, y: calculateTrueAzimuth(h.azimuth, magneticParams.declination) })),
                 borderColor: '#c084fc',
                 backgroundColor: '#c084fc',
                 tension: 0.1,
@@ -160,31 +228,47 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
     };
 
     const trajectory = useMemo(() => {
-        return calculateTrajectory(history.map(h => ({ md: h.depth, inc: h.pitch, azi: h.azimuth })));
-    }, [history]);
+        return calculateTrajectory(history.map(h => ({
+            md: h.depth,
+            inc: h.pitch,
+            azi: calculateTrueAzimuth(h.azimuth, magneticParams.declination)
+        })));
+    }, [history, magneticParams.declination]);
+
+    // Check collisions whenever trajectory or obstacles change
+    useEffect(() => {
+        if (trajectory.length > 0 && obstacles.length > 0) {
+            const results = checkCollision(trajectory, obstacles);
+            setCollisions(results);
+        } else {
+            setCollisions([]);
+        }
+    }, [trajectory, obstacles]);
+
+    const currentAzimuth = data ? calculateTrueAzimuth(data.azimuth, magneticParams.declination) : 0;
 
     return (
-        <div className="space-y-6">
+        <div className={`space-y-6 ${dayMode ? 'bg-white text-gray-900' : ''} transition-colors duration-300`}>
             {/* HUD Section */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card className="bg-slate-900 text-white border-slate-800">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <Card className={`${dayMode ? 'bg-gray-100 border-gray-200' : 'bg-slate-900 border-slate-800'} transition-colors`}>
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-slate-400">Bit Depth</CardTitle>
+                        <CardTitle className={`text-sm font-medium ${dayMode ? 'text-gray-500' : 'text-slate-400'}`}>Bit Depth</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-4xl font-bold text-blue-400">
+                        <div className="text-4xl font-bold text-blue-500">
                             {data?.depth.toFixed(2) || "0.00"} <span className="text-lg text-slate-500">ft</span>
                         </div>
                     </CardContent>
                 </Card>
 
-                <Card className="bg-slate-900 text-white border-slate-800">
+                <Card className={`${dayMode ? 'bg-gray-100 border-gray-200' : 'bg-slate-900 border-slate-800'} transition-colors`}>
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-slate-400">Pitch / Inc</CardTitle>
+                        <CardTitle className={`text-sm font-medium ${dayMode ? 'text-gray-500' : 'text-slate-400'}`}>Pitch / Inc</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="flex items-center space-x-2">
-                            <div className="text-4xl font-bold text-yellow-400">
+                            <div className="text-4xl font-bold text-yellow-500">
                                 {data?.pitch.toFixed(2) || "0.00"}°
                             </div>
                             {data && data.pitch > 0 ? <ArrowUp className="text-green-500" /> : <ArrowDown className="text-red-500" />}
@@ -192,24 +276,56 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
                     </CardContent>
                 </Card>
 
-                <Card className="bg-slate-900 text-white border-slate-800">
+                <Card className={`${dayMode ? 'bg-gray-100 border-gray-200' : 'bg-slate-900 border-slate-800'} transition-colors`}>
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-slate-400">Azimuth</CardTitle>
+                        <CardTitle className={`text-sm font-medium ${dayMode ? 'text-gray-500' : 'text-slate-400'}`}>Azimuth (True)</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-4xl font-bold text-purple-400">
-                            {data?.azimuth.toFixed(2) || "0.00"}°
+                        <div className="text-4xl font-bold text-purple-500">
+                            {currentAzimuth.toFixed(2)}°
+                        </div>
+                        <div className="text-xs text-slate-500 mt-1">
+                            Declination: {magneticParams.declination > 0 ? '+' : ''}{magneticParams.declination}°
                         </div>
                     </CardContent>
+                </Card>
+
+                {/* Steering Rose */}
+                <Card className={`${dayMode ? 'bg-gray-100 border-gray-200' : 'bg-slate-900 border-slate-800'} flex items-center justify-center p-2`}>
+                    <div className="w-24 h-24">
+                        <SteeringRose
+                            toolface={data?.toolFace || 0}
+                            targetToolface={90} // Placeholder
+                            pitch={data?.pitch || 0}
+                            azimuth={currentAzimuth}
+                            dayMode={dayMode}
+                        />
+                    </div>
                 </Card>
             </div>
 
             {/* Controls & Status */}
-            <div className="flex justify-between items-center bg-slate-100 p-4 rounded-lg dark:bg-slate-800">
+            <div className={`flex justify-between items-center p-4 rounded-lg ${dayMode ? 'bg-gray-100' : 'bg-slate-800'} transition-colors`}>
                 <div className="flex items-center space-x-4">
                     <Button onClick={handleSimulate} disabled={isSimulating} className="bg-blue-600 hover:bg-blue-700">
                         {isSimulating ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
                         Simulate Data Packet
+                    </Button>
+                    <Button
+                        onClick={() => setIsImportOpen(true)}
+                        variant="secondary"
+                        className="bg-slate-700 hover:bg-slate-600 text-white"
+                    >
+                        <Upload className="mr-2 h-4 w-4" />
+                        Import Survey
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => setDayMode(!dayMode)}
+                        className={dayMode ? "border-gray-300 hover:bg-gray-200" : "border-slate-600 hover:bg-slate-700 text-white"}
+                    >
+                        {dayMode ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
                     </Button>
                     <span className="text-sm text-muted-foreground">
                         Last Updated: {lastUpdated ? lastUpdated.toLocaleTimeString() : 'Never'}
@@ -223,18 +339,18 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
             {/* Charts & 3D View */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="space-y-6">
-                    <Card>
+                    <Card className={dayMode ? "bg-white border-gray-200" : ""}>
                         <CardHeader>
-                            <CardTitle>Pitch Trend</CardTitle>
+                            <CardTitle className={dayMode ? "text-gray-900" : ""}>Pitch Trend</CardTitle>
                         </CardHeader>
                         <CardContent className="h-[250px]">
                             <Line options={commonOptions} data={pitchData} />
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className={dayMode ? "bg-white border-gray-200" : ""}>
                         <CardHeader>
-                            <CardTitle>Azimuth Trend</CardTitle>
+                            <CardTitle className={dayMode ? "text-gray-900" : ""}>Azimuth Trend</CardTitle>
                         </CardHeader>
                         <CardContent className="h-[250px]">
                             <Line options={commonOptions} data={azimuthData} />
@@ -243,18 +359,26 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
                 </div>
 
                 {/* 3D View */}
-                <Card className="overflow-hidden flex flex-col h-[600px] lg:h-auto">
+                <Card className={`overflow-hidden flex flex-col h-[600px] lg:h-auto ${dayMode ? "border-gray-200" : ""}`}>
                     <CardHeader>
-                        <CardTitle>Real-Time 3D View</CardTitle>
+                        <CardTitle className={dayMode ? "text-gray-900" : ""}>Real-Time 3D View</CardTitle>
                     </CardHeader>
                     <CardContent className="flex-1 p-0 relative min-h-[400px]">
+                        <CollisionWarning collisions={collisions} />
                         <Borehole3D
                             stations={trajectory}
+                            obstacles={obstacles}
                             viewMode="iso"
                         />
                     </CardContent>
                 </Card>
             </div>
+
+            <ImportModal
+                isOpen={isImportOpen}
+                onClose={() => setIsImportOpen(false)}
+                onImport={handleImport}
+            />
         </div>
     );
 }

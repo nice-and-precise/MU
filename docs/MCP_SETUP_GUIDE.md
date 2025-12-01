@@ -5,8 +5,8 @@ This project is equipped with **Model Context Protocol (MCP)** servers to provid
 ## Installed MCP Servers
 
 ### 1. PostgreSQL Database (`postgres`)
-*   **Purpose**: Direct access to the local application database.
-*   **Connection**: Connects to the Dockerized PostgreSQL instance (`hdd-nexus-db`).
+*   **Purpose**: Direct access to the application database.
+*   **Connection**: Connects to the Supabase PostgreSQL instance (via `postgres://` URL in `.env`).
 *   **Capabilities**:
     *   Read database schema.
     *   Execute SQL queries (SELECT, INSERT, UPDATE, etc.).

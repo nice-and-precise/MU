@@ -1,12 +1,17 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import Borehole3D from '@/components/drilling/Borehole3D';
+import dynamic from 'next/dynamic';
 import BoreholeControls from '@/components/drilling/BoreholeControls';
 import StripLog from '@/components/drilling/StripLog';
 import SteeringGauge from '@/components/drilling/SteeringGauge';
 import { SurveyStation, Obstacle } from '@/lib/drilling/types';
 import { calculatePathWithRust } from '@/lib/api/rustEngine';
+
+const Borehole3D = dynamic(() => import('@/components/drilling/Borehole3D'), {
+    ssr: false,
+    loading: () => <div className="flex-1 bg-slate-900 flex items-center justify-center text-slate-500">Loading 3D Engine...</div>
+});
 
 interface Project3DViewerProps {
     initialStations: SurveyStation[];

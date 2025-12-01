@@ -259,6 +259,72 @@ async function main() {
     }
   });
 
+  // 9. Complex River Crossing Scenario
+  const riverProject = await prisma.project.create({
+    data: {
+      name: 'Mississippi River Crossing',
+      description: '1500ft bore under the Mississippi River for 12" Steel Gas Main.',
+      status: 'PLANNING',
+      location: 'St. Louis, MO',
+      customerName: 'Spire Energy',
+      createdById: owner.id,
+      startDate: new Date(Date.now() + 86400000 * 60),
+      budget: 850000,
+    }
+  });
+
+  // River Soil Profile
+  await prisma.geotechReport.create({
+    data: {
+      projectId: riverProject.id,
+      title: 'River Bed Analysis',
+      reportDate: new Date(),
+      engineer: 'GeoCorp',
+      soilLayers: {
+        create: [
+          { startDepth: 0, endDepth: 20, soilType: 'Sand', description: 'Loose River Sand', color: '#F4A460', hardness: 2, shearModulus: 5000, poissonRatio: 0.3 },
+          { startDepth: 20, endDepth: 80, soilType: 'Clay', description: 'Soft River Clay', color: '#8B4513', hardness: 3, shearModulus: 8000, poissonRatio: 0.4 },
+          { startDepth: 80, endDepth: 200, soilType: 'Rock', description: 'Granite Bedrock', color: '#696969', hardness: 9, rockStrengthPsi: 25000, shearModulus: 3000000, poissonRatio: 0.25 },
+        ]
+      }
+    }
+  });
+
+  // River Bore
+  await prisma.bore.create({
+    data: {
+      projectId: riverProject.id,
+      name: 'River Crossing Main',
+      status: 'PLANNED',
+      totalLength: 1500,
+      diameterIn: 12,
+      productMaterial: 'Steel',
+      dip: 68, // Steep dip for St. Louis
+      declination: -1,
+      borePlan: {
+        create: {
+          totalLength: 1500,
+          pipeDiameter: 12,
+          pipeMaterial: 'Steel',
+          designMethod: 'PRCI',
+          safetyFactor: 3.0,
+          notes: 'Deep bore required to avoid river scour and bridge pilings.'
+        }
+      }
+    }
+  });
+
+  // Obstacles
+  await prisma.obstacle.createMany({
+    data: [
+      { projectId: riverProject.id, name: 'Old Bridge Piling', type: 'structure', startX: 500, startY: 0, startZ: 60, diameter: 48, safetyBuffer: 10 },
+      { projectId: riverProject.id, name: 'Gas Main (30")', type: 'gas', startX: 1200, startY: 0, startZ: 15, diameter: 30, safetyBuffer: 5 },
+      // River Bed "Zone" (Visualized as a wide obstacle for now, or just implied)
+      // We'll add a "Water" obstacle to represent the river surface/depth
+      { projectId: riverProject.id, name: 'River Bottom', type: 'water', startX: 200, startY: 0, startZ: 20, endX: 1300, endY: 0, endZ: 20, diameter: 12, safetyBuffer: 0 }
+    ]
+  });
+
   console.log('✅ Robust Seed complete!');
 }
 

@@ -1,125 +1,77 @@
-"use client";
-
 import React from 'react';
-import { motion } from 'framer-motion';
 
 interface SteeringRoseProps {
-    toolFace: number; // 0-360
-    pitch: number; // degrees
-    azimuth: number; // 0-360
-    targetToolFace?: number;
-    status?: 'normal' | 'warning' | 'critical'; // Traffic Light System
-    highContrast?: boolean; // Day Mode
+    toolface: number; // 0-360
+    targetToolface?: number; // 0-360
+    pitch: number;
+    azimuth: number;
+    dayMode?: boolean;
 }
 
-export default function SteeringRose({
-    toolFace,
-    pitch,
-    azimuth,
-    targetToolFace,
-    status = 'normal',
-    highContrast = false
-}: SteeringRoseProps) {
-    // Traffic Light Colors
-    const statusColors = {
-        normal: highContrast ? 'bg-green-600' : 'bg-green-500',
-        warning: highContrast ? 'bg-yellow-600' : 'bg-yellow-500',
-        critical: highContrast ? 'bg-red-600' : 'bg-red-500',
-    };
+export default function SteeringRose({ toolface, targetToolface, pitch, azimuth, dayMode = false }: SteeringRoseProps) {
+    // Colors
+    const bgColor = dayMode ? "bg-white" : "bg-slate-900";
+    const circleColor = dayMode ? "stroke-gray-300" : "stroke-slate-700";
+    const textColor = dayMode ? "fill-gray-900" : "fill-white";
+    const needleColor = "stroke-orange-500";
+    const targetColor = "stroke-green-500";
 
-    const statusBorder = {
-        normal: highContrast ? 'border-green-800' : 'border-green-500/50',
-        warning: highContrast ? 'border-yellow-800' : 'border-yellow-500/50',
-        critical: highContrast ? 'border-red-800' : 'border-red-500/50',
-    };
-
-    // High Contrast Styles
-    const bgClass = highContrast ? 'bg-[#FFD700]' : 'bg-slate-900';
-    const borderClass = highContrast ? 'border-black' : 'border-slate-700';
-    const textClass = highContrast ? 'text-black' : 'text-slate-400';
-    const needleClass = highContrast ? 'border-b-black' : 'border-b-orange-500';
-    const ghostClass = highContrast ? 'border-b-gray-600' : 'border-b-green-500/50';
-    const centerBg = highContrast ? 'bg-white' : 'bg-slate-800';
-    const centerText = highContrast ? 'text-black' : 'text-white';
+    // Convert toolface to rotation (0 is usually Top/High Side)
+    // SVG rotation: 0 is right (3 o'clock). We want 0 at top (12 o'clock).
+    // So rotate -90 deg.
+    // Toolface 0 = High Side.
+    const needleRotation = toolface - 90;
+    const targetRotation = (targetToolface ?? 0) - 90;
 
     return (
-        <motion.div
-            className={`relative w-64 h-64 flex items-center justify-center rounded-full border-4 shadow-2xl ${bgClass} ${borderClass}`}
-            animate={{ borderColor: highContrast ? (status === 'critical' ? '#991b1b' : '#000') : (status === 'critical' ? 'rgba(239, 68, 68, 0.5)' : 'rgba(51, 65, 85, 1)') }}
-            transition={{ duration: 0.5 }}
-        >
-            {/* Compass Rose Background */}
-            <div className={`absolute inset-0 rounded-full border-2 opacity-50 ${highContrast ? 'border-black' : 'border-slate-600'}`}></div>
+        <div className={`relative w-full aspect-square ${bgColor} rounded-full flex items-center justify-center p-2`}>
+            <svg viewBox="0 0 100 100" className="w-full h-full">
+                {/* Outer Ring */}
+                <circle cx="50" cy="50" r="45" fill="none" strokeWidth="2" className={circleColor} />
 
-            {/* Traffic Light Halo (Pulse if critical) */}
-            {status === 'critical' && (
-                <motion.div
-                    className="absolute inset-0 rounded-full bg-red-500/20"
-                    animate={{ opacity: [0.2, 0.5, 0.2] }}
-                    transition={{ duration: 1, repeat: Infinity }}
-                />
-            )}
+                {/* Ticks */}
+                {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
+                    <line
+                        key={deg}
+                        x1="50" y1="50"
+                        x2={50 + 40 * Math.cos((deg - 90) * Math.PI / 180)}
+                        y2={50 + 40 * Math.sin((deg - 90) * Math.PI / 180)}
+                        stroke="currentColor"
+                        strokeWidth={deg % 90 === 0 ? "2" : "1"}
+                        className={dayMode ? "text-gray-400" : "text-slate-600"}
+                    />
+                ))}
 
-            {/* Ticks */}
-            {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((deg) => (
-                <div
-                    key={deg}
-                    className="absolute w-full h-full flex justify-center"
-                    style={{ transform: `rotate(${deg}deg)` }}
-                >
-                    <div className={`w-1 ${deg % 90 === 0 ? (highContrast ? 'h-4 bg-black' : 'h-4 bg-slate-400') : (highContrast ? 'h-2 bg-black' : 'h-2 bg-slate-600')}`}></div>
-                </div>
-            ))}
+                {/* Labels */}
+                <text x="50" y="15" textAnchor="middle" className={`text-[8px] font-bold ${textColor}`}>HS</text>
+                <text x="85" y="52" textAnchor="middle" className={`text-[8px] font-bold ${textColor}`}>R</text>
+                <text x="50" y="90" textAnchor="middle" className={`text-[8px] font-bold ${textColor}`}>LS</text>
+                <text x="15" y="52" textAnchor="middle" className={`text-[8px] font-bold ${textColor}`}>L</text>
 
-            {/* Labels */}
-            <div className={`absolute top-2 font-bold ${textClass}`}>12</div>
-            <div className={`absolute bottom-2 font-bold ${textClass}`}>6</div>
-            <div className={`absolute left-3 font-bold ${textClass}`}>9</div>
-            <div className={`absolute right-3 font-bold ${textClass}`}>3</div>
+                {/* Target Needle */}
+                {targetToolface !== undefined && (
+                    <g transform={`rotate(${targetRotation} 50 50)`}>
+                        <line x1="50" y1="50" x2="85" y2="50" className={targetColor} strokeWidth="3" strokeDasharray="4 2" />
+                    </g>
+                )}
 
-            {/* Target Indicator (Ghost Needle) */}
-            {targetToolFace !== undefined && (
-                <motion.div
-                    className="absolute w-full h-full flex justify-center items-start"
-                    animate={{ rotate: targetToolFace }}
-                    transition={{ type: "spring", stiffness: 50, damping: 20 }}
-                >
-                    <div className={`w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[16px] mt-4 ${ghostClass}`}></div>
-                </motion.div>
-            )}
+                {/* Actual Needle */}
+                <g transform={`rotate(${needleRotation} 50 50)`}>
+                    {/* Pointer */}
+                    <path d="M 50 50 L 85 50" className={needleColor} strokeWidth="4" />
+                    {/* Arrowhead */}
+                    <path d="M 85 50 L 75 45 L 75 55 Z" fill="orange" />
+                </g>
 
-            {/* Tool Face Needle */}
-            <motion.div
-                className="absolute w-full h-full flex justify-center items-start"
-                animate={{ rotate: toolFace }}
-                transition={{ type: "spring", stiffness: 60, damping: 15, mass: 1 }}
-            >
-                {/* Needle Head */}
-                <div className={`w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[20px] mt-2 drop-shadow-lg ${needleClass}`}></div>
-            </motion.div>
+                {/* Center Hub */}
+                <circle cx="50" cy="50" r="5" className={dayMode ? "fill-gray-900" : "fill-slate-200"} />
+            </svg>
 
-            {/* Center Info Hub */}
-            <div className={`absolute w-32 h-32 rounded-full flex flex-col items-center justify-center border-2 z-10 ${centerBg} ${highContrast ? 'border-black' : 'border-slate-600'}`}>
-                <div className={`text-xs uppercase tracking-wider ${textClass}`}>Pitch</div>
-                <motion.div
-                    key={pitch} // Trigger animation on change
-                    initial={{ scale: 0.8, opacity: 0.5 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    className={`text-2xl font-bold ${centerText}`}
-                >
-                    {pitch.toFixed(1)}°
-                </motion.div>
-                <div className={`w-16 h-[1px] my-1 ${highContrast ? 'bg-black' : 'bg-slate-600'}`}></div>
-                <div className={`text-xs uppercase tracking-wider ${textClass}`}>TF</div>
-                <div className={`text-xl font-bold ${highContrast ? 'text-black' : 'text-orange-400'}`}>{Math.round(toolFace)}°</div>
-
-                {/* Status Indicator Dot */}
-                <motion.div
-                    className={`mt-1 w-3 h-3 rounded-full ${statusColors[status]}`}
-                    animate={{ scale: status === 'critical' ? [1, 1.5, 1] : 1 }}
-                    transition={{ duration: 0.5, repeat: status === 'critical' ? Infinity : 0 }}
-                />
+            {/* Digital Readout Overlay */}
+            <div className="absolute bottom-1 left-1/2 -translate-x-1/2 text-center">
+                <div className={`text-xs font-mono ${dayMode ? "text-gray-500" : "text-slate-400"}`}>TF</div>
+                <div className={`text-lg font-bold ${dayMode ? "text-gray-900" : "text-white"}`}>{toolface.toFixed(1)}°</div>
             </div>
-        </motion.div>
+        </div>
     );
 }

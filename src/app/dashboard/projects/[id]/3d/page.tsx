@@ -1,11 +1,7 @@
 import React from 'react';
 import { getProject } from "@/app/actions/projects";
 import { notFound } from "next/navigation";
-import dynamic from 'next/dynamic';
-const Project3DViewer = dynamic(() => import('./Project3DViewer'), {
-    ssr: false,
-    loading: () => <div className="h-full w-full bg-gray-100 dark:bg-gray-900 animate-pulse flex items-center justify-center">Loading Viewer...</div>
-});
+import Project3DViewer from './Project3DViewer';
 import { prisma } from '@/lib/prisma';
 import { SurveyStation } from '@/lib/drilling/types';
 

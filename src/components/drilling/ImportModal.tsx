@@ -80,7 +80,7 @@ export default function ImportModal({ isOpen, onClose, onImport }: ImportModalPr
             let rawPoints: { md: number, inc: number, azi: number }[] = [];
 
             if (file.name.toLowerCase().endsWith('.xml')) {
-                const witsmlStations = parseWitsmlTrajectory(text);
+                const witsmlStations = await parseWitsmlTrajectory(text);
                 if (witsmlStations.length === 0) throw new Error("No valid stations found in WITSML file.");
                 rawPoints = witsmlStations.map(s => ({ md: s.md, inc: s.incl, azi: s.azi }));
             } else if (file.name.toLowerCase().endsWith('.csv') || file.name.toLowerCase().endsWith('.txt')) {

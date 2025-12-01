@@ -1,6 +1,6 @@
 # HDD-Nexus: Digital Subsurface Platform
 
-> **Status**: 🚀 Active Development | **Mode**: Turbo ⚡ | **Stack**: Next.js + Rust + PostGIS
+> **Status**: 🚀 Active Development | **Mode**: Turbo ⚡ | **Stack**: Next.js + TypeScript + Supabase
 
 A comprehensive SaaS platform for **Horizontal Directional Drilling (HDD)** operations, combining high-performance engineering with modern field management. Designed to bridge the gap between office planning and field execution.
 
@@ -20,10 +20,6 @@ A comprehensive SaaS platform for **Horizontal Directional Drilling (HDD)** oper
 *Public facing portal for stakeholders.*
 ![Landing Page](./docs/images/landing_tour.webp)
 
-### Linear Progress Tracking
-*Visualize bore progress by station (footage) directly on the project dashboard.*
-*(See Dashboard Tour above)*
-
 ---
 
 ## 🏗 Architecture
@@ -32,7 +28,7 @@ A comprehensive SaaS platform for **Horizontal Directional Drilling (HDD)** oper
 graph TD
     User[User / Field Crew] -->|HTTPS/PWA| NextJS[Next.js Frontend]
     NextJS -->|Server Actions| Prisma[Prisma ORM]
-    NextJS -->|API| RustEngine[Rust Math Engine]
+    NextJS -->|TypeScript| DrillingLib[Drilling Math Library]
     
     subgraph "Data Layer"
         Prisma --> Supabase[(Supabase PostgreSQL)]
@@ -40,7 +36,9 @@ graph TD
     end
     
     subgraph "Compute Layer"
-        RustEngine -->|MCM & Physics| Calculation[Trajectory Calculation]
+        DrillingLib -->|ASTM F1962| Pullback[Pullback Calc]
+        DrillingLib -->|Delft Model| Hydraulics[Frac-Out Calc]
+        DrillingLib -->|MCM| Trajectory[Trajectory Calc]
     end
 ```
 
@@ -50,102 +48,51 @@ graph TD
 sequenceDiagram
     participant Rig as Drilling Rig
     participant API as /api/witsml
-    participant Parser as WITSML Parser
-    participant DB as PostgreSQL
+    participant DB as Supabase
     participant UI as Live Dashboard
     
-    Rig->>API: POST WITSML XML
-    API->>Parser: Parse Log/Trajectory
-    Parser-->>API: JSON Telemetry
+    Rig->>API: POST WITSML (XML/JSON)
     API->>DB: Store TelemetryLog
-    UI->>DB: Poll for Updates
-    DB-->>UI: New Telemetry Data
+    UI->>API: SSE Connection (/stream)
+    API-->>UI: Real-time Updates
     UI->>UI: Update Steering Rose
-```
-
-### 🧮 Physics Engine Logic
-
-```mermaid
-classDiagram
-    class Bore {
-        +id: String
-        +rodPasses: RodPass[]
-    }
-    class Trajectory {
-        +stations: SurveyStation[]
-        +calculate()
-    }
-    class Physics {
-        +calculatePullback(traj)
-        +calculateFracOut(traj, soil)
-    }
-    
-    Bore --> Trajectory : Converts to
-    Trajectory --> Physics : Input for
-```
-
----
-
-## 📜 Development History (Cinematic)
-
-*Generated using custom Rust tool `git_viz.rs`*
-
-```mermaid
-gitGraph
-   commit id: "9ccf834" tag: "Initial commit"
-   commit id: "21317bd" tag: "feat: Phase 1"
-   commit id: "294e3d8" tag: "feat: Init DB"
-   commit id: "e000449" tag: "feat: HDD-Nexus Core"
-   commit id: "4a6078e" tag: "docs: Update README"
-   commit id: "02d654e" tag: "feat: Save Progress"
-   branch feature/assets
-   checkout feature/assets
-   commit id: "a1b2c3d" tag: "feat: Asset Schema"
-   commit id: "b2c3d4e" tag: "feat: Asset UI"
-   checkout main
-   merge feature/assets
-   branch feature/linear-track
-   checkout feature/linear-track
-   commit id: "c3d4e5f" tag: "feat: Station Model"
-   commit id: "d4e5f6g" tag: "feat: Progress Bar"
-   checkout main
-   merge feature/linear-track
 ```
 
 ---
 
 ## 🚀 Key Features
 
-### 1. 🚜 Asset Management (New!)
+### 1. 🚜 Asset Management
 - **Fleet Tracking**: Manage Drills, Excavators, Trucks, and Locators.
-- **Status Monitoring**: Real-time status (Available, In Use, Maintenance).
-- **Project Assignment**: Assign assets to specific job sites.
+- **Maintenance**: Schedule and track equipment maintenance.
+- **Usage Logs**: Track hours and utilization by project.
 
-### 2. 📈 Linear Progress Tracking (New!)
-- **Station-Based**: Track progress by footage (e.g., "Station 100 to 250").
-- **Activity Logging**: Log specific activities (Pilot, Ream, Pullback).
-- **Visual Dashboard**: Progress bars and completion stats per project.
+### 2. 📈 Production & Engineering
+- **Digital Bore Logs**: Real-time rod-by-rod logging.
+- **As-Built Generation**: Automated profile views and PDF exports.
+- **Physics Engine**: ASTM F1962 Pullback & Delft Frac-Out modeling.
+- **Rod Planner**: Integrated trajectory planning.
 
-### 3. 🧮 Core Engineering (Physics Engine)
-- **Pullback Force**: ASTM F1962 with Capstan Effect (Friction at bends).
-- **Hydraulics**: Delft Cavity Expansion Model for Frac-Out Prediction (P_max).
-- **Magnetic Compensation**: True Azimuth calculation with Declination and Interference scaling.
-- **Rod Planner**: Integrated physics-based planning tool.
+### 3. 💰 Financials
+- **Estimating**: Create professional bids with labor, equipment, and material line items.
+- **Job Costing**: Real-time profitability tracking (Budget vs Actual).
+- **Invoicing**: AIA-style progress billing (G702/G703) with retainage.
+- **Change Management**: T&M Tickets and Change Orders.
 
-### 4. 🌍 Digital Subsurface
+### 4. 👷 Field Operations
+- **Crew Management**: Employee directory and digital time cards.
+- **Safety**: Toolbox Talks (signatures), JSAs, and Vehicle Inspections.
+- **Quality Control**: Punch Lists and Photo Gallery.
+
+### 5. 🌍 Digital Subsurface
 - **3D Visualization**: Interactive view of bore paths and soil layers.
 - **Geotech Integration**: Manage soil borings and stratigraphy.
 - **Collision Detection**: Real-time alerts for utility proximity.
 
-### 5. 📡 Live Operations (WITSML)
-- **Real-Time Telemetry**: Ingest WITSML 1.4.1.1 data streams.
+### 6. 📡 Live Operations
+- **Real-Time Telemetry**: Ingest WITSML data streams.
 - **Live Dashboard**: "Tactical Dashboard" with High Contrast Day Mode.
 - **Steering Rose**: Traffic Light system for deviation alerts.
-
-### 6. 📱 Field Mobility (PWA)
-- **Offline-First**: Progressive Web App with Service Worker caching.
-- **Installable**: Home screen installation on iOS/Android.
-- **Responsive**: Optimized for field tablets and rugged devices.
 
 ---
 
@@ -155,10 +102,9 @@ gitGraph
 |-----------|------------|-------------|
 | **Frontend** | Next.js 16 | App Router, Server Actions, React Server Components |
 | **UI** | Tailwind + Shadcn | Modern, responsive, accessible components |
-| **Backend** | Rust (Axum) | High-performance math and physics calculations |
-| **Database** | Supabase (PostgreSQL 16) | Cloud-hosted with PostGIS (Spatial) and TimescaleDB |
+| **Logic** | TypeScript | Core drilling math and physics (migrated from Rust for velocity) |
+| **Database** | Supabase | Cloud-hosted PostgreSQL with PostGIS |
 | **ORM** | Prisma | Type-safe database access |
-| **DevOps** | Docker | Containerized development (optional) |
 
 ---
 
@@ -168,46 +114,23 @@ gitGraph
 2.  **Configure Environment**: Ensure `.env` has valid Supabase credentials.
 3.  **Sync Database**: `npx prisma db push`
 4.  **Run Dev Server**: `npm run dev`
-5.  **Run Rust Engine**: `cd engine && cargo run`
 
-## ⚡ Low-Spec Development Mode (Recommended)
+## ⚡ Low-Spec Development Mode
 
-For systems with limited RAM (e.g., 16GB) or older CPUs, use the optimized startup script. This script automatically:
-1.  **Stops Docker Desktop** (Saves ~4GB RAM).
-2.  **Cleans Node processes**.
-3.  **Enables Turbopack** (Faster compilation).
+For systems with limited RAM (e.g., 16GB), use the optimized startup script:
 
-To run:
 ```powershell
 ./scripts/dev_low_spec.ps1
 ```
 
 ---
 
-## 🔧 Troubleshooting
-
-If you experience issues:
-
-1.  **Kill Lingering Processes**:
-    ```powershell
-    taskkill /F /IM node.exe
-    ```
-2.  **Start Server (Standard)**:
-    ```powershell
-    npm run dev
-    ```
-
-
----
-
 ## 📂 Documentation Index
 
-
-- [Implementation Plan](./docs/implementation_plan.md) - Recent feature specs.
-- [Walkthrough](./docs/walkthrough.md) - Verification steps for new features.
+- [Audit Plan](./docs/audit_plan.md) - Current documentation status.
 - [Handoff Report](./docs/handoff.md) - Summary of previous session.
-- [Task List](./docs/task.md) - Current roadmap.
 - [Presentation](./docs/presentation.md) - Project overview slides.
+- [_archive/](./_archive/) - Archived documentation.
 
 ---
 

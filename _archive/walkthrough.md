@@ -1,10 +1,3 @@
-# Performance Optimization Walkthrough
-
-## Overview
-Implemented critical performance optimizations to improve dev server speed, page load times, and runtime performance on low-spec hardware.
-
-## Changes
-
 ### Configuration
 - Enabled Next.js Turbo Mode (`next dev --turbo`).
 - Optimized Node.js memory settings (`--max-old-space-size=6144`).

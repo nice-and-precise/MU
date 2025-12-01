@@ -7,7 +7,7 @@ This guide explains how to connect your HDD rig's data stream to the Midwest Und
 The system accepts drilling data via a REST API endpoint. While we support the WITSML standard concepts, we currently ingest data via JSON or CSV for simplicity and compatibility with DCI LWD exports.
 
 ## API Endpoint
-**URL**: `https://your-domain.com/api/witsml`
+**URL**: `https://your-domain.com/api/witsml` (or `http://localhost:3000/api/witsml` for local dev)
 **Method**: `POST`
 **Content-Type**: `application/json` or `text/plain` (for CSV)
 

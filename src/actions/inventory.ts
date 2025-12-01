@@ -47,34 +47,59 @@ export async function getInventoryItems() {
     }
 }
 
+export async function updateInventoryItem(id: string, data: Partial<z.infer<typeof InventoryItemSchema>>) {
+    try {
+        const validated = InventoryItemSchema.partial().parse(data);
+        const item = await prisma.inventoryItem.update({
+            where: { id },
+            data: validated,
+        });
+        revalidatePath('/dashboard/inventory');
+        return { success: true, data: item };
+    } catch (error) {
+        return { success: false, error: 'Failed to update item' };
+    }
+}
+
+export async function deleteInventoryItem(id: string) {
+    try {
+        await prisma.inventoryItem.delete({ where: { id } });
+        revalidatePath('/dashboard/inventory');
+        return { success: true };
+    } catch (error) {
+        return { success: false, error: 'Failed to delete item' };
+    }
+}
+
 export async function recordTransaction(data: z.infer<typeof TransactionSchema>) {
     try {
         const validated = TransactionSchema.parse(data);
 
-        // Update item quantity
+        // Get current item
         const item = await prisma.inventoryItem.findUnique({ where: { id: validated.itemId } });
         if (!item) throw new Error('Item not found');
 
         let newQuantity = item.quantityOnHand;
-        if (validated.type === 'IN') newQuantity += validated.quantity;
-        if (validated.type === 'OUT') newQuantity -= validated.quantity;
-        if (validated.type === 'ADJUST') newQuantity = validated.quantity; // Adjust sets the absolute value? Or relative? Usually adjust is relative or set. Let's assume set for now or handle carefully. 
-        // Actually, standard inventory adjustment usually implies adding/subtracting to match count. 
-        // But if type is ADJUST, let's assume the quantity passed IS the new quantity? 
-        // Or is it the delta? Let's stick to IN/OUT for deltas. 
-        // If type is ADJUST, let's assume the user is providing the DELTA or the NEW TOTAL. 
-        // For simplicity, let's say ADJUST means "Add this amount (can be negative)" or maybe we just stick to IN/OUT.
-        // Let's treat ADJUST as a delta too for now, or just use IN/OUT.
-        // If the user wants to set exact count, they calculate delta.
+        let transactionQty = validated.quantity;
 
-        // Let's refine: IN adds, OUT subtracts.
+        if (validated.type === 'IN') {
+            newQuantity += validated.quantity;
+        } else if (validated.type === 'OUT') {
+            newQuantity -= validated.quantity;
+        } else if (validated.type === 'ADJUST') {
+            // For ADJUST, input quantity is the NEW TOTAL
+            // We record the delta in the transaction for history accuracy? 
+            // Or just record the "Count" value.
+            // Let's record the "Count" value (New Total) and let the UI handle display.
+            newQuantity = validated.quantity;
+        }
 
         await prisma.$transaction([
             prisma.inventoryTransaction.create({
                 data: {
                     itemId: validated.itemId,
                     type: validated.type,
-                    quantity: validated.quantity,
+                    quantity: transactionQty, // For ADJUST, this is the New Total
                     projectId: validated.projectId,
                     notes: validated.notes,
                     userId: validated.performedById,

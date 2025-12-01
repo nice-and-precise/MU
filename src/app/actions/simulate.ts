@@ -37,6 +37,7 @@ export async function simulateDrillingData(boreId: string) {
                 depth: parseFloat(newDepth.toFixed(2)),
                 pitch: parseFloat(newPitch.toFixed(2)),
                 azimuth: parseFloat(newAzimuth.toFixed(2)),
+                toolFace: Math.random() * 360, // Simulate tool rotation
                 // Simulate other params
                 wob: 15 + Math.random() * 5,
                 rpm: 60 + Math.random() * 10,

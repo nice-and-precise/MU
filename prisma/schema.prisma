@@ -35,6 +35,8 @@ model User {
   rodPasses             RodPass[]
   tmTickets             TMTicket[]
   ticket811Responses    Ticket811Response[]
+  createdInvoices       Invoice[]
+  assignedPunchItems    PunchItem[]
 
   @@index([email])
   @@index([role])
@@ -70,6 +72,13 @@ model Project {
   stationProgress       StationProgress[]
   tmTickets             TMTicket[]
   tickets811            Ticket811[]
+  invoices              Invoice[]
+  timeCards             TimeCard[]
+  equipmentUsage        EquipmentUsage[]
+  safetyMeetings        SafetyMeeting[]
+  jsas                  JSA[]
+  punchItems            PunchItem[]
+  photos                Photo[]
 
   @@index([status])
   @@index([createdById])
@@ -87,6 +96,8 @@ model Bore {
   entryPitId      String?
   exitPitId       String?
   status          String         @default("PLANNED")
+  dip             Float          @default(0)
+  declination     Float          @default(0)
   totalLength     Float?
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
@@ -118,6 +129,9 @@ model RodPass {
   pitch            Float?
   azimuth          Float?
   depth            Float?
+  north            Float?         @default(0)
+  east             Float?         @default(0)
+  dls              Float?         @default(0)
   viscosity        Float?
   mudWeight        Float?
   reamerDiameter   Float?
@@ -207,26 +221,32 @@ model Inspection {
   id                String             @id @default(cuid())
   projectId         String
   boreId            String?
+  assetId           String?
   templateName      String?
-  items             String
+  type              String             @default("General") // Pre-Trip, Site, Vehicle
+  items             String             @default("[]") // JSON string of checklist items
   assigneeId        String?
   dueDate           DateTime?
   completedAt       DateTime?
   status            String             @default("OPEN")
+  passed            Boolean            @default(true)
   location          String?
-  createdById       String
+  notes             String?
+  createdById       String?
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
   correctiveActions CorrectiveAction[]
   assignee          User?              @relation("InspectionAssignee", fields: [assigneeId], references: [id])
   bore              Bore?              @relation(fields: [boreId], references: [id])
-  createdBy         User               @relation("InspectionCreator", fields: [createdById], references: [id])
+  asset             Asset?             @relation(fields: [assetId], references: [id])
+  createdBy         User?              @relation("InspectionCreator", fields: [createdById], references: [id])
   project           Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
   photos            Photo[]
 
   @@index([projectId])
   @@index([status])
   @@index([boreId])
+  @@index([assetId])
   @@index([assigneeId])
   @@index([createdById])
 }
@@ -438,11 +458,34 @@ model Photo {
   dailyReport   DailyReport? @relation(fields: [dailyReportId], references: [id], onDelete: Cascade)
   inspection    Inspection?  @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
   uploadedBy    User         @relation(fields: [uploadedById], references: [id])
+  projectId     String?
+  project       Project?     @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([boreId])
   @@index([inspectionId])
+  @@index([projectId])
   @@index([dailyReportId])
   @@index([uploadedById])
+}
+
+model PunchItem {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  status      String   @default("OPEN") // OPEN, COMPLETED
+  priority    String   @default("MEDIUM") // LOW, MEDIUM, HIGH
+  assigneeId  String?
+  assignee    User?    @relation(fields: [assigneeId], references: [id])
+  dueDate     DateTime?
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([status])
+  @@index([assigneeId])
 }
 
 model CostCategory {
@@ -565,6 +608,8 @@ model SoilLayer {
   hardness        Float?
   phpaRequired    Boolean       @default(false)
   rockStrengthPsi Float?
+  shearModulus    Float?
+  poissonRatio    Float?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   geotechReport   GeotechReport @relation(fields: [geotechReportId], references: [id], onDelete: Cascade)
@@ -676,11 +721,76 @@ model Asset {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   project      Project?  @relation(fields: [projectId], references: [id])
+  maintenanceLogs MaintenanceLog[]
+  usageLogs       EquipmentUsage[]
+  inspections     Inspection[]
 
   @@index([projectId])
   @@index([status])
   @@index([type])
 }
+
+model MaintenanceLog {
+  id          String   @id @default(cuid())
+  assetId     String
+  asset       Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  date        DateTime
+  type        String   // Preventative, Repair, Inspection
+  description String
+  cost        Float    @default(0)
+  performedBy String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([assetId])
+}
+
+model EquipmentUsage {
+  id        String   @id @default(cuid())
+  assetId   String
+  asset     Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  date      DateTime
+  hours     Float
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([assetId])
+  @@index([projectId])
+}
+
+model SafetyMeeting {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  date      DateTime
+  topic     String
+  attendees String[] // List of names or IDs
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+}
+
+model JSA {
+  id              String   @id @default(cuid())
+  projectId       String
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  date            DateTime
+  taskDescription String
+  hazards         String   @default("[]") // JSON string of hazards
+  controls        String   @default("[]") // JSON string of controls
+  signatures      String   @default("[]") // JSON string of signatures
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([projectId])
+}
+
+
 
 model StationProgress {
   id           String   @id @default(cuid())
@@ -710,4 +820,83 @@ model Tooling {
   location     String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model Invoice {
+  id              String        @id @default(cuid())
+  projectId       String
+  applicationNo   Int
+  periodStart     DateTime
+  periodEnd       DateTime
+  status          String        @default("DRAFT")
+  totalCompleted  Float         @default(0)
+  retainagePercent Float        @default(0.10)
+  retainageAmount Float         @default(0)
+  totalEarned     Float         @default(0)
+  previousBilled  Float         @default(0)
+  currentDue      Float         @default(0)
+  notes           String?
+  createdById     String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  createdBy       User          @relation(fields: [createdById], references: [id])
+  project         Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  items           InvoiceItem[]
+
+  @@index([projectId])
+  @@index([status])
+}
+
+model InvoiceItem {
+  id             String   @id @default(cuid())
+  invoiceId      String
+  description    String
+  scheduledValue Float
+  previous       Float    @default(0)
+  thisPeriod     Float    @default(0)
+  stored         Float    @default(0)
+  totalCompleted Float    @default(0)
+  percentComplete Float   @default(0)
+  balance        Float    @default(0)
+  retainage      Float    @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  invoice        Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+}
+
+model Employee {
+  id          String     @id @default(cuid())
+  firstName   String
+  lastName    String
+  role        String     // e.g., "Foreman", "Operator", "Laborer"
+  hourlyRate  Float      @default(0)
+  crews       Crew[]
+  timeCards   TimeCard[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Crew {
+  id        String     @id @default(cuid())
+  name      String
+  foremanId String?
+  foreman   Employee?  @relation(fields: [foremanId], references: [id])
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model TimeCard {
+  id         String   @id @default(cuid())
+  employeeId String
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id])
+  date       DateTime
+  hours      Float
+  code       String   // e.g., "Drilling", "Mobilization"
+  notes      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
