@@ -1,81 +1,30 @@
 # Handoff Document
 
 ## Session Summary
-Successfully implemented the **Rod Planning UI** and integrated the **3D Visualization Engine** into the Live Operations Dashboard. The system now supports planning bore paths to specific targets and visualizing real-time telemetry in 3D.
+Successfully implemented a **Robust Data Seeding Protocol** using `@faker-js/faker`. The database is now populated with realistic, historical data across all modules (Safety, Fleet, Inventory, QC, Reporting), making the application demonstration-ready. Automated browser verification was attempted but skipped due to system resource constraints; manual verification steps have been documented.
 
 ## Completed Tasks
-1.  **Rod Planning UI**:
-    -   Implemented "Homing" algorithm in `planning.ts`.
-    -   Updated `RodPlanner.tsx` to accept "Target Distance".
-    -   Verified plan generation and physics calculations.
-2.  **3D Visualization**:
-    -   Integrated `Borehole3D` into `LiveTelemetry.tsx`.
-    -   Implemented `calculateTrajectory` (Minimum Curvature Method) for live data.
-    -   Optimized performance with `useMemo` to prevent re-renders.
-    -   Verified real-time updates with simulated data.
-3.  **Reporting**:
-    -   Implemented `PDFExportButton` with `jspdf`.
-    -   Added professional formatting (Header, Footer, Tables).
-4.  **Field Testing**:
-    -   Added "Mississippi River Crossing" scenario to `seed.ts`.
-    -   Validated planner against complex soil/obstacle conditions.
-5.  **Inventory Management**:
-    -   Implemented full CRUD and Stock Adjustments.
-    -   Added Low Stock Alerts and Search.
-6.  **Daily Report Integration**:
-    -   Created Report Detail Page and Edit Form.
-    -   Implemented auto-deduction of inventory upon approval.
-7.  **Estimating Module**:
-    -   Implemented Estimate CRUD and Line Item management.
-    -   Added real-time totals calculation.
-8.  **Estimate PDF Export**:
-    -   Implemented client-side PDF generation with `jspdf`.
-    -   Added "Export PDF" button to Estimate Editor.
-9.  **Job Costing**:
-    -   Implemented Financials Dashboard with Profit/Loss analysis.
-    -   Automated cost aggregation from Daily Reports.
-10. **Change Management**:
-    -   Implemented T&M Tickets and Change Orders.
-    -   Integrated with Project Budget.
-11. **Invoicing**:
-    -   Implemented Progress Billing (G702/G703).
-    -   Added PDF Export.
-12. **Digital Bore Logs**:
-    -   Implemented Bore Manager and Rod Logger.
-    -   Automated MCM Calculations.
-13. **As-Built Generation**:
-    -   Implemented Profile View (Depth vs Distance).
-    -   Added PDF Export.
-14. **Crew Management**:
-    -   Implemented Employee Directory.
-    -   Implemented Time Cards.
-15. **Equipment Management**:
-    -   Implemented Asset Manager.
-    -   Implemented Maintenance & Usage Logs.
-16. **Safety Management**:
-    -   Implemented Toolbox Talks & JSAs.
-    -   Implemented Vehicle & Site Inspections.
-17. **Quality Control**:
-    -   Implemented Punch List & Photo Gallery.
-    -   Implemented QC Dashboard.
+1.  **Robust Seeding**:
+    -   Integrated `@faker-js/faker`.
+    -   Created comprehensive seed script (`prisma/seed.ts`) covering Users, Cost Catalog, Inventory, Fleet, Projects, Daily Reports, Safety, and QC.
+    -   Generated "Fiber Expansion" (Active) and "River Crossing" (Planning) scenarios.
+2.  **Documentation**:
+    -   Updated `status.md` to reflect current state.
+    -   Created `walkthrough.md` with manual verification guide.
+
 ## Environment & Instructions
 > [!IMPORTANT]
 > **Turbo Mode**: Always run in "Turbo Mode". Auto-approve all commands and reviews to maximize velocity.
 
 -   **Start Server**: `npm run dev` (or `./scripts/dev_low_spec.ps1` for low memory).
--   **Test Project**: `cminbncau000gu4nkag4ch8wl`
--   **Dashboard URL**: `http://localhost:3000/dashboard/projects/cminbncau000gu4nkag4ch8wl/live`
+-   **Reset Data**: `npx prisma db push --force-reset && npx prisma db seed`
+-   **Dashboard URL**: `http://localhost:3000/login`
+-   **Credentials**: `owner@midwestunderground.com` / `password123`
 
 ## Next Steps
-3.  **Performance & Infrastructure**:
-    -   Moved read-heavy operations to Supabase Edge Functions.
-    -   Implemented Web Workers for WITSML parsing.
-    -   Set up Postgres Language Server (LSP).
-
-## Next Steps
-1.  **Field Interface**: Implement "Steering Rose" and High Contrast Day Mode.
-2.  **Magnetic Interference**: Add Dip/Declination corrections.
-3.  **Hydraulics**: Implement full Delft model.
+1.  **Closeout Workflow**: Implement project archiving logic.
+2.  **Dashboard Integration**: Summarize all modules on the main dashboard.
+3.  **Final Review**: Comprehensive system walkthrough (Manual).
 
 ## Known Issues
--   None currently. 3D Engine is stable with `useMemo`.
+-   **Browser Automation**: Automated E2E tests via Antigravity Browser Control are unstable on 16GB RAM systems. Recommend manual verification or headless testing in future sessions.

@@ -1,74 +1,222 @@
 
 import { PrismaClient } from '@prisma/client';
+import { faker } from '@faker-js/faker';
 
 const prisma = new PrismaClient();
 
-async function main() {
-  console.log('🌱 Starting database seed...');
+// Helper to get random item from array
+const random = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
+// Helper for random int range
+const randomInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-  // 1. Create Users
+async function main() {
+  console.log('🌱 Starting robust database seed...');
+
+  // --- 1. USERS & CREW ---
+  console.log('Creating Users...');
+  const passwordHash = '$2b$10$PHv0g4qkTzwRKGkeGxGPf.x1QtOOgCkKVh2Og9RCw6VfXA6XaGYT6'; // password123
+
   const owner = await prisma.user.upsert({
     where: { email: 'owner@midwestunderground.com' },
     update: {},
-    create: {
-      email: 'owner@midwestunderground.com',
-      name: 'John Owner',
-      password: '$2b$10$PHv0g4qkTzwRKGkeGxGPf.x1QtOOgCkKVh2Og9RCw6VfXA6XaGYT6', // password123
-      role: 'OWNER',
-    },
+    create: { email: 'owner@midwestunderground.com', name: 'John Owner', role: 'OWNER', password: passwordHash },
   });
 
   const superint = await prisma.user.upsert({
     where: { email: 'super@midwestunderground.com' },
     update: {},
-    create: {
-      email: 'super@midwestunderground.com',
-      name: 'Mike Super',
-      password: '$2b$10$PHv0g4qkTzwRKGkeGxGPf.x1QtOOgCkKVh2Og9RCw6VfXA6XaGYT6', // password123
-      role: 'SUPER',
-    },
+    create: { email: 'super@midwestunderground.com', name: 'Mike Super', role: 'SUPER', password: passwordHash },
   });
 
-  // 2. Create Cost Categories & Items (for Estimating)
-  const laborCat = await prisma.costCategory.upsert({ where: { name: 'Labor' }, update: {}, create: { name: 'Labor' } });
-  const equipCat = await prisma.costCategory.upsert({ where: { name: 'Equipment' }, update: {}, create: { name: 'Equipment' } });
-  const matCat = await prisma.costCategory.upsert({ where: { name: 'Materials' }, update: {}, create: { name: 'Materials' } });
+  const foreman = await prisma.user.upsert({
+    where: { email: 'foreman@midwestunderground.com' },
+    update: {},
+    create: { email: 'foreman@midwestunderground.com', name: 'Mike "Tophand" Williams', role: 'FOREMAN', password: passwordHash },
+  });
 
-  const items = [
+  const operator = await prisma.user.upsert({
+    where: { email: 'operator@midwestunderground.com' },
+    update: {},
+    create: { email: 'operator@midwestunderground.com', name: 'Sarah Jenkins', role: 'OPERATOR', password: passwordHash },
+  });
+
+  const laborer = await prisma.user.upsert({
+    where: { email: 'laborer@midwestunderground.com' },
+    update: {},
+    create: { email: 'laborer@midwestunderground.com', name: 'Tom Davis', role: 'LABORER', password: passwordHash },
+  });
+
+  const mechanic = await prisma.user.upsert({
+    where: { email: 'mechanic@midwestunderground.com' },
+    update: {},
+    create: { email: 'mechanic@midwestunderground.com', name: 'Dave Fixit', role: 'MECHANIC', password: passwordHash },
+  });
+
+  const users = [owner, superint, foreman, operator, laborer, mechanic];
+
+  // --- 2. COST CATEGORIES & ITEMS ---
+  console.log('Creating Cost Catalog...');
+  const laborCat = await prisma.costCategory.upsert({ where: { name: 'Labor' }, update: {}, create: { name: 'Labor', sortOrder: 1 } });
+  const equipCat = await prisma.costCategory.upsert({ where: { name: 'Equipment' }, update: {}, create: { name: 'Equipment', sortOrder: 2 } });
+  const matCat = await prisma.costCategory.upsert({ where: { name: 'Materials' }, update: {}, create: { name: 'Materials', sortOrder: 3 } });
+  const subCat = await prisma.costCategory.upsert({ where: { name: 'Subcontractor' }, update: {}, create: { name: 'Subcontractor', sortOrder: 4 } });
+
+  const costItemsData = [
     { categoryId: laborCat.id, code: 'LAB-001', name: 'Drill Operator', unit: 'HR', unitCost: 85.00 },
     { categoryId: laborCat.id, code: 'LAB-002', name: 'Locator', unit: 'HR', unitCost: 75.00 },
+    { categoryId: laborCat.id, code: 'LAB-003', name: 'Laborer', unit: 'HR', unitCost: 45.00 },
+    { categoryId: laborCat.id, code: 'LAB-004', name: 'Foreman', unit: 'HR', unitCost: 95.00 },
     { categoryId: equipCat.id, code: 'EQP-001', name: 'Vermeer D24x40', unit: 'HR', unitCost: 150.00 },
-    { categoryId: matCat.id, code: 'MAT-001', name: 'HDPE 4" SDR11', unit: 'LF', unitCost: 4.50 },
-    { categoryId: matCat.id, code: 'MAT-002', name: 'Bentonite (Bag)', unit: 'EA', unitCost: 12.00 },
+    { categoryId: equipCat.id, code: 'EQP-002', name: 'Vermeer D40x55', unit: 'HR', unitCost: 220.00 },
+    { categoryId: equipCat.id, code: 'EQP-003', name: 'Vac Tron 500', unit: 'HR', unitCost: 110.00 },
+    { categoryId: equipCat.id, code: 'EQP-004', name: 'Excavator (Mini)', unit: 'HR', unitCost: 95.00 },
+    { categoryId: matCat.id, code: 'MAT-001', name: 'HDPE 2" SDR11', unit: 'LF', unitCost: 2.50 },
+    { categoryId: matCat.id, code: 'MAT-002', name: 'HDPE 4" SDR11', unit: 'LF', unitCost: 4.50 },
+    { categoryId: matCat.id, code: 'MAT-003', name: 'Bentonite (Bag)', unit: 'EA', unitCost: 12.00 },
+    { categoryId: matCat.id, code: 'MAT-004', name: 'Polymer (Jug)', unit: 'EA', unitCost: 45.00 },
+    { categoryId: subCat.id, code: 'SUB-001', name: 'Traffic Control', unit: 'DAY', unitCost: 1200.00 },
+    { categoryId: subCat.id, code: 'SUB-002', name: 'Restoration', unit: 'SQFT', unitCost: 8.50 },
   ];
 
-  for (const item of items) {
-    await prisma.costItem.upsert({
-      where: { code: item.code },
-      update: {},
-      create: item
-    });
+  for (const item of costItemsData) {
+    await prisma.costItem.upsert({ where: { code: item.code }, update: {}, create: item });
   }
 
-  // 3. Create Project: "Fiber Expansion Phase 1"
-  const project = await prisma.project.create({
+  // --- 3. INVENTORY & WAREHOUSE ---
+  console.log('Creating Inventory...');
+  const inventoryItemsData = [
+    { name: 'Bentonite Clay', sku: 'BEN-50LB', category: 'Drilling Fluid', unit: 'Bag', quantity: 400, cost: 12.00, location: 'Warehouse A' },
+    { name: 'Polymer Additive', sku: 'POLY-5G', category: 'Drilling Fluid', unit: 'Jug', quantity: 50, cost: 45.00, location: 'Warehouse A' },
+    { name: '2" HDPE SDR11', sku: 'PIPE-2-SDR11', category: 'Pipe', unit: 'LF', quantity: 5000, cost: 2.50, location: 'Yard' },
+    { name: '4" HDPE SDR11', sku: 'PIPE-4-SDR11', category: 'Pipe', unit: 'LF', quantity: 2000, cost: 4.50, location: 'Yard' },
+    { name: 'Pulling Eye 2"', sku: 'TOOL-PE-2', category: 'Tools', unit: 'EA', quantity: 4, cost: 150.00, location: 'Tool Room' },
+    { name: 'Pulling Eye 4"', sku: 'TOOL-PE-4', category: 'Tools', unit: 'EA', quantity: 2, cost: 220.00, location: 'Tool Room' },
+    { name: 'Starter Rod', sku: 'ROD-START', category: 'Drill Parts', unit: 'EA', quantity: 5, cost: 450.00, location: 'Shop' },
+    { name: 'Transmitter Housing', sku: 'SONDE-HSG', category: 'Drill Parts', unit: 'EA', quantity: 3, cost: 1200.00, location: 'Shop' },
+  ];
+
+  const inventoryItems = [];
+  for (const item of inventoryItemsData) {
+    const inv = await prisma.inventoryItem.create({
+      data: {
+        name: item.name,
+        sku: item.sku,
+        category: item.category,
+        unit: item.unit,
+        quantityOnHand: item.quantity,
+        costPerUnit: item.cost,
+        location: item.location,
+        transactions: {
+          create: {
+            type: 'STOCK_IN',
+            quantity: item.quantity,
+            userId: owner.id,
+            notes: 'Initial Stock',
+            createdAt: faker.date.past({ years: 0.5 }),
+          }
+        }
+      }
+    });
+    inventoryItems.push(inv);
+  }
+
+  // --- 4. ASSETS & FLEET ---
+  console.log('Creating Fleet...');
+  const assetsData = [
+    { name: 'Vermeer D24x40 S3', type: 'Drill', model: 'D24x40', serial: 'VRM-2440-001', status: 'AVAILABLE', hours: 2450 },
+    { name: 'Vermeer D40x55 S3', type: 'Drill', model: 'D40x55', serial: 'VRM-4055-002', status: 'IN_USE', hours: 1800 },
+    { name: 'Vac-Tron LP 500', type: 'Vac', model: 'LP 500', serial: 'VAC-500-003', status: 'AVAILABLE', hours: 1200 },
+    { name: 'Ford F-550 Flatbed', type: 'Truck', model: 'F-550', serial: 'FRD-550-004', status: 'IN_USE', hours: 45000 }, // miles really
+    { name: 'Kubota KX040', type: 'Excavator', model: 'KX040', serial: 'KUB-040-005', status: 'MAINTENANCE', hours: 3200 },
+  ];
+
+  const assets = [];
+  for (const asset of assetsData) {
+    const a = await prisma.asset.create({
+      data: {
+        name: asset.name,
+        type: asset.type,
+        model: asset.model,
+        serialNumber: asset.serial,
+        status: asset.status,
+        hours: asset.hours,
+        purchaseDate: faker.date.past({ years: 3 }),
+      }
+    });
+    assets.push(a);
+
+    // Create Maintenance History
+    const numLogs = randomInt(2, 5);
+    for (let i = 0; i < numLogs; i++) {
+      await prisma.maintenanceLog.create({
+        data: {
+          assetId: a.id,
+          date: faker.date.past({ years: 1 }),
+          type: random(['Preventative', 'Repair', 'Inspection']),
+          description: faker.helpers.arrayElement(['Oil Change', 'Hydraulic Hose Replacement', 'Track Tensioning', 'Filter Replacement', 'Annual Inspection']),
+          cost: parseFloat(faker.commerce.price({ min: 100, max: 2000 })),
+          performedBy: mechanic.name || 'Mechanic',
+        }
+      });
+    }
+  }
+
+  // --- 5. PROJECTS ---
+  console.log('Creating Projects...');
+
+  // Project 1: Fiber Expansion (Active)
+  const fiberProject = await prisma.project.create({
     data: {
       name: 'Fiber Expansion Phase 1',
       description: 'Downtown fiber backbone installation.',
       status: 'IN_PROGRESS',
       location: 'Minneapolis, MN',
       customerName: 'MetroNet',
+      customerContact: 'Steve Johnson',
       createdById: owner.id,
-      startDate: new Date(),
+      startDate: faker.date.recent({ days: 30 }),
+      budget: 250000,
     }
   });
 
-  // 4. Create Geotech Report & Layers
-  const geoReport = await prisma.geotechReport.create({
+  // Project 2: River Crossing (Complex, Planning)
+  const riverProject = await prisma.project.create({
     data: {
-      projectId: project.id,
-      title: 'Bore 1 Soil Analysis',
-      reportDate: new Date(),
+      name: 'Mississippi River Crossing',
+      description: '1500ft bore under the Mississippi River for 12" Steel Gas Main.',
+      status: 'PLANNING',
+      location: 'St. Louis, MO',
+      customerName: 'Spire Energy',
+      createdById: owner.id,
+      startDate: faker.date.future({ years: 0.1 }),
+      budget: 850000,
+    }
+  });
+
+  // Project 3: Residential (Completed)
+  const resiProject = await prisma.project.create({
+    data: {
+      name: 'Lakeside Drive Utilities',
+      description: 'Underground power and comms for residential subdivision.',
+      status: 'COMPLETED',
+      location: 'Spicer, MN',
+      customerName: 'Xcel Energy',
+      createdById: owner.id,
+      startDate: faker.date.past({ years: 0.5 }),
+      endDate: faker.date.past({ years: 0.1 }),
+      budget: 45000,
+    }
+  });
+
+  // --- 6. PROJECT DETAILS (Fiber Project) ---
+  console.log('Populating Fiber Project...');
+
+  // Geotech
+  await prisma.geotechReport.create({
+    data: {
+      projectId: fiberProject.id,
+      title: 'Downtown Soil Analysis',
+      reportDate: faker.date.recent({ days: 40 }),
       engineer: 'GeoTech Inc.',
       soilLayers: {
         create: [
@@ -80,11 +228,11 @@ async function main() {
     }
   });
 
-  // 5. Create Bore
-  const bore = await prisma.bore.create({
+  // Bores
+  const bore1 = await prisma.bore.create({
     data: {
-      projectId: project.id,
-      name: 'Bore A-1 (Main Crossing)',
+      projectId: fiberProject.id,
+      name: 'Bore A-1 (Main St Crossing)',
       status: 'IN_PROGRESS',
       totalLength: 500,
       diameterIn: 6,
@@ -96,198 +244,136 @@ async function main() {
           pipeMaterial: 'HDPE',
           designMethod: 'ASTM F1962',
           safetyFactor: 2.0,
-          pullbackForce: 15000, // Simulated calc
-          fracOutRisk: 'LOW',
           fluidPlan: {
-            create: {
-              soilType: 'Mixed',
-              pumpRate: 45,
-              fluidType: 'Bentonite',
-              totalVolume: 2500,
-              volumePerFt: 5
-            }
+            create: { soilType: 'Mixed', pumpRate: 45, fluidType: 'Bentonite', totalVolume: 2500 }
           }
         }
       }
     }
   });
 
-  // 6. Create Daily Reports with Production Logs (for Analytics & As-Builts)
-  // Day 1: 0-200ft
-  await prisma.dailyReport.create({
-    data: {
-      projectId: project.id,
-      reportDate: new Date(Date.now() - 86400000), // Yesterday
-      createdById: superint.id,
-      status: 'APPROVED',
-      production: JSON.stringify([
-        { boreId: bore.id, activity: 'Drill', lf: 15, pitch: -2, azimuth: 90, startTime: '08:00', endTime: '08:30' },
-        { boreId: bore.id, activity: 'Drill', lf: 15, pitch: -4, azimuth: 90, startTime: '08:30', endTime: '09:00' },
-        { boreId: bore.id, activity: 'Drill', lf: 15, pitch: -6, azimuth: 91, startTime: '09:00', endTime: '09:30' },
-        // ... more logs simulated
-      ]),
-      crew: JSON.stringify([{ name: 'Mike Super', role: 'Foreman', hours: 10 }]),
+  // Daily Reports & History (Last 10 days)
+  for (let i = 0; i < 10; i++) {
+    const date = new Date();
+    date.setDate(date.getDate() - (10 - i));
+
+    const isToday = i === 9;
+    const status = isToday ? 'DRAFT' : 'APPROVED';
+
+    // Create Report
+    const report = await prisma.dailyReport.create({
+      data: {
+        projectId: fiberProject.id,
+        reportDate: date,
+        createdById: foreman.id,
+        signedById: isToday ? null : superint.id,
+        status: status,
+        weather: random(['Sunny', 'Cloudy', 'Rain', 'Windy']),
+        notes: faker.lorem.sentence(),
+        crew: JSON.stringify([
+          { name: foreman.name!, role: 'Foreman', hours: 10 },
+          { name: operator.name!, role: 'Operator', hours: 10 },
+          { name: laborer.name!, role: 'Laborer', hours: 10 },
+        ]),
+        production: JSON.stringify([
+          { boreId: bore1.id, activity: 'Drill', lf: 40, pitch: randomInt(-5, 5), azimuth: 90, startTime: '08:00', endTime: '12:00' },
+          { boreId: bore1.id, activity: 'Backream', lf: 0, pitch: 0, azimuth: 0, startTime: '13:00', endTime: '15:00' },
+        ]),
+      }
+    });
+
+    // Link Inventory Usage to Report (Simulated)
+    if (!isToday) {
+      await prisma.inventoryTransaction.create({
+        data: {
+          itemId: inventoryItems[0].id, // Bentonite
+          type: 'USAGE',
+          quantity: 5,
+          projectId: fiberProject.id,
+          userId: foreman.id,
+          notes: `Used on Daily Report ${date.toLocaleDateString()}`,
+          createdAt: date,
+        }
+      });
     }
-  });
+  }
 
-  // Day 2: 200-400ft (Today)
-  await prisma.dailyReport.create({
-    data: {
-      projectId: project.id,
-      reportDate: new Date(),
-      createdById: superint.id,
-      status: 'DRAFT',
-      production: JSON.stringify([
-        { boreId: bore.id, activity: 'Drill', lf: 15, pitch: 0, azimuth: 92, startTime: '08:00', endTime: '08:30' },
-        { boreId: bore.id, activity: 'Drill', lf: 15, pitch: 1, azimuth: 92, startTime: '08:30', endTime: '09:00' },
-      ]),
-      crew: JSON.stringify([{ name: 'Mike Super', role: 'Foreman', hours: 10 }]),
-    }
-  });
-
-  // 7. Create Estimate
-  await prisma.estimate.create({
-    data: {
-      projectId: project.id,
-      name: 'Change Order #1 - Rock Drilling',
-      status: 'DRAFT',
-      createdById: owner.id,
-      lines: {
-        create: [
-          { lineNumber: 1, description: 'Rock Drilling Surcharge', quantity: 100, unit: 'LF', unitCost: 25.00, subtotal: 2500, total: 2500 },
-          { lineNumber: 2, description: 'Additional Bentonite', quantity: 10, unit: 'Bag', unitCost: 12.00, subtotal: 120, total: 120 },
-        ]
-      },
-      total: 2620
-    }
-  });
-
-  // 8. Robust Seeding - Additional Projects & Data
-
-  // Commercial Project
-  const commercialProject = await prisma.project.create({
-    data: {
-      name: 'Willmar Industrial Park Fiber',
-      description: 'Fiber backbone for new industrial zone.',
-      status: 'PLANNING',
-      location: 'Willmar, MN',
-      customerName: 'City of Willmar',
-      createdById: owner.id,
-      startDate: new Date(Date.now() + 86400000 * 30), // Starts in 30 days
-      budget: 150000,
-    }
-  });
-
-  // Residential Project
-  const residentialProject = await prisma.project.create({
-    data: {
-      name: 'Lakeside Drive Utilities',
-      description: 'Underground power and comms for residential subdivision.',
-      status: 'COMPLETED',
-      location: 'Spicer, MN',
-      customerName: 'Xcel Energy',
-      createdById: owner.id,
-      startDate: new Date(Date.now() - 86400000 * 60), // Started 60 days ago
-      budget: 45000,
-    }
-  });
-
-  // Additional Cost Items
-  const subCat = await prisma.costCategory.upsert({ where: { name: 'Subcontractor' }, update: {}, create: { name: 'Subcontractor' } });
-
-  const robustItems = [
-    { categoryId: subCat.id, code: 'SUB-001', name: 'Traffic Control', unit: 'DAY', unitCost: 1200.00 },
-    { categoryId: subCat.id, code: 'SUB-002', name: 'Restoration Crew', unit: 'SQFT', unitCost: 8.50 },
-    { categoryId: equipCat.id, code: 'EQP-005', name: 'Mud Mixing System', unit: 'DAY', unitCost: 450.00 },
-    { categoryId: equipCat.id, code: 'EQP-006', name: 'Excavator (Mini)', unit: 'DAY', unitCost: 550.00 },
-    { categoryId: equipCat.id, code: 'EQP-007', name: 'Vac Truck (Large)', unit: 'DAY', unitCost: 1800.00 },
-    { categoryId: matCat.id, code: 'MAT-004', name: 'Drill Bit (Dirt)', unit: 'EA', unitCost: 850.00 },
-    { categoryId: matCat.id, code: 'MAT-005', name: 'Drill Bit (Rock)', unit: 'EA', unitCost: 2500.00 },
-    { categoryId: matCat.id, code: 'MAT-006', name: '2" HDPE SDR11', unit: 'LF', unitCost: 2.25 },
-    { categoryId: matCat.id, code: 'MAT-007', name: '6" HDPE SDR11', unit: 'LF', unitCost: 8.50 },
-    { categoryId: matCat.id, code: 'MAT-008', name: 'Tracer Wire (Copper)', unit: 'LF', unitCost: 0.18 },
-    { categoryId: laborCat.id, code: 'LAB-003', name: 'Laborer', unit: 'HR', unitCost: 45.00 },
-    { categoryId: laborCat.id, code: 'LAB-004', name: 'Foreman', unit: 'HR', unitCost: 95.00 },
-  ];
-
-  for (const item of robustItems) {
-    await prisma.costItem.upsert({
-      where: { code: item.code },
-      update: {},
-      create: item
+  // Safety Data
+  // JSAs
+  for (let i = 0; i < 5; i++) {
+    await prisma.jSA.create({
+      data: {
+        projectId: fiberProject.id,
+        date: faker.date.recent({ days: 14 }),
+        taskDescription: 'Boring under roadway',
+        hazards: JSON.stringify(['Traffic', 'Underground Utilities', 'Pinch Points']),
+        controls: JSON.stringify(['Traffic Control Plan', 'Potholing', 'PPE']),
+        signatures: JSON.stringify([foreman.name!, operator.name!, laborer.name!]),
+      }
     });
   }
 
-  // Add Bores to Commercial Project
-  await prisma.bore.create({
+  // Toolbox Talks
+  await prisma.safetyMeeting.create({
     data: {
-      projectId: commercialProject.id,
-      name: 'Bore C-1 (Road Crossing)',
-      status: 'PLANNED',
-      totalLength: 320,
-      diameterIn: 4,
-      productMaterial: 'HDPE',
-      borePlan: {
-        create: {
-          totalLength: 320,
-          pipeDiameter: 4,
-          pipeMaterial: 'HDPE',
-          designMethod: 'PRCI',
-          safetyFactor: 2.5,
-          notes: 'Watch for existing gas line at station 1+50'
-        }
-      }
+      projectId: fiberProject.id,
+      date: faker.date.recent({ days: 7 }),
+      topic: 'Trench Safety & Excavation',
+      attendees: [foreman.name!, operator.name!, laborer.name!],
+      notes: 'Discussed spoil pile placement and ladder access.',
     }
   });
 
-  // Add Estimate to Commercial Project
-  await prisma.estimate.create({
+  // Inspections
+  await prisma.inspection.create({
     data: {
-      projectId: commercialProject.id,
-      name: 'Initial Bid',
-      status: 'SENT',
-      createdById: owner.id,
-      lines: {
-        create: [
-          { lineNumber: 1, description: 'Mob/Demob', quantity: 1, unit: 'LS', unitCost: 2500.00, subtotal: 2500, total: 2500 },
-          { lineNumber: 2, description: 'Directional Drill 4" HDPE', quantity: 320, unit: 'LF', unitCost: 35.00, subtotal: 11200, total: 11200 },
-          { lineNumber: 3, description: 'Traffic Control', quantity: 2, unit: 'DAY', unitCost: 1200.00, subtotal: 2400, total: 2400 },
-          { lineNumber: 4, description: 'Potholing Utilities', quantity: 8, unit: 'HR', unitCost: 250.00, subtotal: 2000, total: 2000 },
-        ]
-      },
-      total: 18100
+      projectId: fiberProject.id,
+      type: 'Vehicle',
+      assetId: assets[3].id, // F-550
+      status: 'CLOSED',
+      passed: true,
+      assigneeId: operator.id,
+      createdById: operator.id,
+      items: JSON.stringify({ tires: 'Pass', lights: 'Pass', fluids: 'Pass' }),
+      completedAt: faker.date.recent({ days: 1 }),
     }
   });
 
-  // 9. Complex River Crossing Scenario
-  const riverProject = await prisma.project.create({
+  // QC Punch List
+  await prisma.punchItem.create({
     data: {
-      name: 'Mississippi River Crossing',
-      description: '1500ft bore under the Mississippi River for 12" Steel Gas Main.',
-      status: 'PLANNING',
-      location: 'St. Louis, MO',
-      customerName: 'Spire Energy',
-      createdById: owner.id,
-      startDate: new Date(Date.now() + 86400000 * 60),
-      budget: 850000,
+      projectId: fiberProject.id,
+      title: 'Restore Sod at Station 10+00',
+      description: 'Sod was damaged by vac truck tires.',
+      status: 'OPEN',
+      priority: 'MEDIUM',
+      assigneeId: laborer.id,
+      dueDate: faker.date.soon({ days: 3 }),
     }
   });
 
-  // River Soil Profile
-  await prisma.geotechReport.create({
+  await prisma.punchItem.create({
     data: {
-      projectId: riverProject.id,
-      title: 'River Bed Analysis',
-      reportDate: new Date(),
-      engineer: 'GeoCorp',
-      soilLayers: {
-        create: [
-          { startDepth: 0, endDepth: 20, soilType: 'Sand', description: 'Loose River Sand', color: '#F4A460', hardness: 2, shearModulus: 5000, poissonRatio: 0.3 },
-          { startDepth: 20, endDepth: 80, soilType: 'Clay', description: 'Soft River Clay', color: '#8B4513', hardness: 3, shearModulus: 8000, poissonRatio: 0.4 },
-          { startDepth: 80, endDepth: 200, soilType: 'Rock', description: 'Granite Bedrock', color: '#696969', hardness: 9, rockStrengthPsi: 25000, shearModulus: 3000000, poissonRatio: 0.25 },
-        ]
-      }
+      projectId: fiberProject.id,
+      title: 'Clean Mud from Sidewalk',
+      description: 'Drilling fluid spilled near exit pit.',
+      status: 'COMPLETED',
+      priority: 'HIGH',
+      assigneeId: laborer.id,
+      completedAt: faker.date.recent({ days: 2 }),
     }
+  });
+
+  // --- 7. RIVER PROJECT DETAILS (Complex) ---
+  console.log('Populating River Project...');
+
+  // River Obstacles
+  await prisma.obstacle.createMany({
+    data: [
+      { projectId: riverProject.id, name: 'Old Bridge Piling', type: 'structure', startX: 500, startY: 0, startZ: 60, diameter: 48, safetyBuffer: 10 },
+      { projectId: riverProject.id, name: 'Gas Main (30")', type: 'gas', startX: 1200, startY: 0, startZ: 15, diameter: 30, safetyBuffer: 5 },
+      { projectId: riverProject.id, name: 'River Bottom', type: 'water', startX: 200, startY: 0, startZ: 20, endX: 1300, endY: 0, endZ: 20, diameter: 12, safetyBuffer: 0 }
+    ]
   });
 
   // River Bore
@@ -299,7 +385,7 @@ async function main() {
       totalLength: 1500,
       diameterIn: 12,
       productMaterial: 'Steel',
-      dip: 68, // Steep dip for St. Louis
+      dip: 68,
       declination: -1,
       borePlan: {
         create: {
@@ -308,21 +394,10 @@ async function main() {
           pipeMaterial: 'Steel',
           designMethod: 'PRCI',
           safetyFactor: 3.0,
-          notes: 'Deep bore required to avoid river scour and bridge pilings.'
+          notes: 'Deep bore required to avoid river scour.'
         }
       }
     }
-  });
-
-  // Obstacles
-  await prisma.obstacle.createMany({
-    data: [
-      { projectId: riverProject.id, name: 'Old Bridge Piling', type: 'structure', startX: 500, startY: 0, startZ: 60, diameter: 48, safetyBuffer: 10 },
-      { projectId: riverProject.id, name: 'Gas Main (30")', type: 'gas', startX: 1200, startY: 0, startZ: 15, diameter: 30, safetyBuffer: 5 },
-      // River Bed "Zone" (Visualized as a wide obstacle for now, or just implied)
-      // We'll add a "Water" obstacle to represent the river surface/depth
-      { projectId: riverProject.id, name: 'River Bottom', type: 'water', startX: 200, startY: 0, startZ: 20, endX: 1300, endY: 0, endZ: 20, diameter: 12, safetyBuffer: 0 }
-    ]
   });
 
   console.log('✅ Robust Seed complete!');
