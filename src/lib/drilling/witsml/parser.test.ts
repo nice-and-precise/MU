@@ -3,7 +3,7 @@ import { parseWitsmlTrajectory, parseWitsmlLog } from './parser';
 
 describe('WITSML Parser', () => {
     describe('parseWitsmlTrajectory', () => {
-        it('should parse a valid trajectory XML', () => {
+        it('should parse a valid trajectory XML', async () => {
             const xml = `
                 <trajectorys xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
                     <trajectory uid="traj1">
@@ -24,7 +24,7 @@ describe('WITSML Parser', () => {
                 </trajectorys>
             `;
 
-            const stations = parseWitsmlTrajectory(xml);
+            const stations = await parseWitsmlTrajectory(xml);
             expect(stations.length).toBe(2);
             expect(stations[0].md).toBe(100.0);
             expect(stations[0].tvd).toBe(99.8);
@@ -32,15 +32,15 @@ describe('WITSML Parser', () => {
             expect(stations[0].azi).toBe(45.0);
         });
 
-        it('should return empty array for invalid XML', () => {
+        it('should return empty array for invalid XML', async () => {
             const xml = `<invalid>xml</invalid>`;
-            const stations = parseWitsmlTrajectory(xml);
+            const stations = await parseWitsmlTrajectory(xml);
             expect(stations).toEqual([]);
         });
     });
 
     describe('parseWitsmlLog', () => {
-        it('should parse a valid log XML', () => {
+        it('should parse a valid log XML', async () => {
             const xml = `
                 <logs xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
                     <log uid="log1">
@@ -62,7 +62,7 @@ describe('WITSML Parser', () => {
                 </logs>
             `;
 
-            const data = parseWitsmlLog(xml);
+            const data = await parseWitsmlLog(xml);
             expect(data.length).toBe(2);
             expect(data[0].depth).toBe(100);
             expect(data[0].pitch).toBe(1.5);
