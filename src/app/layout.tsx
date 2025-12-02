@@ -24,8 +24,8 @@ export const metadata: Metadata = {
 export const viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false, // Prevent zooming in field app
+  // userScalable: false, // Removed for accessibility
+  // maximumScale: 1, // Removed for accessibility
   themeColor: "#0f172a",
 };
 

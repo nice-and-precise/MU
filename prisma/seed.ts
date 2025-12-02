@@ -97,8 +97,10 @@ async function main() {
 
   const inventoryItems = [];
   for (const item of inventoryItemsData) {
-    const inv = await prisma.inventoryItem.create({
-      data: {
+    const inv = await prisma.inventoryItem.upsert({
+      where: { sku: item.sku },
+      update: {},
+      create: {
         name: item.name,
         sku: item.sku,
         category: item.category,

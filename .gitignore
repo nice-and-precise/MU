@@ -53,3 +53,5 @@ public/swe-worker-*.js
 
 # Rust Target
 engine/target/
+
+.vercel

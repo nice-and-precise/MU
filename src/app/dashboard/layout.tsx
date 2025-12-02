@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { LogOut, User, LayoutDashboard, HardHat, FileText, Settings, Activity, Calculator, Globe } from "lucide-react";
+import { LogOut, User, LayoutDashboard, HardHat, FileText, Settings, Activity, Calculator, Globe, Package, Users, ClipboardCheck, MapPin } from "lucide-react";
 
 export default async function DashboardLayout({
     children,
@@ -60,11 +60,37 @@ export default async function DashboardLayout({
                         <span>Log Rod Pass</span>
                     </Link>
 
+                    <Link href="/dashboard/inventory" className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white hover:border-l-4 hover:border-yellow-500 rounded-r-lg transition-all duration-200">
+                        <Package className="h-5 w-5" />
+                        <span>Inventory</span>
+                    </Link>
+
+                    <Link href="/dashboard/crew" className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white hover:border-l-4 hover:border-yellow-500 rounded-r-lg transition-all duration-200">
+                        <Users className="h-5 w-5" />
+                        <span>Dispatch</span>
+                    </Link>
+
+                    <Link href="/dashboard/qc" className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white hover:border-l-4 hover:border-yellow-500 rounded-r-lg transition-all duration-200">
+                        <ClipboardCheck className="h-5 w-5" />
+                        <span>Quality Control</span>
+                    </Link>
+
+                    <Link href="/dashboard/track" className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white hover:border-l-4 hover:border-yellow-500 rounded-r-lg transition-all duration-200">
+                        <MapPin className="h-5 w-5" />
+                        <span>Live Tracking</span>
+                    </Link>
+
                     {session.user.role === "OWNER" && (
-                        <Link href="/dashboard/settings" className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white hover:border-l-4 hover:border-yellow-500 rounded-r-lg transition-all duration-200">
-                            <Settings className="h-5 w-5" />
-                            <span>Settings</span>
-                        </Link>
+                        <>
+                            <Link href="/dashboard/admin" className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white hover:border-l-4 hover:border-yellow-500 rounded-r-lg transition-all duration-200">
+                                <LayoutDashboard className="h-5 w-5" />
+                                <span>Command Center</span>
+                            </Link>
+                            <Link href="/dashboard/settings" className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white hover:border-l-4 hover:border-yellow-500 rounded-r-lg transition-all duration-200">
+                                <Settings className="h-5 w-5" />
+                                <span>Settings</span>
+                            </Link>
+                        </>
                     )}
                 </nav>
 

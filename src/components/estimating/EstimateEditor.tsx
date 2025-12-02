@@ -65,9 +65,11 @@ export default function EstimateEditor({ estimate }: EstimateEditorProps) {
             {/* Top Bar */}
             <div className="flex justify-between items-center">
                 <div className="flex items-center gap-4">
-                    <Link href="/dashboard/estimating">
-                        <Button variant="ghost" size="icon"><ArrowLeft className="w-4 h-4" /></Button>
-                    </Link>
+                    <Button variant="ghost" size="icon" asChild>
+                        <Link href="/dashboard/estimating" aria-label="Back to Estimating">
+                            <ArrowLeft className="w-4 h-4" />
+                        </Link>
+                    </Button>
                     <h1 className="text-2xl font-bold">{estimate.name}</h1>
                     <span className="text-muted-foreground text-sm">#{estimate.id.slice(-6)}</span>
                 </div>
@@ -134,6 +136,7 @@ export default function EstimateEditor({ estimate }: EstimateEditorProps) {
                                             value={line.description}
                                             onChange={e => handleUpdateLine(line.id, 'description', e.target.value)}
                                             className="border-none shadow-none focus-visible:ring-0 px-0"
+                                            aria-label="Description"
                                         />
                                     </TableCell>
                                     <TableCell>
@@ -142,6 +145,7 @@ export default function EstimateEditor({ estimate }: EstimateEditorProps) {
                                             value={line.quantity}
                                             onChange={e => handleUpdateLine(line.id, 'quantity', Number(e.target.value))}
                                             className="w-20"
+                                            aria-label="Quantity"
                                         />
                                     </TableCell>
                                     <TableCell>
@@ -149,6 +153,7 @@ export default function EstimateEditor({ estimate }: EstimateEditorProps) {
                                             value={line.unit}
                                             onChange={e => handleUpdateLine(line.id, 'unit', e.target.value)}
                                             className="w-16"
+                                            aria-label="Unit"
                                         />
                                     </TableCell>
                                     <TableCell>
@@ -157,6 +162,7 @@ export default function EstimateEditor({ estimate }: EstimateEditorProps) {
                                             value={line.unitCost}
                                             onChange={e => handleUpdateLine(line.id, 'unitCost', Number(e.target.value))}
                                             className="w-24"
+                                            aria-label="Unit Cost"
                                         />
                                     </TableCell>
                                     <TableCell>
@@ -165,13 +171,14 @@ export default function EstimateEditor({ estimate }: EstimateEditorProps) {
                                             value={line.markup * 100}
                                             onChange={e => handleUpdateLine(line.id, 'markup', Number(e.target.value) / 100)}
                                             className="w-16"
+                                            aria-label="Markup Percentage"
                                         />
                                     </TableCell>
                                     <TableCell className="text-right font-medium">
                                         ${line.total.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                                     </TableCell>
                                     <TableCell>
-                                        <Button variant="ghost" size="icon" onClick={() => handleDeleteLine(line.id)}>
+                                        <Button variant="ghost" size="icon" onClick={() => handleDeleteLine(line.id)} aria-label="Delete Line Item">
                                             <Trash2 className="w-4 h-4 text-red-500" />
                                         </Button>
                                     </TableCell>
@@ -181,19 +188,19 @@ export default function EstimateEditor({ estimate }: EstimateEditorProps) {
                             {/* Add New Line Row */}
                             <TableRow className="bg-slate-50">
                                 <TableCell>
-                                    <Input placeholder="New Item Description" value={newLine.description} onChange={e => setNewLine({ ...newLine, description: e.target.value })} />
+                                    <Input placeholder="New Item Description" value={newLine.description} onChange={e => setNewLine({ ...newLine, description: e.target.value })} aria-label="New Item Description" />
                                 </TableCell>
                                 <TableCell>
-                                    <Input type="number" value={newLine.quantity} onChange={e => setNewLine({ ...newLine, quantity: Number(e.target.value) })} />
+                                    <Input type="number" value={newLine.quantity} onChange={e => setNewLine({ ...newLine, quantity: Number(e.target.value) })} aria-label="New Item Quantity" />
                                 </TableCell>
                                 <TableCell>
-                                    <Input value={newLine.unit} onChange={e => setNewLine({ ...newLine, unit: e.target.value })} />
+                                    <Input value={newLine.unit} onChange={e => setNewLine({ ...newLine, unit: e.target.value })} aria-label="New Item Unit" />
                                 </TableCell>
                                 <TableCell>
-                                    <Input type="number" placeholder="Cost" value={newLine.unitCost} onChange={e => setNewLine({ ...newLine, unitCost: Number(e.target.value) })} />
+                                    <Input type="number" placeholder="Cost" value={newLine.unitCost} onChange={e => setNewLine({ ...newLine, unitCost: Number(e.target.value) })} aria-label="New Item Cost" />
                                 </TableCell>
                                 <TableCell>
-                                    <Input type="number" value={newLine.markup * 100} onChange={e => setNewLine({ ...newLine, markup: Number(e.target.value) / 100 })} />
+                                    <Input type="number" value={newLine.markup * 100} onChange={e => setNewLine({ ...newLine, markup: Number(e.target.value) / 100 })} aria-label="New Item Markup" />
                                 </TableCell>
                                 <TableCell className="text-right">
                                     <Button size="sm" onClick={handleAddLine} disabled={!newLine.description || loading}>
