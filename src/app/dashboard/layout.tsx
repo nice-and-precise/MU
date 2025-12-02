@@ -3,7 +3,6 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { LogOut, User, LayoutDashboard, HardHat, FileText, Settings, Activity, Calculator, Globe } from "lucide-react";
-import MobileNav from "@/components/layout/MobileNav";
 
 export default async function DashboardLayout({
     children,
@@ -17,18 +16,15 @@ export default async function DashboardLayout({
     }
 
     return (
-        <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col md:flex-row">
-            {/* Mobile Navigation */}
-            <MobileNav user={{ name: session.user.name || "User", role: session.user.role || "USER" }} />
-
-            {/* Sidebar (Desktop) */}
-            <aside className="w-64 bg-gray-800 text-white hidden md:flex flex-col h-screen sticky top-0">
+        <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex">
+            {/* Sidebar */}
+            <aside className="w-64 bg-gray-800 text-white hidden md:flex flex-col">
                 <div className="p-6 border-b border-gray-700">
                     <h1 className="text-xl font-bold text-white tracking-wide">MIDWEST <span className="text-yellow-500">UNDERGROUND</span></h1>
                     <p className="text-xs text-gray-400 mt-1 uppercase tracking-wider">Operations Command</p>
                 </div>
 
-                <nav className="flex-1 px-4 space-y-2 mt-6 overflow-y-auto">
+                <nav className="flex-1 px-4 space-y-2 mt-6">
                     <Link href="/dashboard" className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white hover:border-l-4 hover:border-yellow-500 rounded-r-lg transition-all duration-200">
                         <LayoutDashboard className="h-5 w-5" />
                         <span>Dashboard</span>
@@ -90,7 +86,7 @@ export default async function DashboardLayout({
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 overflow-auto h-[calc(100vh-64px)] md:h-screen">
+            <main className="flex-1 overflow-auto">
                 {children}
             </main>
         </div>

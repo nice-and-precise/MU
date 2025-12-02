@@ -32,11 +32,7 @@ export default function InvoiceList({ projectId }: InvoiceListProps) {
         setCreating(true);
         const res = await createInvoice(projectId);
         if (res.success) {
-            if (res.data) {
-                router.push(`/dashboard/invoices/${res.data.id}`);
-            } else {
-                alert('Failed to create invoice: No data returned');
-            }
+            router.push(`/dashboard/invoices/${res.data.id}`);
         } else {
             alert(res.error || 'Failed to create invoice');
             setCreating(false);

@@ -30,7 +30,7 @@ export async function getProjectSummary(projectId: string) {
     if (!project) return null;
 
     // Financials
-    const totalInvoiced = invoices.reduce((sum, inv) => sum + inv.currentDue, 0);
+    const totalInvoiced = invoices.reduce((sum, inv) => sum + inv.total, 0);
     const approvedCOs = changeOrders
         .filter(co => co.status === 'APPROVED')
         .reduce((sum, co) => sum + (co.budgetImpact || 0), 0);

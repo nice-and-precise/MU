@@ -1,11 +1,9 @@
 import React from 'react';
 import { getProject } from "@/app/actions/projects";
 import { notFound } from "next/navigation";
-import dynamic from 'next/dynamic';
+import Project3DViewer from './Project3DViewer';
 import { prisma } from '@/lib/prisma';
 import { SurveyStation } from '@/lib/drilling/types';
-
-import Project3DViewer from './Project3DViewer';
 
 export default async function Project3DPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;

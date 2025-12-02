@@ -3,12 +3,12 @@
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { requireAuth } from "@/lib/auth-utils";
 
 const prisma = new PrismaClient();
 
 export async function getReports() {
-    const session = await requireAuth();
+    const session = await getServerSession(authOptions);
+    if (!session) throw new Error("Unauthorized");
 
     return await prisma.dailyReport.findMany({
         orderBy: { reportDate: "desc" },
@@ -24,7 +24,8 @@ export async function getReports() {
 }
 
 export async function createDailyReport(data: { projectId: string; reportDate: string; notes?: string }) {
-    const session = await requireAuth();
+    const session = await getServerSession(authOptions);
+    if (!session) throw new Error("Unauthorized");
 
     const { projectId, reportDate, notes } = data;
 
@@ -56,7 +57,8 @@ export async function createDailyReport(data: { projectId: string; reportDate: s
     return report;
 }
 export async function getReport(id: string) {
-    const session = await requireAuth();
+    const session = await getServerSession(authOptions);
+    if (!session) throw new Error("Unauthorized");
 
     const report = await prisma.dailyReport.findUnique({
         where: { id },
@@ -71,7 +73,8 @@ export async function getReport(id: string) {
 }
 
 export async function updateDailyReport(id: string, data: any) {
-    const session = await requireAuth();
+    const session = await getServerSession(authOptions);
+    if (!session) throw new Error("Unauthorized");
 
     // TODO: Add validation for data structure if needed
     // For now, we assume the client sends valid JSON strings for crew, production, materials
@@ -92,7 +95,8 @@ export async function updateDailyReport(id: string, data: any) {
 }
 
 export async function approveDailyReport(id: string) {
-    const session = await requireAuth();
+    const session = await getServerSession(authOptions);
+    if (!session) throw new Error("Unauthorized");
 
     const report = await prisma.dailyReport.findUnique({ where: { id } });
     if (!report) throw new Error("Report not found");

@@ -3,10 +3,10 @@
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { requireAuth } from "@/lib/auth-utils";
 
 export async function getProjects() {
-    const session = await requireAuth();
+    const session = await getServerSession(authOptions);
+    if (!session) throw new Error("Unauthorized");
 
     return await prisma.project.findMany({
         orderBy: { updatedAt: "desc" },
@@ -19,7 +19,8 @@ export async function getProjects() {
 }
 
 export async function getProject(id: string) {
-    const session = await requireAuth();
+    const session = await getServerSession(authOptions);
+    if (!session) throw new Error("Unauthorized");
 
     return await prisma.project.findUnique({
         where: { id },

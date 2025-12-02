@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import LiveTelemetryWrapper from "@/components/live/LiveTelemetryWrapper";
+import { LiveTelemetry } from "@/components/live/LiveTelemetry";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -44,7 +44,7 @@ export default async function LiveDashboardPage({ params }: PageProps) {
             </div>
 
             {activeBore ? (
-                <LiveTelemetryWrapper boreId={activeBore.id} boreName={activeBore.name} />
+                <LiveTelemetry boreId={activeBore.id} boreName={activeBore.name} />
             ) : (
                 <div className="flex items-center justify-center h-64 border-2 border-dashed rounded-lg">
                     <p className="text-muted-foreground">No active bore found for this project.</p>

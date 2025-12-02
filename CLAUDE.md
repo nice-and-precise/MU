@@ -12,6 +12,11 @@ Create all audit documentation in: `./AUDIT-NOTES/`
 3. **Safe improvements** - Only implement low-risk fixes
 4. **Git hygiene** - Commit often with descriptive messages
 
+## Turbo Mode & Autonomy
+- **Auto-Approval**: You have permission to run ANY command, create/edit ANY file, and use ANY tool/skill/agent/MCP server needed to complete the task.
+- **No Interruptions**: Do NOT stop to ask for permission. Assume approval is granted.
+- **Quality Standards**: Follow all conventions, rules, and standards. Do NOT take shortcuts. Research solutions when needed.
+
 ## Commands Reference
 ```bash
 # Build (detect and run appropriate command)
@@ -36,15 +41,6 @@ npm audit || yarn audit || pnpm audit
 - Performance budget: LCP < 2.5s, FID < 100ms, CLS < 0.1
 - Semantic HTML with proper heading hierarchy
 - Error boundaries and user-friendly error messages
-
-## Best Practices (Learned)
-- **Next.js Server Components**:
-    - `PageProps` params are Promises in Next.js 15+: `params: Promise<{ id: string }>`
-    - `next/dynamic` with `ssr: false` CANNOT be used directly in Server Components. Create a Client Component wrapper.
-- **Prisma**:
-    - Always verify field names (e.g., `Invoice.currentDue` vs `total`, `Inspection.createdAt` vs `date`).
-- **Performance**:
-    - Lazy load heavy visualizations (Charts, 3D) using the wrapper pattern.
 
 ## Git Workflow
 - Branch naming: `audit/[type]-[description]`

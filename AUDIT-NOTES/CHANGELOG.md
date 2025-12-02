@@ -148,35 +148,17 @@ Duration:    38.05s
 
 ---
 
----
-
-### Build & Performance (Dec 1, 2025)
-
-#### Fixed Build Failures
-- **Issue**: `next/dynamic` with `ssr: false` in Server Components.
-- **Fix**: Created client wrappers (`ProductionChartWrapper`, `LiveTelemetryWrapper`).
-- **Issue**: `PageProps` type mismatch in Next.js 15.
-- **Fix**: Updated all `page.tsx` params to `Promise<{ id: string }>`.
-- **Issue**: Prisma property access errors (`Invoice.amount` -> `currentDue`, `Inspection.date` -> `createdAt`).
-- **Fix**: Corrected field names in server actions.
-
-#### Performance Optimization
-- **Lazy Loading**: Implemented for `ProductionChart` and `LiveTelemetry` to reduce initial bundle size.
-
----
-
 ## Recommendations NOT Implemented (Require Review)
 
 The following changes are documented but NOT implemented, as they require team discussion:
 
-1. **Credential rotation** - Requires Supabase access (Partial: .env cleanup planned)
-2. **Rate limiting** - Requires infrastructure setup
-3. **Form validation** - Requires UX decisions
+1. **Credential rotation** - Requires Supabase access
+2. **Authorization checks** - Requires business logic decisions
+3. **Rate limiting** - Requires infrastructure setup
+4. **Mobile navigation** - Requires design approval
+5. **Form validation** - Requires UX decisions
 
-### Implemented Recommendations
-1. **Authorization checks** - Implemented `requireAuth` helper and applied to server actions.
-2. **Mobile navigation** - Implemented `MobileNav` component.
-3. **Input Validation** - Implemented file upload validation in `import.ts`.
+These are detailed in the audit reports for implementation by the development team.
 
 ---
 

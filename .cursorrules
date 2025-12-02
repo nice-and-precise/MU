@@ -1,0 +1,45 @@
+# Agent Rules (Antigravity & Claude)
+
+## 1. Turbo Mode & Autonomy (CRITICAL)
+- **Auto-Approval**: You have permission to run ANY command, create/edit ANY file, and use ANY tool/skill/agent/MCP server needed to complete the task.
+- **No Interruptions**: Do NOT stop to ask for permission. Assume approval is granted.
+- **Quality Standards**:
+  - Follow all conventions, rules, and standards.
+  - Do NOT take shortcuts.
+  - Research solutions when needed (do not guess).
+  - "Execute, Test, Prove".
+
+## 2. Tech Stack & Libraries
+- **Framework**: Next.js 16 (App Router)
+- **Database**: Prisma (PostgreSQL)
+- **Styling**: Tailwind CSS
+- **Language**: TypeScript
+- **State Management**: Server Actions for mutations/fetching; React Server Components by default.
+- **Math Engine**: Rust (future integration)
+
+## 3. Coding Style
+- **Next.js**:
+  - Use `params: Promise<{ id: string }>` for PageProps in Next.js 15+.
+  - `next/dynamic` with `ssr: false` must be in a Client Component wrapper.
+- **Prisma**:
+  - Always verify field names before querying.
+  - Run `npx prisma generate` after schema changes.
+- **Git Hygiene**:
+  - Commit often with descriptive messages (`[type]: description`).
+  - No force pushes to main.
+
+## 4. Behavior & Process
+- **Cascading Memory**:
+  - Maintain `task.md` (tactical), `status.md` (project), `decisions.md` (ADRs), `handoff.md` (session), `README.md` (public).
+- **Agentic Mode**:
+  - Break tasks into small chunks.
+  - Use `task_boundary` to signal intent.
+  - Use `notify_user` only when blocked or finished with a major chunk.
+- **Verification First**:
+  - Run `npm run build` frequently.
+  - Simulate hardware/data if real sources are unavailable.
+
+## 5. Design Philosophy
+- **Aesthetics**: "Modern Professional Construction" (Deep Blues, Safety Yellow).
+- **UX**: High Contrast Day Mode for field apps. Big buttons.
+- **Priorities**: Mobile-first, Accessibility (WCAG 2.1 AA).

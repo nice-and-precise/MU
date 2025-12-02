@@ -11,7 +11,7 @@ To maintain context across long sessions and multiple agents, use a "Cascading M
 ## 2. Agentic Mode & Task Boundaries
 - **Granularity**: Break tasks down into small, verifiable chunks (e.g., "Create Component", "Update API", "Verify Build").
 - **Communication**: Use `task_boundary` to signal intent. Use `notify_user` ONLY when blocked or finished with a major chunk.
-- **Turbo Mode**: If the user enables "Turbo Mode", assume approval for standard tasks (lint fixes, file creations).
+- **Turbo Mode**: You have permission to run ANY command, create/edit ANY file, and use ANY tool/skill/agent/MCP server needed. Do NOT stop to ask for permission. Assume approval is granted. Research solutions when needed.
 
 ## 3. Verification First
 - **Build Often**: Run `npm run build` (or `npm run build -- --webpack`) frequently to catch type errors early.

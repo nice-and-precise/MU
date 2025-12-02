@@ -3,10 +3,10 @@
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { requireAuth } from "@/lib/auth-utils";
 
 export async function getBore(boreId: string) {
-    const session = await requireAuth();
+    const session = await getServerSession(authOptions);
+    if (!session) throw new Error("Unauthorized");
 
     return await prisma.bore.findUnique({
         where: { id: boreId },
@@ -27,7 +27,8 @@ export async function getBore(boreId: string) {
 }
 
 export async function saveImportedLogs(boreId: string, logs: any[]) {
-    const session = await requireAuth();
+    const session = await getServerSession(authOptions);
+    if (!session) throw new Error("Unauthorized");
 
     // Batch insert logs
     // Map fields to TelemetryLog model
