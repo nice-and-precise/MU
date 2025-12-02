@@ -143,6 +143,8 @@ For systems with limited RAM (e.g., 16GB), use the optimized startup script:
 
 ## 📂 Documentation Index
 
+- [Architecture](./docs/architecture.md) - System design and tech stack.
+- [Decisions](./docs/decisions.md) - Architectural decision records (ADR).
 - [Audit Plan](./docs/audit_plan.md) - Current documentation status.
 - [Handoff Report](./docs/handoff.md) - Summary of previous session.
 - [Presentation](./docs/presentation.md) - Project overview slides.

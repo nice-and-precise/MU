@@ -83,3 +83,31 @@ export async function getProjectPhotos(projectId: string) {
         orderBy: { createdAt: 'desc' }
     });
 }
+
+export async function createPhoto(data: {
+    projectId: string;
+    url: string;
+    thumbnailUrl?: string;
+}) {
+    const session = await getServerSession(authOptions);
+    if (!session) return { success: false, error: 'Unauthorized' };
+
+    try {
+        const photo = await prisma.photo.create({
+            data: {
+                projectId: data.projectId,
+                url: data.url,
+                thumbnailUrl: data.thumbnailUrl,
+                filename: data.url.split('/').pop() || 'image.jpg',
+                size: 0, // Placeholder
+                mimeType: 'image/jpeg', // Placeholder
+                uploadedById: session.user.id
+            }
+        });
+        revalidatePath(`/dashboard/projects/${data.projectId}/qc`);
+        return { success: true, data: photo };
+    } catch (error) {
+        console.error('Failed to create photo:', error);
+        return { success: false, error: 'Failed to create photo' };
+    }
+}

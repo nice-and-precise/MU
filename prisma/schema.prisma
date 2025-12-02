@@ -41,7 +41,8 @@ model User {
   jobAssets             JobAsset[]
   jobDocuments          JobDocument[]          @relation("DocumentCreator")
   dailyNotes            DailyNote[]            @relation("NoteAuthor")
-
+  expenses              Expense[]
+  employee              Employee?
 
   @@index([email])
   @@index([role])
@@ -93,6 +94,9 @@ model Project {
   jobAssets             JobAsset[]
   jobDocuments          JobDocument[]
   dailyNotes            DailyNote[]
+  incidents             SafetyIncident[]
+  timeEntries           TimeEntry[]
+  expenses              Expense[]
 
   @@index([status])
   @@index([createdById])
@@ -666,6 +670,7 @@ model BorePlan {
   pullbackForce Float?
   safetyFactor  Float?
   fracOutRisk   String?
+  planData      String     @default("[]") // JSON string of PlannedRod[]
   notes         String?
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
@@ -906,18 +911,58 @@ model InvoiceItem {
 
 model Employee {
   id          String     @id @default(cuid())
+  userId      String?    @unique // Link to auth user
+  user        User?      @relation(fields: [userId], references: [id])
+  
+  // Personal Info
   firstName   String
   lastName    String
-  role        String     // e.g., "Foreman", "Operator", "Laborer"
+  email       String?
+  phone       String?
+  address     String?
+  ssn         String?    // Encrypted or masked in app logic
+  dob         DateTime?
+  emergencyContact String? // JSON or simple string
+
+  // Employment Info
+  role        String     // Foreman, Operator, Laborer, Office
   position    String?    // Detailed position e.g. "Drill Operator", "Locator"
+  status      String     @default("ACTIVE") // ACTIVE, TERMINATED, LEAVE
+  hireDate    DateTime?
+  terminationDate DateTime?
+  
+  // Payroll
+  payType     String     @default("HOURLY") // HOURLY, SALARY
   hourlyRate  Float      @default(0)
-  burdenRate  Float?
+  salary      Float?
+  taxStatus   String?    // W-4 Single, etc.
   qboEmployeeId String?
-  crews       Crew[]     @relation("CrewMembers")
+  adpEmployeeId String?
+  
+  // Relations
+  crews       CrewMember[]
   foremanCrews Crew[]    @relation("CrewForeman")
   timeCards   TimeCard[]
+  timeEntries TimeEntry[]
+  certs       Certification[]
+  incidents   SafetyIncident[]
+  documents   StaffDocument[]
+  reviews     PerformanceReview[]
+  statusHistory EmploymentStatusHistory[]
+  
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
+}
+
+model EmploymentStatusHistory {
+  id          String   @id @default(cuid())
+  employeeId  String
+  employee    Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  status      String
+  reason      String?
+  effectiveDate DateTime
+  createdAt   DateTime @default(now())
+  createdBy   String?
 }
 
 model Crew {
@@ -925,20 +970,72 @@ model Crew {
   name      String
   foremanId String
   foreman   Employee   @relation("CrewForeman", fields: [foremanId], references: [id])
-  members   Employee[] @relation("CrewMembers")
+  members   CrewMember[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+}
+
+model CrewMember {
+  id        String    @id @default(cuid())
+  crewId    String
+  crew      Crew      @relation(fields: [crewId], references: [id], onDelete: Cascade)
+  employeeId String
+  employee  Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  role      String?
+  startDate DateTime  @default(now())
+  endDate   DateTime?
+  
+  @@index([crewId])
+  @@index([employeeId])
+}
+
+model TimeEntry {
+  id          String    @id @default(cuid())
+  employeeId  String
+  employee    Employee  @relation(fields: [employeeId], references: [id])
+  projectId   String?
+  project     Project?  @relation(fields: [projectId], references: [id])
+  
+  startTime   DateTime
+  startLat    Float?
+  startLong   Float?
+  
+  endTime     DateTime?
+  endLat      Float?
+  endLong     Float?
+  
+  type        String    @default("WORK") // WORK, TRAVEL, BREAK
+  description String?
+  
+  status      String    @default("PENDING") // PENDING, APPROVED, REJECTED
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@index([employeeId])
+  @@index([projectId])
+  @@index([startTime])
 }
 
 model TimeCard {
   id         String   @id @default(cuid())
   employeeId String
   employee   Employee @relation(fields: [employeeId], references: [id])
-  projectId  String
-  project    Project  @relation(fields: [projectId], references: [id])
-  date       DateTime
-  hours      Float
-  code       String   // e.g., "Drilling", "Mobilization"
+  projectId  String?
+  project    Project? @relation(fields: [projectId], references: [id])
+  
+  periodStart DateTime
+  periodEnd   DateTime
+  
+  totalRegularHours Float @default(0)
+  totalOvertime     Float @default(0)
+  
+  status      String   @default("DRAFT") // DRAFT, SUBMITTED, APPROVED
+  
+  // Legacy fields for backward compatibility or direct entry
+  date       DateTime?
+  hours      Float?
+  code       String?   // e.g., "Drilling", "Mobilization"
   payrollItem String? // QBO Payroll Item Ref
   serviceItem String? // QBO Service Item Ref
   clockInTime DateTime?
@@ -947,8 +1044,76 @@ model TimeCard {
   clockInLong Float?
   isGeofenced Boolean    @default(false)
   notes      String?
+  
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+model Certification {
+  id          String    @id @default(cuid())
+  employeeId  String
+  employee    Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  name        String
+  provider    String?
+  issuedDate  DateTime?
+  expiresDate DateTime?
+  documentUrl String?
+  status      String    @default("ACTIVE") // ACTIVE, EXPIRED
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@index([employeeId])
+}
+
+model SafetyIncident {
+  id          String    @id @default(cuid())
+  projectId   String?
+  project     Project?  @relation(fields: [projectId], references: [id])
+  employeeId  String?   // Main employee involved
+  employee    Employee? @relation(fields: [employeeId], references: [id])
+  
+  date        DateTime
+  type        String    // INJURY, NEAR_MISS, PROPERTY_DAMAGE
+  severity    String    // LOW, MEDIUM, HIGH, CRITICAL
+  description String
+  location    String?
+  
+  photos      String    @default("[]")
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@index([projectId])
+  @@index([employeeId])
+}
+
+model StaffDocument {
+  id          String    @id @default(cuid())
+  employeeId  String
+  employee    Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  name        String
+  type        String    // POLICY, CONTRACT, FORM
+  url         String
+  status      String    @default("PENDING") // PENDING, SIGNED
+  signedAt    DateTime?
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model PerformanceReview {
+  id          String    @id @default(cuid())
+  employeeId  String
+  employee    Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  reviewerId  String
+  date        DateTime
+  rating      Int?      // 1-5
+  summary     String?
+  goals       String?   // JSON
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model JobAsset {
@@ -987,4 +1152,25 @@ model DailyNote {
   author      User     @relation("NoteAuthor", fields: [authorId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  date        DateTime
+  category    String   // e.g., "Fuel", "Per Diem", "Material", "Subcontractor"
+  description String
+  amount      Float
+  vendor      String?
+  receiptUrl  String?
+  status      String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([category])
+  @@index([date])
 }

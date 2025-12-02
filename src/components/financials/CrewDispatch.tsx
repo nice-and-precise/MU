@@ -1,58 +1,42 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BigButton } from "@/components/ui/BigButton";
 import { Users, UserPlus, X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-// Mock data - in real app, fetch from DB
-const AVAILABLE_EMPLOYEES = [
-    { id: "1", name: "John Doe", role: "Operator", rate: 45 },
-    { id: "2", name: "Jane Smith", role: "Locator", rate: 40 },
-    { id: "3", name: "Bob Johnson", role: "Laborer", rate: 25 },
-    { id: "4", name: "Mike Brown", role: "Laborer", rate: 25 },
-    { id: "5", name: "Sarah Connor", role: "Foreman", rate: 55 },
-];
-
-const AVAILABLE_ASSETS = [
-    { id: "v1", name: "Ford F-550 (Truck 101)", type: "Vehicle", rate: 35 },
-    { id: "v2", name: "Ram 5500 (Truck 102)", type: "Vehicle", rate: 35 },
-    { id: "e1", name: "Vermeer D24x40 (Drill)", type: "Equipment", rate: 150 },
-    { id: "e2", name: "Ditch Witch JT20 (Drill)", type: "Equipment", rate: 120 },
-    { id: "e3", name: "Vac-Tron (Vac)", type: "Equipment", rate: 85 },
-];
-
-const ACTIVE_PROJECTS = [
-    { id: "p1", name: "Fiber Install - Willmar" },
-    { id: "p2", name: "Water Main - Spicer" },
-    { id: "p3", name: "Emergency Repair - Hwy 12" },
-];
+import { Employee, Asset, Project } from "@prisma/client";
+import { dispatchCrew } from "@/actions/staff";
 
 interface CrewDispatchProps {
     variant?: "default" | "owner";
+    employees: Employee[];
+    assets: Asset[];
+    projects: Project[];
 }
 
-export function CrewDispatch({ variant = "default" }: CrewDispatchProps) {
-    const [crewMembers, setCrewMembers] = useState<typeof AVAILABLE_EMPLOYEES>([]);
-    const [selectedEmployee, setSelectedEmployee] = useState("");
+export function CrewDispatch({ variant = "default", employees, assets, projects }: CrewDispatchProps) {
+    // Local state for the crew being built
+    const [crewMembers, setCrewMembers] = useState<(Employee & { role: string })[]>([]);
+    const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
     const [selectedRole, setSelectedRole] = useState("");
 
     // Owner specific state
-    const [selectedAssets, setSelectedAssets] = useState<typeof AVAILABLE_ASSETS>([]);
+    const [selectedAssets, setSelectedAssets] = useState<Asset[]>([]);
     const [selectedAssetId, setSelectedAssetId] = useState("");
-    const [selectedProject, setSelectedProject] = useState("");
+    const [selectedProjectId, setSelectedProjectId] = useState("");
     const [isHighPriority, setIsHighPriority] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     function addMember() {
-        if (!selectedEmployee) return;
-        const employee = AVAILABLE_EMPLOYEES.find(e => e.id === selectedEmployee);
+        if (!selectedEmployeeId) return;
+        const employee = employees.find(e => e.id === selectedEmployeeId);
         if (employee && !crewMembers.find(m => m.id === employee.id)) {
             const memberWithRole = { ...employee, role: selectedRole || employee.role };
             setCrewMembers([...crewMembers, memberWithRole]);
         }
-        setSelectedEmployee("");
+        setSelectedEmployeeId("");
         setSelectedRole("");
     }
 
@@ -62,7 +46,7 @@ export function CrewDispatch({ variant = "default" }: CrewDispatchProps) {
 
     function addAsset() {
         if (!selectedAssetId) return;
-        const asset = AVAILABLE_ASSETS.find(a => a.id === selectedAssetId);
+        const asset = assets.find(a => a.id === selectedAssetId);
         if (asset && !selectedAssets.find(a => a.id === asset.id)) {
             setSelectedAssets([...selectedAssets, asset]);
         }
@@ -73,32 +57,48 @@ export function CrewDispatch({ variant = "default" }: CrewDispatchProps) {
         setSelectedAssets(selectedAssets.filter(a => a.id !== id));
     }
 
-    const totalHourlyRate = React.useMemo(() => {
-        const laborCost = crewMembers.reduce((acc, m) => acc + m.rate, 0);
-        const assetCost = selectedAssets.reduce((acc, a) => acc + a.rate, 0);
+    const totalHourlyRate = useMemo(() => {
+        const laborCost = crewMembers.reduce((acc, m) => acc + (m.hourlyRate || 0), 0);
+        const assetCost = selectedAssets.reduce((acc, a) => acc + (a.hourlyRate || 0), 0);
         return laborCost + assetCost;
     }, [crewMembers, selectedAssets]);
 
-    function handleDispatch() {
+    async function handleDispatch() {
         if (crewMembers.length === 0) {
             alert("Add crew members first.");
             return;
         }
-        if (variant === "owner" && !selectedProject) {
+        if (variant === "owner" && !selectedProjectId) {
             alert("Please select a project.");
             return;
         }
 
+        setIsSubmitting(true);
+
         const dispatchData = {
-            crew: crewMembers,
-            assets: selectedAssets,
-            project: selectedProject,
+            crew: crewMembers.map(m => ({ id: m.id, role: m.role })),
+            assets: selectedAssets.map(a => a.id),
+            projectId: selectedProjectId,
             priority: isHighPriority,
             estimatedDailyCost: totalHourlyRate * 10 // Assuming 10h day
         };
 
-        console.log("Dispatching:", dispatchData);
-        alert(`Dispatched crew to ${variant === "owner" ? ACTIVE_PROJECTS.find(p => p.id === selectedProject)?.name : "site"}! Est. Daily Cost: $${dispatchData.estimatedDailyCost}`);
+        try {
+            const res = await dispatchCrew(dispatchData);
+            if (res.success) {
+                alert(`Dispatched crew successfully!`);
+                setCrewMembers([]);
+                setSelectedAssets([]);
+                setSelectedProjectId("");
+            } else {
+                alert("Failed to dispatch: " + res.error);
+            }
+        } catch (error) {
+            console.error(error);
+            alert("An error occurred during dispatch.");
+        } finally {
+            setIsSubmitting(false);
+        }
     }
 
     return (
@@ -122,12 +122,12 @@ export function CrewDispatch({ variant = "default" }: CrewDispatchProps) {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
                         <div className="space-y-2">
                             <Label>Target Project</Label>
-                            <Select value={selectedProject} onValueChange={setSelectedProject}>
+                            <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
                                 <SelectTrigger className="bg-white">
                                     <SelectValue placeholder="Select Project" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {ACTIVE_PROJECTS.map(p => (
+                                    {projects.map(p => (
                                         <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
                                     ))}
                                 </SelectContent>
@@ -153,13 +153,13 @@ export function CrewDispatch({ variant = "default" }: CrewDispatchProps) {
                         <div className="flex gap-2 items-end">
                             <div className="flex-1 space-y-2">
                                 <Label>Employee</Label>
-                                <Select value={selectedEmployee} onValueChange={setSelectedEmployee}>
+                                <Select value={selectedEmployeeId} onValueChange={setSelectedEmployeeId}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select Employee" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {AVAILABLE_EMPLOYEES.filter(e => !crewMembers.find(m => m.id === e.id)).map(e => (
-                                            <SelectItem key={e.id} value={e.id}>{e.name} - {e.role}</SelectItem>
+                                        {employees.filter(e => !crewMembers.find(m => m.id === e.id)).map(e => (
+                                            <SelectItem key={e.id} value={e.id}>{e.firstName} {e.lastName} - {e.role}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
@@ -185,8 +185,8 @@ export function CrewDispatch({ variant = "default" }: CrewDispatchProps) {
                             {crewMembers.map(member => (
                                 <div key={member.id} className="flex items-center justify-between p-3 bg-white rounded-lg border shadow-sm">
                                     <div>
-                                        <div className="font-bold">{member.name}</div>
-                                        <div className="text-xs text-muted-foreground">{member.role} • ${member.rate}/hr</div>
+                                        <div className="font-bold">{member.firstName} {member.lastName}</div>
+                                        <div className="text-xs text-muted-foreground">{member.role} • ${member.hourlyRate}/hr</div>
                                     </div>
                                     <button onClick={() => removeMember(member.id)} className="text-red-500 hover:bg-red-50 p-1 rounded">
                                         <X className="h-4 w-4" />
@@ -209,13 +209,15 @@ export function CrewDispatch({ variant = "default" }: CrewDispatchProps) {
                                             <SelectValue placeholder="Select Asset" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {AVAILABLE_ASSETS.filter(a => !selectedAssets.find(sa => sa.id === a.id)).map(a => (
+                                            {assets.filter(a => !selectedAssets.find(sa => sa.id === a.id)).map(a => (
                                                 <SelectItem key={a.id} value={a.id}>{a.name} ({a.type})</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                <BigButton icon={UserPlus} onClick={addAsset} className="py-2" label="" fullWidth={false} />
+                                <div className="w-1/3">
+                                    <BigButton icon={UserPlus} onClick={addAsset} className="py-2 w-full" label="" fullWidth={false} />
+                                </div>
                             </div>
 
                             <div className="space-y-2">
@@ -223,7 +225,7 @@ export function CrewDispatch({ variant = "default" }: CrewDispatchProps) {
                                     <div key={asset.id} className="flex items-center justify-between p-3 bg-white rounded-lg border shadow-sm">
                                         <div>
                                             <div className="font-bold">{asset.name}</div>
-                                            <div className="text-xs text-muted-foreground">{asset.type} • ${asset.rate}/hr</div>
+                                            <div className="text-xs text-muted-foreground">{asset.type} • ${asset.hourlyRate}/hr</div>
                                         </div>
                                         <button onClick={() => removeAsset(asset.id)} className="text-red-500 hover:bg-red-50 p-1 rounded">
                                             <X className="h-4 w-4" />
@@ -238,9 +240,10 @@ export function CrewDispatch({ variant = "default" }: CrewDispatchProps) {
 
                 <div className="pt-4 border-t">
                     <BigButton
-                        label={variant === "owner" ? `DISPATCH CREW & ASSETS` : "DISPATCH CREW"}
+                        label={isSubmitting ? "DISPATCHING..." : (variant === "owner" ? `DISPATCH CREW & ASSETS` : "DISPATCH CREW")}
                         icon={Users}
                         onClick={handleDispatch}
+                        disabled={isSubmitting}
                         className="bg-[#003366] hover:bg-[#002244] text-white w-full"
                     />
                     {variant === "owner" && (
@@ -253,4 +256,3 @@ export function CrewDispatch({ variant = "default" }: CrewDispatchProps) {
         </Card>
     );
 }
-

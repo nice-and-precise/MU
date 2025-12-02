@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useTransition } from "react";
 import { BigButton } from "@/components/ui/BigButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin, Clock, AlertTriangle } from "lucide-react";
+import { MapPin, Clock, AlertTriangle, Loader2 } from "lucide-react";
 import { InspectionChecklist } from "@/components/field/InspectionChecklist";
+import { clockIn, clockOut, getClockStatus } from "@/actions/staff";
 
 // Haversine formula to calculate distance in feet
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
@@ -35,8 +36,18 @@ export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius,
     const [distance, setDistance] = useState<number | null>(null);
     const [error, setError] = useState("");
     const [showInspection, setShowInspection] = useState(false);
+    const [isPending, startTransition] = useTransition();
 
     useEffect(() => {
+        // Check initial status
+        if (employeeId && employeeId !== "current-user") {
+            getClockStatus(employeeId).then(res => {
+                if (res.success && res.data) {
+                    setStatus("IN");
+                }
+            });
+        }
+
         // Watch position
         if ("geolocation" in navigator) {
             const watchId = navigator.geolocation.watchPosition(
@@ -56,9 +67,9 @@ export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius,
         } else {
             setError("Geolocation not supported");
         }
-    }, [projectLat, projectLong]);
+    }, [projectLat, projectLong, employeeId]);
 
-    async function handleClockAction() {
+    function handleClockAction() {
         if (!location) {
             alert("Waiting for GPS location...");
             return;
@@ -76,9 +87,54 @@ export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius,
             setShowInspection(true);
         } else {
             // Clock Out
-            setStatus("OUT");
-            alert("Clocked OUT!");
+            performClockOut();
         }
+    }
+
+    function performClockIn() {
+        startTransition(async () => {
+            try {
+                const res = await clockIn({
+                    employeeId,
+                    projectId,
+                    lat: location!.lat,
+                    long: location!.long,
+                    type: "WORK"
+                });
+
+                if (res.success) {
+                    setStatus("IN");
+                    alert("Clocked IN!");
+                } else {
+                    alert("Failed to clock in: " + res.error);
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Error clocking in");
+            }
+        });
+    }
+
+    function performClockOut() {
+        startTransition(async () => {
+            try {
+                const res = await clockOut({
+                    employeeId,
+                    lat: location!.lat,
+                    long: location!.long
+                });
+
+                if (res.success) {
+                    setStatus("OUT");
+                    alert("Clocked OUT!");
+                } else {
+                    alert("Failed to clock out: " + res.error);
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Error clocking out");
+            }
+        });
     }
 
     return (
@@ -118,9 +174,10 @@ export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius,
 
                 <div className="grid grid-cols-2 gap-4">
                     <BigButton
-                        label={status === "OUT" ? "CLOCK IN" : "CLOCK OUT"}
-                        icon={Clock}
+                        label={isPending ? "PROCESSING..." : (status === "OUT" ? "CLOCK IN" : "CLOCK OUT")}
+                        icon={isPending ? Loader2 : Clock}
                         onClick={handleClockAction}
+                        disabled={isPending}
                         className={status === "OUT" ? "bg-green-600 hover:bg-green-700 text-white" : "bg-red-600 hover:bg-red-700 text-white"}
                     />
                     <BigButton
@@ -137,12 +194,11 @@ export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius,
                     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
                         <div className="bg-background rounded-xl max-h-[90vh] overflow-y-auto w-full max-w-2xl relative">
                             <InspectionChecklist
-                                assetId="truck-1"
+                                assetId="truck-1" // TODO: Select asset dynamically
                                 assetName="Ford F-550 (Truck #12)"
                                 onComplete={() => {
                                     setShowInspection(false);
-                                    setStatus("IN");
-                                    alert("Inspection Passed! Clocked IN.");
+                                    performClockIn();
                                 }}
                             />
                             <button
@@ -158,3 +214,4 @@ export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius,
         </Card>
     );
 }
+

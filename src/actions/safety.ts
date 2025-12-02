@@ -110,7 +110,7 @@ export async function createInspection(data: {
             data: {
                 projectId: data.projectId,
                 assetId: data.assetId,
-                date: data.date,
+                createdAt: data.date, // Map date to createdAt
                 type: data.type,
                 items: JSON.stringify(data.items),
                 passed: data.passed,
@@ -131,7 +131,7 @@ export async function getInspections(projectId: string) {
     const inspections = await prisma.inspection.findMany({
         where: { projectId },
         include: { asset: true },
-        orderBy: { date: 'desc' }
+        orderBy: { createdAt: 'desc' }
     });
     return inspections.map(insp => ({
         ...insp,

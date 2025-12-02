@@ -400,6 +400,52 @@ async function main() {
     }
   });
 
+  // --- 8. EXPENSES (Phase 5) ---
+  console.log('Creating Expenses...');
+  const expenseCategories = ['Fuel', 'Per Diem', 'Materials', 'Repairs', 'Lodging'];
+  for (let i = 0; i < 15; i++) {
+    await prisma.expense.create({
+      data: {
+        projectId: fiberProject.id,
+        date: faker.date.recent({ days: 30 }),
+        category: random(expenseCategories),
+        amount: parseFloat(faker.commerce.price({ min: 50, max: 500 })),
+        vendor: faker.company.name(),
+        description: faker.lorem.sentence(),
+        status: random(['PENDING', 'APPROVED', 'PAID']),
+        createdById: foreman.id,
+      }
+    });
+  }
+
+  // --- 9. ROD PLANS (Phase 6) ---
+  console.log('Creating Rod Plans...');
+  // Generate a simple straight bore plan for Bore 1
+  const plannedRods = [];
+  let currentPitch = -12; // Start with entry pitch
+  for (let i = 0; i < 30; i++) {
+    // Flatten out gradually
+    if (i > 5 && currentPitch < 0) currentPitch += 2;
+    if (currentPitch > 0) currentPitch = 0;
+
+    plannedRods.push({
+      id: faker.string.uuid(),
+      length: 15,
+      pitch: currentPitch,
+      azimuth: 90,
+      pullback: 0,
+      pMax: 0
+    });
+  }
+
+  await prisma.borePlan.update({
+    where: { boreId: bore1.id },
+    data: {
+      planData: JSON.stringify(plannedRods),
+      notes: 'Auto-generated demo plan'
+    }
+  });
+
   console.log('✅ Robust Seed complete!');
 }
 

@@ -26,6 +26,8 @@ export async function createTimeCards(data: z.infer<typeof timeCardSchema>) {
                     data: {
                         employeeId: data.employeeId,
                         projectId: data.projectId,
+                        periodStart: data.date,
+                        periodEnd: data.date,
                         date: data.date,
                         hours: entry.hours,
                         code: entry.code,
@@ -68,9 +70,10 @@ export async function getProjectBurnRate(projectId: string) {
         let totalManHours = 0;
 
         project.timeCards.forEach(tc => {
-            const rate = (tc.employee.hourlyRate || 0) + (tc.employee.burdenRate || 0);
-            totalLaborCost += tc.hours * rate;
-            totalManHours += tc.hours;
+            const emp = tc.employee as any;
+            const rate = (emp.hourlyRate || 0) + (emp.burdenRate || 0);
+            totalLaborCost += (tc.hours || 0) * rate;
+            totalManHours += (tc.hours || 0);
         });
 
         // Calculate Machine Cost
@@ -78,7 +81,7 @@ export async function getProjectBurnRate(projectId: string) {
         // For simplicity, let's sum up hours where code == "Drilling"
         const drillHours = project.timeCards
             .filter(tc => tc.code === "Drilling")
-            .reduce((acc, curr) => acc + curr.hours, 0);
+            .reduce((acc, curr) => acc + (curr.hours || 0), 0);
 
         const machineRate = project.machineRate || 150; // Default $150/hr
         const totalMachineCost = drillHours * machineRate;
@@ -110,6 +113,7 @@ export async function getProjectFinancials(projectId: string) {
                 timeCards: { include: { employee: true } },
                 inventoryTransactions: { include: { item: true } },
                 assets: true,
+                expenses: true,
             }
         });
 
@@ -118,8 +122,9 @@ export async function getProjectFinancials(projectId: string) {
         // 1. Calculate Actuals
         let actualLabor = 0;
         project.timeCards.forEach(tc => {
-            const rate = (tc.employee.hourlyRate || 0) + (tc.employee.burdenRate || 0);
-            actualLabor += tc.hours * rate;
+            const emp = tc.employee as any;
+            const rate = (emp.hourlyRate || 0) + (emp.burdenRate || 0);
+            actualLabor += (tc.hours || 0) * rate;
         });
 
         // Calculate Materials (Inventory)
@@ -137,15 +142,18 @@ export async function getProjectFinancials(projectId: string) {
         });
 
         // Calculate Equipment (Assets)
-        // This is harder without usage logs linked to assets directly in a simple way, 
-        // but we can estimate based on "Drilling" time or similar.
-        // For now, let's use the same logic as Burn Rate for machine cost.
         const drillHours = project.timeCards
             .filter(tc => tc.code === "Drilling")
-            .reduce((acc, curr) => acc + curr.hours, 0);
+            .reduce((acc, curr) => acc + (curr.hours || 0), 0);
         const actualEquipment = drillHours * (project.machineRate || 150);
 
-        const actualTotal = actualLabor + actualMaterials + actualEquipment;
+        // Calculate Expenses (New Model)
+        let expenseTotal = 0;
+        project.expenses.forEach(exp => {
+            expenseTotal += exp.amount;
+        });
+
+        const actualTotal = actualLabor + actualMaterials + actualEquipment + expenseTotal;
 
         // 2. Calculate Estimates (Mock/Placeholder or from Project fields)
         // In a real app, we'd query the Estimate model.
@@ -173,7 +181,8 @@ export async function getProjectFinancials(projectId: string) {
                     totalCost: actualTotal,
                     labor: actualLabor,
                     equipment: actualEquipment,
-                    materials: actualMaterials
+                    materials: actualMaterials,
+                    expenses: expenseTotal,
                 },
                 profit,
                 margin

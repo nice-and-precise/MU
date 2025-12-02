@@ -5,8 +5,8 @@ import JSABuilder from "@/components/safety/JSABuilder";
 import InspectionForm from "@/components/safety/InspectionForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export default async function SafetyPage({ params }: { params: { id: string } }) {
-    const projectId = params.id;
+export default async function SafetyPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id: projectId } = await params;
     const [meetings, jsas, inspections, assets] = await Promise.all([
         getSafetyMeetings(projectId),
         getJSAs(projectId),
@@ -63,7 +63,7 @@ export default async function SafetyPage({ params }: { params: { id: string } })
                                         <span className="font-semibold">{i.type}</span>
                                         <span className={i.passed ? "text-green-600" : "text-red-600"}>{i.passed ? "PASS" : "FAIL"}</span>
                                     </div>
-                                    <p className="text-gray-500">{new Date(i.date).toLocaleDateString()}</p>
+                                    <p className="text-gray-500">{new Date(i.createdAt).toLocaleDateString()}</p>
                                 </div>
                             ))}
                         </div>

@@ -1,30 +1,80 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useTransition } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BigButton } from "@/components/ui/BigButton";
-import { Package, Droplet, Flame, AlertTriangle } from "lucide-react";
+import { Package, Droplet, Flame, AlertTriangle, RefreshCw } from "lucide-react";
+import { getInventory, updateInventory } from "@/actions/inventory";
+import { toast } from "sonner";
 
 interface InventoryManagerProps {
     projectId: string;
+    userId?: string;
 }
 
-export function InventoryManager({ projectId }: InventoryManagerProps) {
+export function InventoryManager({ projectId, userId = "current-user" }: InventoryManagerProps) {
     const [activeTab, setActiveTab] = useState("fluids");
+    const [inventory, setInventory] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [isPending, startTransition] = useTransition();
 
-    const handleQuickAdd = (item: string, quantity: number, unit: string) => {
-        // In real app: Server action to create InventoryTransaction
-        console.log(`Adding ${quantity} ${unit} of ${item} to project ${projectId}`);
-        alert(`Logged: ${quantity} ${unit} of ${item}`);
+    useEffect(() => {
+        loadInventory();
+    }, [projectId]);
+
+    async function loadInventory() {
+        setLoading(true);
+        const res = await getInventory(projectId);
+        if (res.success) {
+            setInventory(res.data || []);
+        }
+        setLoading(false);
+    }
+
+    const handleQuickAdd = (itemName: string, quantity: number, unit: string) => {
+        // Find item ID by name (mocking this lookup since we don't have IDs in the UI yet)
+        // In a real scenario, we'd map buttons to specific Item IDs.
+        // For now, let's assume we find the item or create a transaction with a placeholder ID if not found (which would fail backend validation, so we need real IDs).
+
+        // Strategy: We'll filter the loaded inventory for a matching name.
+        const item = inventory.find(i => i.name.toLowerCase().includes(itemName.toLowerCase()));
+
+        if (!item) {
+            toast.error(`Item "${itemName}" not found in inventory.`);
+            return;
+        }
+
+        startTransition(async () => {
+            const res = await updateInventory({
+                itemId: item.id,
+                quantity: Math.abs(quantity),
+                type: quantity < 0 ? 'USE' : 'RESTOCK',
+                projectId,
+                userId: userId,
+                notes: `Quick action via Field Dashboard`
+            });
+
+            if (res.success) {
+                toast.success(`Logged: ${Math.abs(quantity)} ${unit} of ${itemName}`);
+                loadInventory();
+            } else {
+                toast.error(res.error || "Failed to update inventory");
+            }
+        });
     };
 
     return (
         <Card>
             <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <Package className="h-6 w-6" />
-                    Job Inventory & Consumables
+                <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <Package className="h-6 w-6" />
+                        Job Inventory & Consumables
+                    </div>
+                    <button onClick={loadInventory} disabled={loading} className="text-sm text-muted-foreground hover:text-blue-500">
+                        <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                    </button>
                 </CardTitle>
             </CardHeader>
             <CardContent>
@@ -42,18 +92,21 @@ export function InventoryManager({ projectId }: InventoryManagerProps) {
                                 subLabel="-1 Bag (50lb)"
                                 onClick={() => handleQuickAdd("Bentonite", -1, "Bag")}
                                 className="bg-slate-700 hover:bg-slate-600 h-32"
+                                disabled={isPending}
                             />
                             <BigButton
                                 label="POLYMER"
                                 subLabel="-1 Jug (5gal)"
                                 onClick={() => handleQuickAdd("Polymer", -1, "Jug")}
                                 className="bg-slate-700 hover:bg-slate-600 h-32"
+                                disabled={isPending}
                             />
                             <BigButton
                                 label="SODA ASH"
                                 subLabel="-1 Bag"
                                 onClick={() => handleQuickAdd("Soda Ash", -1, "Bag")}
                                 className="bg-slate-700 hover:bg-slate-600 h-32"
+                                disabled={isPending}
                             />
                             <BigButton
                                 label="RESTOCK"
@@ -83,6 +136,7 @@ export function InventoryManager({ projectId }: InventoryManagerProps) {
                                 subLabel="-4 AA Lithium"
                                 onClick={() => handleQuickAdd("Lithium Batteries", -4, "Each")}
                                 className="bg-orange-700 hover:bg-orange-600 h-32"
+                                disabled={isPending}
                             />
                             <BigButton
                                 label="BROKEN TOOTH"
@@ -95,10 +149,20 @@ export function InventoryManager({ projectId }: InventoryManagerProps) {
                 </Tabs>
 
                 <div className="mt-6 border-t pt-4">
-                    <h3 className="font-bold text-sm text-muted-foreground mb-2">Recent Activity</h3>
+                    <h3 className="font-bold text-sm text-muted-foreground mb-2">Current Stock Levels</h3>
                     <div className="space-y-2 text-sm">
-                        <div className="flex justify-between"><span>Used 5 Bags Bentonite</span> <span className="text-muted-foreground">10:30 AM - John Doe</span></div>
-                        <div className="flex justify-between"><span>Used 1 Jug Polymer</span> <span className="text-muted-foreground">09:15 AM - Jane Smith</span></div>
+                        {inventory.length === 0 ? (
+                            <p className="text-muted-foreground">No inventory loaded.</p>
+                        ) : (
+                            inventory.map(item => (
+                                <div key={item.id} className="flex justify-between">
+                                    <span>{item.name}</span>
+                                    <span className={`font-mono ${item.quantityOnHand < (item.reorderPoint || 0) ? 'text-red-500 font-bold' : 'text-muted-foreground'}`}>
+                                        {item.quantityOnHand} {item.unit || 'units'}
+                                    </span>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </div>
             </CardContent>

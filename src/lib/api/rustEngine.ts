@@ -45,17 +45,43 @@ export async function calculatePathWithRust(stations: SurveyStation[]): Promise<
         console.warn("Failed to connect to Rust engine, falling back to client-side calculation:", error);
         // Fallback to client-side calculation if Rust fails
         const { calculateBorePath } = await import('../drilling/math/survey');
-        // We need to map the result of calculateBorePath (which returns Point3D from survey.ts) to our local Point3D if they differ,
-        // but they are likely compatible structure-wise.
-        // However, calculateBorePath expects SurveyStation with 'inclination' property if it uses the old type definition?
-        // Let's check survey.ts again.
-        // survey.ts uses SurveyStation with 'inclination'.
-        // But types.ts uses 'inc'.
-        // This means survey.ts might be using a different SurveyStation definition or needs update.
-        // Let's assume for now we might need to map it.
 
-        // Actually, let's just return empty array or handle it in the component if fallback fails type check.
-        // Ideally we should fix survey.ts to use types.ts definition.
-        return [];
+        // Map SurveyStation (types.ts) to SurveyStation (survey.ts)
+        // types.ts: inc (degrees, 90=Horizontal)
+        // survey.ts: inclination (degrees, 0=Vertical Down?) -> Actually survey.ts comments are confusing, 
+        // but calculateBorePath converts (90 - p.inclination) to radians. 
+        // If p.inclination is 90 (Horizontal), then (90-90)=0. cos(0)=1. dV = dMD * (1+1) * rf... wait.
+        // If i1=0, cos(0)=1. dV is max. So Vertical change is max.
+        // So in survey.ts, 90 input means Vertical change is max?
+        // Let's look at survey.ts again:
+        // const dV = (dMD / 2) * (Math.cos(i1) + Math.cos(i2)) * rf;
+        // If input is 90, i1 = (90-90)*deg2rad = 0. cos(0)=1. dV is large.
+        // So input 90 means Vertical.
+        // But in HDD, 90 is Horizontal.
+        // So survey.ts expects 0 for Horizontal?
+        // Let's assume types.ts uses standard HDD: 90 Inc = Horizontal.
+        // If we pass 90 to survey.ts, it treats it as Vertical?
+        // We need to verify survey.ts math.
+
+        // Let's just implement a simple MCM here or use the one in mcm.ts which we saw earlier and seemed more standard.
+        // mcm.ts: calculateTrajectory(rawPoints, tieIn)
+
+        const { calculateTrajectory } = await import('../drilling/math/mcm');
+
+        // Map stations to raw points for mcm.ts
+        const rawPoints = stations.map(s => ({
+            md: s.md,
+            inc: s.inc,
+            azi: s.azi
+        }));
+
+        const trajectory = calculateTrajectory(rawPoints);
+
+        return trajectory.map(s => ({
+            x: s.east,
+            y: s.north,
+            z: s.tvd,
+            md: s.md
+        }));
     }
 }

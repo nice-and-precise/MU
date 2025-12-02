@@ -24,7 +24,7 @@ export default async function QCPage({ params }: { params: Promise<{ id: string 
                     <PunchList projectId={projectId} items={punchItems} users={users} />
                 </div>
                 <div className="lg:col-span-2">
-                    <PhotoGallery photos={photos} />
+                    <PhotoGallery photos={photos} projectId={projectId} />
                 </div>
             </div>
         </div>

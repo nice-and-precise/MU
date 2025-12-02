@@ -4,9 +4,15 @@ import { ProductionChart } from "@/components/dashboard/ProductionChart";
 import { MapPin } from "lucide-react";
 import Link from "next/link";
 import { CrewDispatch } from "@/components/financials/CrewDispatch";
+import { getAvailableCrewMembers } from "@/actions/staff";
+import { getAssets } from "@/actions/assets";
+import { getActiveProjects } from "@/actions/projects";
 
 export default async function OwnerDashboard() {
     const stats = await getOwnerStats();
+    const { data: employees } = await getAvailableCrewMembers();
+    const { data: assets } = await getAssets();
+    const { data: projects } = await getActiveProjects();
 
     return (
         <div className="p-8 space-y-8">
@@ -93,7 +99,12 @@ export default async function OwnerDashboard() {
             </div>
 
             <div className="mt-8">
-                <CrewDispatch variant="owner" />
+                <CrewDispatch
+                    variant="owner"
+                    employees={employees || []}
+                    assets={assets || []}
+                    projects={projects || []}
+                />
             </div>
         </div>
     );

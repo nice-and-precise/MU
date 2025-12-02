@@ -16,6 +16,8 @@ import { calculateDetailedPullback } from '@/lib/drilling/math/loads';
 import { calculateDelftPMax, getSoilProperties } from '@/lib/drilling/math/hydraulics';
 import { calculateTrueAzimuth } from '@/lib/drilling/math/magnetic';
 import PDFExportButton from './PDFExportButton';
+import { saveRodPlan, getRodPlan } from '@/actions/planning';
+import { toast } from 'sonner';
 
 // Simple types for the planner
 interface PlannedRod {
@@ -53,6 +55,35 @@ export default function RodPlanningGrid() {
     const [collisionResults, setCollisionResults] = useState<CollisionResult[]>([]);
     const [isCalculating, setIsCalculating] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
+
+    // Load plan on mount
+    useEffect(() => {
+        if (projectId) {
+            getRodPlan(projectId).then(res => {
+                if (res.success && res.data) {
+                    if (res.data.rods.length > 0) setRods(res.data.rods);
+                    if (res.data.settings) {
+                        setSettings(prev => ({
+                            ...prev,
+                            diameter: res.data.settings.diameter || prev.diameter,
+                            material: (res.data.settings.material as 'HDPE' | 'Steel') || prev.material,
+                            soil: (res.data.settings.soil as 'Clay' | 'Sand' | 'Rock') || prev.soil,
+                            declination: res.data.settings.declination || prev.declination
+                        }));
+                    }
+                }
+            });
+        }
+    }, [projectId]);
+
+    const handleSave = async () => {
+        const res = await saveRodPlan(projectId, rods, settings);
+        if (res.success) {
+            toast.success('Plan saved successfully');
+        } else {
+            toast.error('Failed to save plan');
+        }
+    };
 
     // Fetch obstacles on mount
     useEffect(() => {
@@ -195,8 +226,23 @@ export default function RodPlanningGrid() {
                                 <Settings2 className="w-4 h-4" />
                             </Button>
                             <Button size="sm" variant="outline" onClick={addRod}><Plus className="w-4 h-4" /></Button>
+                            <Button size="sm" variant="outline" onClick={() => {
+                                // Simple Auto-Plan: Add 10 rods straight
+                                const lastRod = rods[rods.length - 1];
+                                const newRods = [...rods];
+                                for (let i = 0; i < 10; i++) {
+                                    newRods.push({
+                                        id: Math.random().toString(36).substr(2, 9),
+                                        length: 15,
+                                        pitch: lastRod.pitch,
+                                        azimuth: lastRod.azimuth
+                                    });
+                                }
+                                setRods(newRods);
+                                toast.success('Added 10 rods');
+                            }}>Auto-Plan</Button>
                             <PDFExportButton rods={rods} settings={settings} projectName={`Project ${projectId}`} />
-                            <Button size="sm" onClick={() => console.log("Save Plan", rods)}><Save className="w-4 h-4" /></Button>
+                            <Button size="sm" onClick={handleSave}><Save className="w-4 h-4" /></Button>
                         </div>
                     </CardTitle>
 

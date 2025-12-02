@@ -3,7 +3,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MapPin, Users, Truck, FileText } from "lucide-react";
+import { MapPin, Users, Truck, FileText, BarChart3 } from "lucide-react";
 import { TicketManager } from "@/components/safety/TicketManager";
 
 export function OwnerCommandCenter() {
@@ -43,6 +43,7 @@ export function OwnerCommandCenter() {
                                     <TabsTrigger value="crew" className="flex-1"><Users className="h-4 w-4" /></TabsTrigger>
                                     <TabsTrigger value="assets" className="flex-1"><Truck className="h-4 w-4" /></TabsTrigger>
                                     <TabsTrigger value="docs" className="flex-1"><FileText className="h-4 w-4" /></TabsTrigger>
+                                    <TabsTrigger value="analytics" className="flex-1"><BarChart3 className="h-4 w-4" /></TabsTrigger>
                                 </TabsList>
 
                                 <TabsContent value="crew" className="space-y-4 mt-4">
@@ -75,7 +76,29 @@ export function OwnerCommandCenter() {
 
                                 <TabsContent value="docs" className="space-y-4 mt-4">
                                     <div className="h-[400px]">
-                                        <TicketManager />
+                                        <TicketManager projectId="demo-project" />
+                                    </div>
+                                </TabsContent>
+                                <TabsContent value="analytics" className="space-y-4 mt-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="p-3 border rounded bg-orange-50">
+                                            <h3 className="font-bold text-orange-800 text-xs uppercase mb-1">Safety</h3>
+                                            <div className="text-2xl font-bold">124</div>
+                                            <div className="text-xs text-muted-foreground">Days Without Incident</div>
+                                        </div>
+                                        <div className="p-3 border rounded bg-blue-50">
+                                            <h3 className="font-bold text-blue-800 text-xs uppercase mb-1">Quality</h3>
+                                            <div className="text-2xl font-bold">3</div>
+                                            <div className="text-xs text-muted-foreground">Open Punch Items</div>
+                                        </div>
+                                    </div>
+                                    <div className="p-3 border rounded bg-secondary/10">
+                                        <h3 className="font-bold mb-2">Recent Activity</h3>
+                                        <ul className="text-sm space-y-2">
+                                            <li className="flex justify-between"><span>Safety Meeting</span> <span className="text-gray-500">Today</span></li>
+                                            <li className="flex justify-between"><span>JSA Submitted</span> <span className="text-gray-500">Today</span></li>
+                                            <li className="flex justify-between"><span>Punch Item #123</span> <span className="text-gray-500">Yesterday</span></li>
+                                        </ul>
                                     </div>
                                 </TabsContent>
                             </Tabs>

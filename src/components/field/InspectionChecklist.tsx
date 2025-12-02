@@ -1,14 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useTransition } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BigButton } from "@/components/ui/BigButton";
 import { CheckCircle, XCircle, Camera, Truck, AlertTriangle } from "lucide-react";
+import { submitInspection } from "@/actions/inspections";
+import { toast } from "sonner";
 
 interface InspectionChecklistProps {
     assetId: string;
     assetName: string;
     onComplete: () => void;
+    inspectorId?: string;
+    projectId?: string;
 }
 
 const TRUCK_CHECKLIST = [
@@ -21,9 +25,10 @@ const TRUCK_CHECKLIST = [
     "Fire Extinguisher & Triangles"
 ];
 
-export function InspectionChecklist({ assetId, assetName, onComplete }: InspectionChecklistProps) {
+export function InspectionChecklist({ assetId, assetName, onComplete, inspectorId = "current-user", projectId = "current-project" }: InspectionChecklistProps) {
     const [results, setResults] = useState<Record<string, "Pass" | "Fail" | null>>({});
     const [notes, setNotes] = useState("");
+    const [isPending, startTransition] = useTransition();
 
     const handleCheck = (item: string, status: "Pass" | "Fail") => {
         setResults(prev => ({ ...prev, [item]: status }));
@@ -34,17 +39,36 @@ export function InspectionChecklist({ assetId, assetName, onComplete }: Inspecti
 
     const handleSubmit = () => {
         if (!allChecked) {
-            alert("Please complete all items.");
+            toast.error("Please complete all items.");
             return;
         }
         if (hasFailures && !notes) {
-            alert("Please add notes/photos for failed items.");
+            toast.error("Please add notes/photos for failed items.");
             return;
         }
-        // Server action to save Inspection
-        console.log("Submitting inspection:", { assetId, results, notes });
-        alert("Inspection Submitted!");
-        onComplete();
+
+        const defects = Object.entries(results)
+            .filter(([_, status]) => status === "Fail")
+            .map(([item]) => item);
+
+        startTransition(async () => {
+            const res = await submitInspection({
+                assetId,
+                inspectorId: inspectorId,
+                projectId: projectId,
+                type: 'Pre-Trip',
+                passed: !hasFailures,
+                defects,
+                notes
+            });
+
+            if (res.success) {
+                toast.success("Inspection Submitted!");
+                onComplete();
+            } else {
+                toast.error(res.error || "Failed to submit inspection");
+            }
+        });
     };
 
     return (
@@ -106,9 +130,9 @@ export function InspectionChecklist({ assetId, assetName, onComplete }: Inspecti
                 )}
 
                 <BigButton
-                    label="SIGN & SUBMIT DVIR"
+                    label={isPending ? "SUBMITTING..." : "SIGN & SUBMIT DVIR"}
                     onClick={handleSubmit}
-                    disabled={!allChecked}
+                    disabled={!allChecked || isPending}
                     className={allChecked ? "bg-green-600 hover:bg-green-700" : "opacity-50"}
                 />
             </CardContent>

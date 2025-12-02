@@ -195,3 +195,155 @@ export function generateAsBuiltPDF(bore: any) {
     // Save
     doc.save(`AsBuilt_${bore.name.replace(/\s+/g, '_')}.pdf`);
 }
+export function generateDailyReportPDF(report: any, safetyMeetings: any[] = [], jsas: any[] = [], punchItems: any[] = [], inventoryTransactions: any[] = []) {
+    const doc = new jsPDF();
+
+    // --- Header ---
+    doc.setFontSize(18);
+    doc.setTextColor(0, 51, 102);
+    doc.text('DAILY FIELD REPORT', 14, 20);
+
+    doc.setFontSize(10);
+    doc.setTextColor(0);
+    doc.text(`Project: ${report.project.name}`, 14, 30);
+    doc.text(`Date: ${new Date(report.reportDate).toLocaleDateString()}`, 14, 35);
+    doc.text(`Weather: ${report.weather || 'N/A'}`, 14, 40);
+    doc.text(`Status: ${report.status}`, 150, 30);
+
+    let currentY = 50;
+
+    // --- Notes ---
+    if (report.notes) {
+        doc.setFontSize(12);
+        doc.setTextColor(0, 51, 102);
+        doc.text('Notes', 14, currentY);
+        doc.setFontSize(10);
+        doc.setTextColor(0);
+        const splitNotes = doc.splitTextToSize(report.notes, 180);
+        doc.text(splitNotes, 14, currentY + 5);
+        currentY += splitNotes.length * 5 + 10;
+    }
+
+    // --- Crew ---
+    const crew = JSON.parse(report.crew || '[]');
+    if (crew.length > 0) {
+        doc.setFontSize(12);
+        doc.setTextColor(0, 51, 102);
+        doc.text('Crew', 14, currentY);
+
+        const tableColumn = ["Name", "Role", "Hours"];
+        const tableRows = crew.map((c: any) => [c.name, c.role, c.hours]);
+
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            startY: currentY + 5,
+            theme: 'striped',
+            headStyles: { fillColor: [0, 51, 102] },
+            styles: { fontSize: 9 },
+        });
+        currentY = (doc as any).lastAutoTable.finalY + 10;
+    }
+
+    // --- Production ---
+    const production = JSON.parse(report.production || '[]');
+    if (production.length > 0) {
+        doc.setFontSize(12);
+        doc.setTextColor(0, 51, 102);
+        doc.text('Production', 14, currentY);
+
+        const tableColumn = ["Activity", "LF", "Pitch", "Azimuth"];
+        const tableRows = production.map((p: any) => [p.activity, p.lf, p.pitch, p.azimuth]);
+
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            startY: currentY + 5,
+            theme: 'striped',
+            headStyles: { fillColor: [0, 51, 102] },
+            styles: { fontSize: 9 },
+        });
+        currentY = (doc as any).lastAutoTable.finalY + 10;
+    }
+
+    // --- Materials ---
+    const materials = JSON.parse(report.materials || '[]');
+    if (materials.length > 0) {
+        doc.setFontSize(12);
+        doc.setTextColor(0, 51, 102);
+        doc.text('Material Usage', 14, currentY);
+
+        // Note: We might not have item names here if only IDs are stored, 
+        // but for now we list what we have. Ideally we'd map IDs to names.
+        const tableColumn = ["Item ID", "Quantity"];
+        const tableRows = materials.map((m: any) => [m.inventoryItemId, m.quantity]);
+
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            startY: currentY + 5,
+            theme: 'striped',
+            headStyles: { fillColor: [0, 51, 102] },
+            styles: { fontSize: 9 },
+        });
+        currentY = (doc as any).lastAutoTable.finalY + 10;
+    }
+
+    // --- Safety ---
+    if (safetyMeetings.length > 0 || jsas.length > 0) {
+        doc.addPage();
+        currentY = 20;
+        doc.setFontSize(14);
+        doc.setTextColor(0, 51, 102);
+        doc.text('Safety Activity', 14, currentY);
+        currentY += 10;
+
+        if (safetyMeetings.length > 0) {
+            doc.setFontSize(12);
+            doc.text('Toolbox Talks', 14, currentY);
+            const rows = safetyMeetings.map((m: any) => [m.topic, `${m.attendees.length} attendees`]);
+            autoTable(doc, {
+                head: [["Topic", "Details"]],
+                body: rows,
+                startY: currentY + 5,
+                theme: 'striped',
+                headStyles: { fillColor: [200, 100, 0] }, // Orange for safety
+            });
+            currentY = (doc as any).lastAutoTable.finalY + 10;
+        }
+
+        if (jsas.length > 0) {
+            doc.setFontSize(12);
+            doc.text('JSAs', 14, currentY);
+            const rows = jsas.map((j: any) => [j.taskDescription, `${j.hazards.length} hazards`]);
+            autoTable(doc, {
+                head: [["Task", "Hazards"]],
+                body: rows,
+                startY: currentY + 5,
+                theme: 'striped',
+                headStyles: { fillColor: [200, 100, 0] },
+            });
+            currentY = (doc as any).lastAutoTable.finalY + 10;
+        }
+    }
+
+    // --- QC ---
+    if (punchItems.length > 0) {
+        if (currentY > 250) { doc.addPage(); currentY = 20; }
+        doc.setFontSize(14);
+        doc.setTextColor(0, 51, 102);
+        doc.text('Quality Control', 14, currentY);
+
+        const rows = punchItems.map((p: any) => [p.title, p.status, p.priority]);
+        autoTable(doc, {
+            head: [["Item", "Status", "Priority"]],
+            body: rows,
+            startY: currentY + 10,
+            theme: 'striped',
+            headStyles: { fillColor: [0, 100, 200] }, // Blue for QC
+        });
+    }
+
+    // Save
+    doc.save(`DailyReport_${report.reportDate.split('T')[0]}_${report.project.name}.pdf`);
+}

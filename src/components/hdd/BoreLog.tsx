@@ -120,7 +120,34 @@ export function BoreLog({ boreId, userId }: BoreLogProps) {
             startY: 30,
             head: [["Rod #", "Length", "Depth", "Pitch", "Steer", "Pullback", "Returns"]],
             body: tableData,
-            < Card >
+        });
+        doc.save("bore-log.pdf");
+    }
+
+    const chartData = {
+        labels: logs.map(l => l.sequence),
+        datasets: [
+            {
+                label: 'Depth Profile',
+                data: logs.map(l => l.depth),
+                borderColor: 'rgb(255, 99, 132)',
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            }
+        ]
+    };
+
+    const chartOptions = {
+        responsive: true,
+        plugins: {
+            legend: { position: 'top' as const },
+            title: { display: true, text: 'Bore Depth Profile' },
+        },
+    };
+
+    return (
+        <div className="space-y-4">
+            <FluidAlert open={alertOpen} onOpenChange={setAlertOpen} />
+            <Card>
                 <CardHeader>
                     <CardTitle>New Rod Entry</CardTitle>
                 </CardHeader>
@@ -205,4 +232,4 @@ export function BoreLog({ boreId, userId }: BoreLogProps) {
             </div>
         </div >
     );
-    }
+}

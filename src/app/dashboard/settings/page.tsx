@@ -1,6 +1,9 @@
 import { EmployeeManager } from "@/components/financials/EmployeeManager";
+import { getEmployees } from "@/actions/staff";
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+    const { data: employees } = await getEmployees();
+
     return (
         <div className="p-8 max-w-4xl">
             <div className="mb-8 border-b border-gray-200 pb-4">
@@ -111,7 +114,7 @@ export default function SettingsPage() {
                         <span className="w-1 h-6 bg-green-600 mr-3 rounded-sm"></span>
                         Employee Management
                     </h2>
-                    <EmployeeManager />
+                    <EmployeeManager initialEmployees={employees || []} />
                 </div>
 
                 <div className="flex justify-end">

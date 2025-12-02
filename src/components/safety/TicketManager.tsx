@@ -1,18 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BigButton } from "@/components/ui/BigButton";
 import { TicketTimer } from "@/components/safety/TicketTimer";
-import { Plus, FileText, Search } from "lucide-react";
+import { Plus, FileText, Search, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-
-// Mock data
-const MOCK_TICKETS = [
-    { id: "1", number: "202345001", project: "Fiber Install - Willmar", expiration: new Date(Date.now() + 1000 * 60 * 60 * 24 * 5).toISOString(), status: "Active" },
-    { id: "2", number: "202345002", project: "Water Main - Spicer", expiration: new Date(Date.now() + 1000 * 60 * 60 * 4).toISOString(), status: "Expiring Soon" },
-    { id: "3", number: "202345003", project: "Emergency Repair - Hwy 12", expiration: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), status: "Expired" },
-];
+import { createTicket, getTickets } from "@/actions/tickets";
+import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 interface Ticket {
     id: string;
@@ -23,16 +20,51 @@ interface Ticket {
 }
 
 interface TicketManagerProps {
-    projectId?: string;
+    projectId: string;
     initialTickets?: Ticket[];
 }
 
-export function TicketManager({ projectId, initialTickets }: TicketManagerProps) {
-    const [tickets, setTickets] = useState<Ticket[]>(initialTickets || MOCK_TICKETS);
+export function TicketManager({ projectId, initialTickets = [] }: TicketManagerProps) {
+    const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
     const [searchTerm, setSearchTerm] = useState("");
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    // New Ticket Form State
+    const [newTicketNumber, setNewTicketNumber] = useState("");
+    const [expirationDate, setExpirationDate] = useState("");
+
+    useEffect(() => {
+        // Refresh tickets if needed, but we rely on initialTickets mostly
+    }, [projectId]);
+
+    const handleCreateTicket = async () => {
+        if (!newTicketNumber || !expirationDate) return;
+        setLoading(true);
+
+        const res = await createTicket({
+            projectId,
+            ticketNumber: newTicketNumber,
+            ticketDate: new Date(), // Assuming today is start date
+            expirationDate: new Date(expirationDate)
+        });
+
+        if (res.success) {
+            toast.success("Ticket Created");
+            setIsDialogOpen(false);
+            setNewTicketNumber("");
+            setExpirationDate("");
+            // Refresh list
+            const updated = await getTickets(projectId);
+            setTickets(updated);
+        } else {
+            toast.error("Failed to create ticket");
+        }
+        setLoading(false);
+    };
 
     const filteredTickets = tickets.filter(t =>
-        t.number.includes(searchTerm) || t.project.toLowerCase().includes(searchTerm.toLowerCase())
+        t.number.includes(searchTerm) || (t.project && t.project.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     return (
@@ -43,7 +75,30 @@ export function TicketManager({ projectId, initialTickets }: TicketManagerProps)
                         <FileText className="h-5 w-5 text-orange-600" />
                         811 Ticket Management
                     </CardTitle>
-                    <BigButton label="NEW TICKET" icon={Plus} onClick={() => alert("New Ticket Modal")} className="h-8 text-xs" fullWidth={false} />
+
+                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                        <DialogTrigger asChild>
+                            <Button size="sm" className="h-8 text-xs"><Plus className="w-3 h-3 mr-1" /> NEW TICKET</Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Add New 811 Ticket</DialogTitle>
+                            </DialogHeader>
+                            <div className="space-y-4 py-4">
+                                <div>
+                                    <label className="text-sm font-medium">Ticket Number</label>
+                                    <Input value={newTicketNumber} onChange={e => setNewTicketNumber(e.target.value)} placeholder="e.g. 202345001" />
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium">Expiration Date</label>
+                                    <Input type="datetime-local" value={expirationDate} onChange={e => setExpirationDate(e.target.value)} />
+                                </div>
+                                <Button onClick={handleCreateTicket} disabled={loading} className="w-full">
+                                    {loading ? <Loader2 className="animate-spin w-4 h-4" /> : "Create Ticket"}
+                                </Button>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
                 </div>
                 <div className="relative mt-2">
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -84,6 +139,11 @@ export function TicketManager({ projectId, initialTickets }: TicketManagerProps)
                             </div>
                         </div>
                     ))}
+                    {filteredTickets.length === 0 && (
+                        <div className="p-8 text-center text-muted-foreground">
+                            No tickets found.
+                        </div>
+                    )}
                 </div>
             </CardContent>
         </Card>

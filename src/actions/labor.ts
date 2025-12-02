@@ -36,7 +36,7 @@ export async function getEmployees() {
 
 // --- Crews ---
 
-export async function createCrew(data: { name: string; foremanId?: string }) {
+export async function createCrew(data: { name: string; foremanId: string }) {
     const session = await getServerSession(authOptions);
     if (!session) return { success: false, error: 'Unauthorized' };
 
@@ -78,6 +78,13 @@ export async function createTimeCard(data: {
     if (!session) return { success: false, error: 'Unauthorized' };
 
     try {
+        // Calculate period start (Monday) and end (Sunday)
+        const d = new Date(data.date);
+        const day = d.getDay();
+        const diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+        const periodStart = new Date(d.setDate(diff));
+        const periodEnd = new Date(d.setDate(diff + 6));
+
         const timeCard = await prisma.timeCard.create({
             data: {
                 employeeId: data.employeeId,
@@ -86,6 +93,8 @@ export async function createTimeCard(data: {
                 hours: data.hours,
                 code: data.code,
                 notes: data.notes,
+                periodStart,
+                periodEnd,
             }
         });
         revalidatePath(`/dashboard/projects/${data.projectId}`);
