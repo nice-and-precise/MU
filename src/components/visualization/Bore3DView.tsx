@@ -67,8 +67,25 @@ function SoilLayerVisual({ layer, depth, width = 200 }: { layer: any, depth: num
 }
 
 export default function Bore3DView({ length, diameter, entryAngle = 12, points, soilLayers = [] }: Bore3DViewProps) {
+    const [demoMode, setDemoMode] = React.useState(false);
+
     // If no points provided, simulate a simple arc based on length and angles
     const calculatedPoints = useMemo(() => {
+        if (demoMode) {
+            // Generate a complex demo path
+            const pts = [];
+            const steps = 100;
+            for (let i = 0; i <= steps; i++) {
+                const t = i / steps;
+                const x = t * length;
+                // Add some steering corrections (wiggles)
+                const y = -1 * Math.sin(t * Math.PI) * (length * 0.15) + (Math.sin(t * 10) * 2);
+                const z = Math.sin(t * 5) * 5; // Left/Right steering
+                pts.push(new THREE.Vector3(x, y, z));
+            }
+            return pts;
+        }
+
         if (points) {
             // Filter out invalid points (NaN, Infinity)
             const validPoints = points.filter(p =>
@@ -78,26 +95,36 @@ export default function Bore3DView({ length, diameter, entryAngle = 12, points, 
             if (validPoints.length >= 2) {
                 return validPoints;
             }
-            // Fallback to simulation if not enough valid points
         }
 
-        // Simulate:
-        // Simple parabolic arc for visualization if no real data
+        // Fallback: Simple parabolic arc
         const pts = [];
         const steps = 20;
-
-        // Naive arc:
         for (let i = 0; i <= steps; i++) {
             const t = i / steps;
             const x = t * length;
-            const y = -1 * Math.sin(t * Math.PI) * (length * 0.1); // Depth approx 10% of length
+            const y = -1 * Math.sin(t * Math.PI) * (length * 0.1);
             pts.push(new THREE.Vector3(x, y, 0));
         }
         return pts;
-    }, [length, entryAngle, points]);
+    }, [length, entryAngle, points, demoMode]);
 
     return (
-        <div className="h-[400px] w-full bg-slate-950 rounded-lg overflow-hidden border border-slate-800">
+        <div className="relative h-[600px] w-full bg-slate-950 rounded-lg overflow-hidden border border-slate-800">
+            <div className="absolute top-4 left-4 z-10">
+                <h3 className="text-white font-bold text-lg drop-shadow-md">3D Digital Twin</h3>
+                <p className="text-white/60 text-xs">Real-time drilling telemetry visualization</p>
+            </div>
+
+            <div className="absolute top-4 right-4 z-10 flex gap-2">
+                <button
+                    onClick={() => setDemoMode(!demoMode)}
+                    className={`px-3 py-1 rounded text-xs font-bold transition-colors ${demoMode ? 'bg-blue-600 text-white' : 'bg-white/10 text-white hover:bg-white/20'}`}
+                >
+                    {demoMode ? 'Disable Demo' : 'Load Demo Bore'}
+                </button>
+            </div>
+
             <Canvas
                 camera={{ position: [length / 2, 50, 100], fov: 50 }}
                 gl={{ preserveDrawingBuffer: true }}
@@ -116,10 +143,30 @@ export default function Bore3DView({ length, diameter, entryAngle = 12, points, 
 
                 <OrbitControls target={[length / 2, -20, 0]} />
 
-                {/* Annotations */}
-                <Text position={[0, 5, 0]} fontSize={5} color="white">Entry</Text>
-                <Text position={[length, 5, 0]} fontSize={5} color="white">Exit</Text>
+                {/* 3D Text Annotations */}
+                <Text position={[0, 5, 0]} fontSize={5} color="white" anchorX="center" anchorY="bottom">Entry</Text>
+                <Text position={[length, 5, 0]} fontSize={5} color="white" anchorX="center" anchorY="bottom">Exit</Text>
+
+                {/* Depth Markers every 100ft */}
+                {Array.from({ length: Math.floor(length / 100) }).map((_, i) => (
+                    <Text key={i} position={[(i + 1) * 100, 5, 0]} fontSize={3} color="white" anchorX="center" anchorY="bottom">
+                        {(i + 1) * 100}'
+                    </Text>
+                ))}
             </Canvas>
+
+            {/* HUD Overlay */}
+            <div className="absolute bottom-4 left-4 pointer-events-none space-y-1">
+                <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    <span className="text-white text-xs font-bold">Bore Path</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-gray-500/50 rounded-sm"></div>
+                    <span className="text-white text-xs">Ground Level</span>
+                </div>
+            </div>
+
             <div className="absolute bottom-4 right-4 text-xs text-white/50 pointer-events-none">
                 Left Click: Rotate • Right Click: Pan • Scroll: Zoom
             </div>

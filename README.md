@@ -107,13 +107,23 @@ sequenceDiagram
 - **Live Tracking**: Real-time GPS location of fleet assets.
 - **Steering Rose**: Modernized UI with traffic light deviation alerts.
 
-### 7. ⚙️ System Administration
-- **Command Center**: Owner-level view of all project controls and safety stats.
-- **Role-Based Access**: Admin, Foreman, and Crew roles.
+### 7. Live Fleet Tracking
+- **Real-time Map**: View all assets on a satellite map.
+- **Interactive Details**: Click on any vehicle to see assigned job, crew, speed, and ETA.
+- **Status Indicators**: Color-coded markers for Moving, Working, and Stopped assets.
+
+### 8. 3D Visualization (Digital Twin)
+- **Bore Path Rendering**: Visualize the underground bore path in 3D.
+- **Demo Mode**: Toggle a realistic demo simulation to showcase capabilities.
+- **Contextual Data**: View soil layers, depth markers, and steering orientation.
+
+### 9. Owner Command Center
+- **Project Controls**: Centralized dashboard for owners to manage crew, assets, and safety.
+- **Live Operations Map**: High-level view of all active projects.
 - **Integrations**: QuickBooks Online configuration.
 - **Preferences**: System-wide dark mode and notification settings.
 
-### 8. ♿ Accessibility
+### 10. ♿ Accessibility
 - **Zoom Support**: Enabled pinch-to-zoom for better mobile usability.
 - **Screen Reader Support**: ARIA labels on all form inputs and icon-only buttons.
 - **Semantic HTML**: Valid nesting of interactive elements.
