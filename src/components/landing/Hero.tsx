@@ -16,9 +16,7 @@ export default function Hero() {
                 className="absolute inset-0 z-0"
                 style={{ y: y1 }}
             >
-                import Image from "next/image";
 
-                // ...
 
                 <div className="absolute inset-0 bg-black/60 z-10" /> {/* Overlay */}
                 <Image

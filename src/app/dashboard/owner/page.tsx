@@ -30,6 +30,24 @@ export default async function OwnerDashboard() {
                     <h3 className="text-gray-500 text-xs font-bold uppercase tracking-wider">Pending Approvals</h3>
                     <p className="text-4xl font-extrabold text-gray-900 mt-2">{stats.pendingApprovals}</p>
                 </div>
+
+                {/* New Widgets */}
+                <div className="bg-white p-6 rounded-lg border-t-4 border-blue-500 shadow-sm border-x border-b border-gray-200">
+                    <h3 className="text-gray-500 text-xs font-bold uppercase tracking-wider">Inventory Value</h3>
+                    <p className="text-4xl font-extrabold text-gray-900 mt-2">
+                        ${stats.inventoryValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                    </p>
+                </div>
+                <div className="bg-white p-6 rounded-lg border-t-4 border-indigo-500 shadow-sm border-x border-b border-gray-200">
+                    <h3 className="text-gray-500 text-xs font-bold uppercase tracking-wider">Active Fleet</h3>
+                    <p className="text-4xl font-extrabold text-gray-900 mt-2">{stats.activeFleet}</p>
+                </div>
+                <div className={`bg-white p-6 rounded-lg border-t-4 shadow-sm border-x border-b border-gray-200 ${stats.openSafetyIssues > 0 ? 'border-red-500' : 'border-green-500'}`}>
+                    <h3 className="text-gray-500 text-xs font-bold uppercase tracking-wider">Open Safety Issues</h3>
+                    <p className={`text-4xl font-extrabold mt-2 ${stats.openSafetyIssues > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                        {stats.openSafetyIssues}
+                    </p>
+                </div>
             </div>
 
             {/* Charts & Maps Row */}

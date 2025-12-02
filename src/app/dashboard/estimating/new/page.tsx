@@ -17,11 +17,18 @@ export default function NewEstimatePage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        const res = await createEstimate({ name });
-        if (res.success && res.data) {
-            router.push(`/dashboard/estimating/${res.data.id}`);
-        } else {
-            alert('Failed to create estimate');
+        try {
+            const res = await createEstimate({ name });
+            if (res.success && res.data) {
+                // Success - redirect handled by router.push
+                router.push(`/dashboard/estimating/${res.data.id}`);
+            } else {
+                alert(res.error || 'Failed to create estimate');
+                setLoading(false);
+            }
+        } catch (error) {
+            console.error(error);
+            alert('An unexpected error occurred');
             setLoading(false);
         }
     };

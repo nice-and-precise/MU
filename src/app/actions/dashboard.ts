@@ -12,7 +12,7 @@ export async function getOwnerStats() {
         throw new Error("Unauthorized");
     }
 
-    const [activeProjects, totalRevenue, pendingApprovals] = await Promise.all([
+    const [activeProjects, totalRevenue, pendingApprovals, inventoryItems, activeFleet, openSafetyIssues] = await Promise.all([
         prisma.project.count({
             where: { status: "IN_PROGRESS" },
         }),
@@ -24,12 +24,28 @@ export async function getOwnerStats() {
         prisma.changeOrder.count({
             where: { status: "PENDING" },
         }),
+        prisma.inventoryItem.findMany({
+            select: { quantityOnHand: true, costPerUnit: true }
+        }),
+        prisma.asset.count({
+            where: { status: "AVAILABLE" } // Assuming all assets are fleet/equipment for now
+        }),
+        prisma.correctiveAction.count({
+            where: { status: "OPEN" }
+        })
     ]);
+
+    const inventoryValue = inventoryItems.reduce((acc, item) => {
+        return acc + (item.quantityOnHand * (item.costPerUnit || 0));
+    }, 0);
 
     return {
         activeProjects,
         totalRevenue: totalRevenue._sum.budget || 0,
         pendingApprovals,
+        inventoryValue,
+        activeFleet,
+        openSafetyIssues
     };
 }
 

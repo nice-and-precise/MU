@@ -79,8 +79,9 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
 
     const fetchData = async () => {
         try {
-            // Use Edge Function if available, otherwise fallback to Next.js API
-            const edgeUrl = process.env.NEXT_PUBLIC_EDGE_FUNCTION_URL;
+            // Force local API for demo stability
+            // const edgeUrl = process.env.NEXT_PUBLIC_EDGE_FUNCTION_URL;
+            const edgeUrl = null;
             const url = edgeUrl
                 ? `${edgeUrl}/witsml-logs?boreId=${boreId}`
                 : `/api/witsml/latest?boreId=${boreId}`;
@@ -112,7 +113,8 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
 
     useEffect(() => {
         // Initial fetch via SSE
-        const edgeUrl = process.env.NEXT_PUBLIC_EDGE_FUNCTION_URL;
+        // const edgeUrl = process.env.NEXT_PUBLIC_EDGE_FUNCTION_URL;
+        const edgeUrl = null;
         const streamUrl = edgeUrl
             ? `${edgeUrl}/witsml-stream?boreId=${boreId}`
             : `/api/witsml/stream?boreId=${boreId}`;

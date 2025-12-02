@@ -10,5 +10,62 @@
     "consoleLogs": [],
     "userInfo": null,
     "screenshot": "/bug_reports/bug-1764518500472.png"
+  },
+  {
+    "id": "1764638923367",
+    "timestamp": "2025-12-02T01:28:43.091Z",
+    "description": "nothing happens after I click this button, it doesn't do anything\n",
+    "element": "button.inline-flex.items-center.justify-center.gap-2.whitespace-nowrap.rounded-md.text-sm.font-medium.transition-all.disabled:pointer-events-none.disabled:opacity-50.[&_svg]:pointer-events-none.[&_svg:not([class*='size-'])]:size-4.shrink-0.[&_svg]:shrink-0.outline-none.focus-visible:border-ring.focus-visible:ring-ring/50.focus-visible:ring-[3px].aria-invalid:ring-destructive/20.dark:aria-invalid:ring-destructive/40.aria-invalid:border-destructive.bg-primary.text-primary-foreground.hover:bg-primary/90.h-9.px-4.py-2.has-[>svg]:px-3.w-full (Create Estimate)",
+    "path": "/dashboard/estimating/new",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "screenSize": "1920x826",
+    "consoleLogs": [
+      "[LOG] [Fast Refresh] done in 3006ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 17981ms"
+    ],
+    "userInfo": {
+      "name": "John Owner",
+      "email": "owner@midwestunderground.com"
+    },
+    "screenshot": "/bug_reports/bug-1764638923366.png"
+  },
+  {
+    "id": "1764639025729",
+    "timestamp": "2025-12-02T01:30:25.485Z",
+    "description": "I dont see this working, the data is not showing up anywhere I can see if it is making the data someplace else ",
+    "element": "button.inline-flex.items-center.justify-center.gap-2.whitespace-nowrap.rounded-md.text-sm.font-medium.transition-all.disabled:pointer-events-none.disabled:opacity-50.[&_svg]:pointer-events-none.[&_svg:not([class*='size-'])]:size-4.shrink-0.[&_svg]:shrink-0.outline-none.focus-visible:border-ring.focus-visible:ring-ring/50.focus-visible:ring-[3px].aria-invalid:ring-destructive/20.dark:aria-invalid:ring-destructive/40.aria-invalid:border-destructive.text-primary-foreground.h-9.px-4.py-2.has-[>svg]:px-3.bg-blue-600.hover:bg-blue-700 (Simulate Data Packet)",
+    "path": "/dashboard/projects/cminkfiln002qu43kq5zfw0lb/live",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "screenSize": "1920x826",
+    "consoleLogs": [
+      "[LOG] [Fast Refresh] done in 3006ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 17981ms"
+    ],
+    "userInfo": {
+      "name": "John Owner",
+      "email": "owner@midwestunderground.com"
+    },
+    "screenshot": "/bug_reports/bug-1764639025727.png"
+  },
+  {
+    "id": "1764639103582",
+    "timestamp": "2025-12-02T01:31:43.515Z",
+    "description": "I want to see the path of the utilities on here so it shows a 3d map of their jobsite\n",
+    "element": "canvas ()",
+    "path": "/dashboard/projects/cminkfiln002qu43kq5zfw0lb/live",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "screenSize": "1920x826",
+    "consoleLogs": [
+      "[LOG] [Fast Refresh] done in 3006ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 17981ms"
+    ],
+    "userInfo": {
+      "name": "John Owner",
+      "email": "owner@midwestunderground.com"
+    },
+    "screenshot": "/bug_reports/bug-1764639103581.png"
   }
 ]
