@@ -32,7 +32,7 @@ export default function Navigation() {
         >
             <div className="container mx-auto px-6 flex justify-between items-center">
                 {/* Logo */}
-                <Link href="/" className="relative z-50">
+                <Link href="/" className="relative z-50 bg-white/10 backdrop-blur-sm p-2 rounded-lg hover:bg-white/20 transition-colors">
                     <img
                         src="/images/MidwestUnderground_Logo (1).png"
                         alt="Midwest Underground"
@@ -54,7 +54,7 @@ export default function Navigation() {
 
                     {/* Client Portal Button */}
                     <Link
-                        href="/dashboard"
+                        href="/login"
                         className="group flex items-center space-x-2 px-5 py-2 border border-white/30 rounded-full text-white hover:bg-white hover:text-charcoal transition-all duration-300"
                     >
                         <Lock className="w-4 h-4" />
@@ -89,7 +89,7 @@ export default function Navigation() {
                             </Link>
                         ))}
                         <Link
-                            href="/dashboard"
+                            href="/login"
                             className="flex items-center space-x-2 px-8 py-3 border border-white/30 rounded-full text-white hover:bg-white hover:text-charcoal transition-all duration-300"
                             onClick={() => setIsMobileMenuOpen(false)}
                         >

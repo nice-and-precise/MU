@@ -309,10 +309,39 @@ const CameraController = ({ viewMode, flyThrough, stations }: { viewMode: string
 
 export default function Borehole3D({ stations, ghostPath = [], obstacles = [], targets = [], viewMode = 'iso', flyThrough = false }: Borehole3DProps) {
     const isOrtho = viewMode === 'top' || viewMode === 'side';
+    const [contextLost, setContextLost] = useState(false);
 
     return (
         <div className="h-full w-full bg-slate-900 rounded-lg overflow-hidden relative">
-            <Canvas>
+            {contextLost && (
+                <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/80 text-white">
+                    <div className="text-xl font-bold mb-2">3D Context Lost</div>
+                    <p className="text-sm text-gray-400 mb-4">The graphics driver crashed or was reset.</p>
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700 transition-colors"
+                    >
+                        Reload Page
+                    </button>
+                </div>
+            )}
+            <Canvas
+                gl={{ powerPreference: "high-performance" }}
+                onCreated={({ gl }) => {
+                    const handleContextLost = (event: Event) => {
+                        event.preventDefault();
+                        setContextLost(true);
+                        console.warn('WebGL Context Lost');
+                    };
+                    const handleContextRestored = () => {
+                        setContextLost(false);
+                        console.log('WebGL Context Restored');
+                    };
+
+                    gl.domElement.addEventListener('webglcontextlost', handleContextLost, false);
+                    gl.domElement.addEventListener('webglcontextrestored', handleContextRestored, false);
+                }}
+            >
                 {isOrtho ? (
                     <OrthographicCamera makeDefault position={[0, 0, 0]} zoom={10} near={-2000} far={2000} />
                 ) : (

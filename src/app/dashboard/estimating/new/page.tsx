@@ -16,18 +16,22 @@ export default function NewEstimatePage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        console.log("Submitting estimate creation for:", name);
         setLoading(true);
         try {
             const res = await createEstimate({ name });
+            console.log("Estimate creation result:", res);
             if (res.success && res.data) {
                 // Success - redirect handled by router.push
+                console.log("Redirecting to:", `/dashboard/estimating/${res.data.id}`);
                 router.push(`/dashboard/estimating/${res.data.id}`);
             } else {
+                console.error("Estimate creation failed:", res.error);
                 alert(res.error || 'Failed to create estimate');
                 setLoading(false);
             }
         } catch (error) {
-            console.error(error);
+            console.error("Unexpected error creating estimate:", error);
             alert('An unexpected error occurred');
             setLoading(false);
         }

@@ -39,6 +39,12 @@ graph TD
         DrillingLib -->|ASTM F1962| Pullback[Pullback Calc]
         DrillingLib -->|Delft Model| Hydraulics[Frac-Out Calc]
         DrillingLib -->|MCM| Trajectory[Trajectory Calc]
+        DrillingLib -->|Collision| CollisionCheck[Anti-Collision]
+    end
+
+    subgraph "Integrations"
+        NextJS -->|API| QuickBooks[QuickBooks Online]
+        NextJS -->|WITSML| RigData[Drilling Rig Telemetry]
     end
 ```
 
@@ -50,11 +56,14 @@ sequenceDiagram
     participant API as /api/witsml
     participant DB as Supabase
     participant UI as Live Dashboard
+    participant 3D as 3D Engine
     
     Rig->>API: POST WITSML (XML/JSON)
     API->>DB: Store TelemetryLog
     UI->>API: SSE Connection (/stream)
     API-->>UI: Real-time Updates
+    UI->>3D: Update Trajectory
+    3D->>3D: Check Collisions
     UI->>UI: Update Steering Rose
 ```
 
@@ -77,7 +86,7 @@ sequenceDiagram
 - **Estimating**: Create professional bids with labor, equipment, and material line items.
 - **Job Costing**: Real-time profitability tracking (Budget vs Actual).
 - **Invoicing**: AIA-style progress billing (G702/G703) with retainage.
-- **Change Management**: T&M Tickets and Change Orders.
+- **Payroll**: Employee management with QuickBooks-compatible fields (SSN, Tax Status).
 
 ### 4. 👷 Field Operations
 - **Crew Management**: Employee directory and digital time cards.
@@ -88,11 +97,17 @@ sequenceDiagram
 - **3D Visualization**: Interactive view of bore paths and soil layers.
 - **Geotech Integration**: Manage soil borings and stratigraphy.
 - **Collision Detection**: Real-time alerts for utility proximity.
+- **Robust 3D Engine**: WebGL context loss handling and auto-recovery.
 
 ### 6. 📡 Live Operations
 - **Real-Time Telemetry**: Ingest WITSML data streams.
 - **Live Dashboard**: "Tactical Dashboard" with High Contrast Day Mode.
-- **Steering Rose**: Traffic Light system for deviation alerts.
+- **Steering Rose**: Modernized UI with traffic light deviation alerts.
+
+### 7. ⚙️ System Administration
+- **Role-Based Access**: Admin, Foreman, and Crew roles.
+- **Integrations**: QuickBooks Online configuration.
+- **Preferences**: System-wide dark mode and notification settings.
 
 ---
 
@@ -105,6 +120,7 @@ sequenceDiagram
 | **Logic** | TypeScript | Core drilling math and physics (migrated from Rust for velocity) |
 | **Database** | Supabase | Cloud-hosted PostgreSQL with PostGIS |
 | **ORM** | Prisma | Type-safe database access |
+| **3D** | Three.js + R3F | High-performance WebGL visualization |
 
 ---
 

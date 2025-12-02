@@ -10,9 +10,9 @@ import { UserCog, Briefcase, MapPin } from "lucide-react";
 
 // Mock Data
 const EMPLOYEES = [
-    { id: "1", name: "John Doe", role: "Operator", currentJob: "Project Alpha" },
-    { id: "2", name: "Jane Smith", role: "Locator", currentJob: "Unassigned" },
-    { id: "3", name: "Bob Johnson", role: "Laborer", currentJob: "Project Beta" },
+    { id: "1", name: "John Doe", role: "Operator", currentJob: "Project Alpha", ssn: "***-**-1234", address: "123 Maple St, Springfield", taxStatus: "W-4 Single", payRate: 35.00 },
+    { id: "2", name: "Jane Smith", role: "Locator", currentJob: "Unassigned", ssn: "***-**-5678", address: "456 Oak Ln, Shelbyville", taxStatus: "W-4 Married", payRate: 32.50 },
+    { id: "3", name: "Bob Johnson", role: "Laborer", currentJob: "Project Beta", ssn: "***-**-9012", address: "789 Pine Rd, Capital City", taxStatus: "1099 Contractor", payRate: 25.00 },
 ];
 
 const PROJECTS = [
@@ -106,6 +106,40 @@ export function EmployeeManager() {
                                     <p className="text-xs text-muted-foreground">
                                         Assigning a job will make it appear in their "My Jobs" list.
                                     </p>
+                                </div>
+                            </div>
+
+                            <div className="md:col-span-2 space-y-4 p-4 border rounded-lg bg-secondary/10">
+                                <div className="flex items-center gap-2 font-bold text-lg">
+                                    <Briefcase className="h-5 w-5" />
+                                    Payroll Information (QuickBooks)
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label>Social Security Number</Label>
+                                        <Input defaultValue={employee.ssn} placeholder="XXX-XX-XXXX" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Home Address</Label>
+                                        <Input defaultValue={employee.address} placeholder="Full Address" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Tax Filing Status</Label>
+                                        <Select defaultValue={employee.taxStatus}>
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="W-4 Single">W-4 Single</SelectItem>
+                                                <SelectItem value="W-4 Married">W-4 Married</SelectItem>
+                                                <SelectItem value="1099 Contractor">1099 Contractor</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Hourly Pay Rate ($)</Label>
+                                        <Input type="number" defaultValue={employee.payRate} placeholder="0.00" />
+                                    </div>
                                 </div>
                             </div>
 

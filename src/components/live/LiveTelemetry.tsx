@@ -25,6 +25,7 @@ import { SurveyStation, Obstacle } from '@/lib/drilling/types';
 import SteeringRose from '../drilling/SteeringRose';
 import ImportModal from '../drilling/ImportModal';
 import CollisionWarning from '../drilling/CollisionWarning';
+import { Gauge } from '../visualization/Gauge';
 
 ChartJS.register(
     CategoryScale,
@@ -47,6 +48,11 @@ interface TelemetryLog {
     azimuth: number;
     toolFace?: number;
     timestamp: string;
+    rop?: number;
+    wob?: number;
+    flow?: number;
+    pressure?: number;
+    torque?: number;
 }
 
 interface LiveTelemetryProps {
@@ -79,9 +85,8 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
 
     const fetchData = async () => {
         try {
-            // Force local API for demo stability
-            // const edgeUrl = process.env.NEXT_PUBLIC_EDGE_FUNCTION_URL;
-            const edgeUrl = null;
+            // Use local API for now, or edge URL if configured
+            const edgeUrl = process.env.NEXT_PUBLIC_EDGE_FUNCTION_URL;
             const url = edgeUrl
                 ? `${edgeUrl}/witsml-logs?boreId=${boreId}`
                 : `/api/witsml/latest?boreId=${boreId}`;
@@ -113,8 +118,7 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
 
     useEffect(() => {
         // Initial fetch via SSE
-        // const edgeUrl = process.env.NEXT_PUBLIC_EDGE_FUNCTION_URL;
-        const edgeUrl = null;
+        const edgeUrl = process.env.NEXT_PUBLIC_EDGE_FUNCTION_URL;
         const streamUrl = edgeUrl
             ? `${edgeUrl}/witsml-stream?boreId=${boreId}`
             : `/api/witsml/stream?boreId=${boreId}`;
@@ -294,15 +298,34 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
 
                 {/* Steering Rose */}
                 <Card className={`${dayMode ? 'bg-gray-100 border-gray-200' : 'bg-slate-900 border-slate-800'} flex items-center justify-center p-2`}>
-                    <div className="w-24 h-24">
+                    <div className="w-32 h-32">
                         <SteeringRose
                             toolface={data?.toolFace || 0}
-                            targetToolface={90} // Placeholder
                             pitch={data?.pitch || 0}
-                            azimuth={currentAzimuth}
+                            azimuth={data?.azimuth || 0}
                             dayMode={dayMode}
                         />
                     </div>
+                </Card>
+            </div>
+
+            {/* Driller's Console (New) */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Card className={`md:col-span-3 ${dayMode ? 'bg-gray-100 border-gray-200' : 'bg-slate-900 border-slate-800'}`}>
+                    <CardHeader className={`pb-2 ${dayMode ? 'border-b border-gray-200' : 'border-b border-slate-800'}`}>
+                        <CardTitle className={`text-sm font-medium ${dayMode ? 'text-gray-500' : 'text-slate-400'} uppercase tracking-widest flex items-center gap-2`}>
+                            <Activity className="h-4 w-4 text-blue-500" /> Driller's Console
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-6">
+                        <div className="flex flex-wrap justify-around items-end gap-8">
+                            <Gauge value={data?.rop || 0} min={0} max={100} label="ROP" unit="ft/hr" color="#10b981" />
+                            <Gauge value={data?.wob || 0} min={0} max={50} label="WOB" unit="klbs" color="#f59e0b" />
+                            <Gauge value={data?.flow || 0} min={0} max={200} label="Flow" unit="gpm" color="#3b82f6" />
+                            <Gauge value={data?.pressure || 0} min={0} max={5000} label="Pressure" unit="psi" color="#ef4444" />
+                            <Gauge value={data?.torque || 0} min={0} max={15000} label="Torque" unit="ft-lbs" color="#8b5cf6" />
+                        </div>
+                    </CardContent>
                 </Card>
             </div>
 

@@ -69,24 +69,27 @@ function SoilLayerVisual({ layer, depth, width = 200 }: { layer: any, depth: num
 export default function Bore3DView({ length, diameter, entryAngle = 12, points, soilLayers = [] }: Bore3DViewProps) {
     // If no points provided, simulate a simple arc based on length and angles
     const calculatedPoints = useMemo(() => {
-        if (points) return points.map(p => new THREE.Vector3(p.x, p.z, p.y)); // Swap Y/Z for ThreeJS (Y is Up)
+        if (points) {
+            // Filter out invalid points (NaN, Infinity)
+            const validPoints = points.filter(p =>
+                Number.isFinite(p.x) && Number.isFinite(p.y) && Number.isFinite(p.z)
+            ).map(p => new THREE.Vector3(p.x, p.z, p.y)); // Swap Y/Z for ThreeJS (Y is Up)
+
+            if (validPoints.length >= 2) {
+                return validPoints;
+            }
+            // Fallback to simulation if not enough valid points
+        }
 
         // Simulate:
         // Simple parabolic arc for visualization if no real data
         const pts = [];
         const steps = 20;
-        const radianEntry = (entryAngle * Math.PI) / 180;
 
         // Naive arc:
-        // x goes from 0 to length (approx)
-        // y starts at 0, goes down, then up
-        // This is just a visual placeholder
         for (let i = 0; i <= steps; i++) {
             const t = i / steps;
             const x = t * length;
-            // Parabola: y = 4h * (x/L) * (1 - x/L) ? No, we need entry angle.
-            // Let's just use the survey lib if we had stations.
-            // Fallback:
             const y = -1 * Math.sin(t * Math.PI) * (length * 0.1); // Depth approx 10% of length
             pts.push(new THREE.Vector3(x, y, 0));
         }
@@ -95,7 +98,10 @@ export default function Bore3DView({ length, diameter, entryAngle = 12, points, 
 
     return (
         <div className="h-[400px] w-full bg-slate-950 rounded-lg overflow-hidden border border-slate-800">
-            <Canvas camera={{ position: [length / 2, 50, 100], fov: 50 }}>
+            <Canvas
+                camera={{ position: [length / 2, 50, 100], fov: 50 }}
+                gl={{ preserveDrawingBuffer: true }}
+            >
                 <ambientLight intensity={0.5} />
                 <pointLight position={[10, 10, 10]} />
                 <Environment preset="city" />

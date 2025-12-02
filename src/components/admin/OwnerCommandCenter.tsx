@@ -4,6 +4,7 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MapPin, Users, Truck, FileText } from "lucide-react";
+import { TicketManager } from "@/components/safety/TicketManager";
 
 export function OwnerCommandCenter() {
     return (
@@ -73,16 +74,9 @@ export function OwnerCommandCenter() {
                                 </TabsContent>
 
                                 <TabsContent value="docs" className="space-y-4 mt-4">
-                                    <div className="p-3 border rounded bg-secondary/10">
-                                        <h3 className="font-bold mb-2">Documents</h3>
-                                        <ul className="text-sm space-y-1">
-                                            <li className="flex items-center gap-2"><FileText className="h-3 w-3" /> Bore Plan.pdf</li>
-                                            <li className="flex items-center gap-2"><FileText className="h-3 w-3" /> 811 Ticket.pdf</li>
-                                        </ul>
+                                    <div className="h-[400px]">
+                                        <TicketManager />
                                     </div>
-                                    <button className="w-full py-2 bg-slate-600 text-white rounded font-bold text-sm hover:bg-slate-700">
-                                        Upload Document
-                                    </button>
                                 </TabsContent>
                             </Tabs>
                         </CardContent>

@@ -181,18 +181,29 @@ export function FeedbackWidget() {
                 body: JSON.stringify(report),
             });
 
-            if (res.ok) {
+            let data;
+            const contentType = res.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                data = await res.json();
+            } else {
+                // Handle non-JSON response (likely HTML error page)
+                const text = await res.text();
+                console.error("Received non-JSON response from feedback API:", text.slice(0, 200));
+                throw new Error(`Server returned ${res.status} ${res.statusText}`);
+            }
+
+            if (res.ok && data.success) {
                 setIsOpen(false);
                 setDescription('');
                 setSelectedElement(null);
                 setScreenshot(null);
                 alert('Feedback submitted successfully!');
             } else {
-                alert('Failed to submit feedback.');
+                alert(`Failed to submit feedback: ${data?.message || 'Unknown error'}`);
             }
         } catch (error) {
             console.error(error);
-            alert('Error submitting feedback.');
+            alert('Error submitting feedback. Check console for details.');
         } finally {
             setIsSubmitting(false);
         }

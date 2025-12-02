@@ -1,3 +1,5 @@
+import { EmployeeManager } from "@/components/financials/EmployeeManager";
+
 export default function SettingsPage() {
     return (
         <div className="p-8 max-w-4xl">
@@ -49,6 +51,67 @@ export default function SettingsPage() {
                             </div>
                         </div>
                     </div>
+                </div>
+
+                {/* User Roles & Permissions */}
+                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                    <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                        <span className="w-1 h-6 bg-purple-600 mr-3 rounded-sm"></span>
+                        User Roles & Permissions
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                            <h3 className="font-bold text-gray-900">Admin / Owner</h3>
+                            <p className="text-xs text-gray-500 mt-1">Full access to all settings, financials, and personnel.</p>
+                            <div className="mt-3 flex -space-x-2">
+                                <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold ring-2 ring-white">JD</div>
+                            </div>
+                        </div>
+                        <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                            <h3 className="font-bold text-gray-900">Foreman</h3>
+                            <p className="text-xs text-gray-500 mt-1">Can create reports, view assigned projects, and manage crew.</p>
+                            <div className="mt-3 flex -space-x-2">
+                                <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold ring-2 ring-white">BS</div>
+                                <div className="w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center text-white text-xs font-bold ring-2 ring-white">MK</div>
+                            </div>
+                        </div>
+                        <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                            <h3 className="font-bold text-gray-900">Crew Member</h3>
+                            <p className="text-xs text-gray-500 mt-1">View-only access to assigned jobs and safety docs.</p>
+                            <div className="mt-3 flex -space-x-2">
+                                <div className="w-8 h-8 rounded-full bg-gray-500 flex items-center justify-center text-white text-xs font-bold ring-2 ring-white">+5</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Integrations */}
+                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                    <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                        <span className="w-1 h-6 bg-green-500 mr-3 rounded-sm"></span>
+                        Integrations
+                    </h2>
+                    <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                        <div className="flex items-center space-x-4">
+                            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center text-green-700 font-bold text-xl">QB</div>
+                            <div>
+                                <h3 className="font-bold text-gray-900">QuickBooks Online</h3>
+                                <p className="text-sm text-gray-500">Sync invoices, payroll, and expenses.</p>
+                            </div>
+                        </div>
+                        <button className="px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded hover:bg-gray-50">
+                            Configure
+                        </button>
+                    </div>
+                </div>
+
+                {/* Employee Management */}
+                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                    <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                        <span className="w-1 h-6 bg-green-600 mr-3 rounded-sm"></span>
+                        Employee Management
+                    </h2>
+                    <EmployeeManager />
                 </div>
 
                 <div className="flex justify-end">

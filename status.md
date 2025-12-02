@@ -10,6 +10,21 @@
 - **Schema Updates:** Added `InventoryItem`, `InventoryTransaction`, `Inspection`, `JobAsset`, `JobDocument`, `DailyNote`.
 - **Financials 2.0:** Integrated GPS Clock-In, Geofencing, and Job Costing.
 - **Quality Control:** Fixed build errors in QC module.
+- [x] **Bug Fixes:**
+    - **UI/UX:** Fixed "Client Portal" link, Navigation logo visibility, and Owner Dashboard colors (Dark Mode).
+    - **Functional:** Fixed "Create Estimate" button logic and `LiveTelemetry` render errors.
+    - **Stability:** Added WebGL Context Loss handling to `Borehole3D` engine.
+- [x] **Feature Expansion:**
+    - **Settings:** Added "User Roles" and "Integrations" sections.
+    - **Payroll:** Added QuickBooks-compatible fields (SSN, Tax Status) to Employee Manager.
+    - **Steering:** Modernized `SteeringRose` UI with gradients and digital readout.
+- [x] **Dispatch & Assignments:** Integrated `CrewDispatch` and `EmployeeManager` into dashboards.
+    - **Owner Dispatch:** Added Asset Assignment, Project Selection, and Cost Estimation.
+- [x] **Feature Recovery:**
+    - **Live Tracking:** Restored `/dashboard/track` with `LiveFleetMap`.
+    - **811 Tickets:** Enhanced `TicketManager` with expiration alerts.
+    - **WITSML:** Connected `LiveTelemetry` to real-time data API.
+- [x] **Field Operations:** Verified `InventoryManager` and `InspectionChecklist` existence.
 
 ## Current State
 - **Build:** Passing (`npm run build`).

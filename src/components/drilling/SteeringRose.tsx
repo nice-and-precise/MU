@@ -24,8 +24,18 @@ export default function SteeringRose({ toolface, targetToolface, pitch, azimuth,
     const targetRotation = (targetToolface ?? 0) - 90;
 
     return (
-        <div className={`relative w-full aspect-square ${bgColor} rounded-full flex items-center justify-center p-2`}>
+        <div className={`relative w-full aspect-square ${bgColor} rounded-full flex items-center justify-center p-2 shadow-inner border ${dayMode ? 'border-gray-200' : 'border-slate-700'}`}>
             <svg viewBox="0 0 100 100" className="w-full h-full">
+                <defs>
+                    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style={{ stopColor: dayMode ? '#f3f4f6' : '#1e293b', stopOpacity: 1 }} />
+                        <stop offset="100%" style={{ stopColor: dayMode ? '#e5e7eb' : '#0f172a', stopOpacity: 1 }} />
+                    </linearGradient>
+                </defs>
+
+                {/* Background Circle */}
+                <circle cx="50" cy="50" r="48" fill="url(#grad1)" />
+
                 {/* Outer Ring */}
                 <circle cx="50" cy="50" r="45" fill="none" strokeWidth="2" className={circleColor} />
 
@@ -58,19 +68,19 @@ export default function SteeringRose({ toolface, targetToolface, pitch, azimuth,
                 {/* Actual Needle */}
                 <g transform={`rotate(${needleRotation} 50 50)`}>
                     {/* Pointer */}
-                    <path d="M 50 50 L 85 50" className={needleColor} strokeWidth="4" />
+                    <path d="M 50 50 L 85 50" className={needleColor} strokeWidth="4" strokeLinecap="round" />
                     {/* Arrowhead */}
-                    <path d="M 85 50 L 75 45 L 75 55 Z" fill="orange" />
+                    <path d="M 85 50 L 75 45 L 75 55 Z" fill="#f97316" />
                 </g>
 
                 {/* Center Hub */}
-                <circle cx="50" cy="50" r="5" className={dayMode ? "fill-gray-900" : "fill-slate-200"} />
+                <circle cx="50" cy="50" r="6" className={dayMode ? "fill-gray-900" : "fill-slate-200"} stroke={dayMode ? "white" : "#0f172a"} strokeWidth="2" />
             </svg>
 
             {/* Digital Readout Overlay */}
-            <div className="absolute bottom-1 left-1/2 -translate-x-1/2 text-center">
-                <div className={`text-xs font-mono ${dayMode ? "text-gray-500" : "text-slate-400"}`}>TF</div>
-                <div className={`text-lg font-bold ${dayMode ? "text-gray-900" : "text-white"}`}>{toolface.toFixed(1)}°</div>
+            <div className="absolute bottom-1 left-1/2 -translate-x-1/2 text-center bg-black/20 backdrop-blur-sm px-2 rounded">
+                <div className={`text-[10px] font-mono ${dayMode ? "text-gray-600" : "text-slate-300"}`}>TF</div>
+                <div className={`text-sm font-bold ${dayMode ? "text-gray-900" : "text-white"}`}>{toolface.toFixed(1)}°</div>
             </div>
         </div>
     );

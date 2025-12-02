@@ -6,6 +6,7 @@ import { MapPin, Calendar, DollarSign, Activity, FileText, AlertCircle, ShieldCh
 import { LinearProgressBar } from "@/components/projects/LinearProgressBar";
 import DataImportDropzone from "@/components/import/DataImportDropzone";
 import CloseoutModal from "@/components/closeout/CloseoutModal";
+import { TicketManager } from "@/components/safety/TicketManager";
 
 export default async function ProjectDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -217,23 +218,17 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
 
                 {/* Sidebar: 811 & Actions */}
                 <div className="space-y-6">
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                        <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">811 Tickets</h2>
-                        <div className="space-y-3">
-                            {project.tickets811.map((ticket) => (
-                                <div key={ticket.id} className="flex items-start space-x-3 text-sm">
-                                    <AlertCircle className={`h-5 w-5 ${ticket.status === "ACTIVE" ? "text-green-500" : "text-red-500"
-                                        }`} />
-                                    <div>
-                                        <p className="font-medium text-gray-900 dark:text-white">{ticket.ticketNumber}</p>
-                                        <p className="text-gray-500 text-xs">Expires: {new Date(ticket.expirationDate).toLocaleDateString()}</p>
-                                    </div>
-                                </div>
-                            ))}
-                            {project.tickets811.length === 0 && (
-                                <p className="text-gray-500 text-sm">No active tickets.</p>
-                            )}
-                        </div>
+                    <div className="h-[500px]">
+                        <TicketManager
+                            projectId={project.id}
+                            initialTickets={project.tickets811.map(t => ({
+                                id: t.id,
+                                number: t.ticketNumber,
+                                project: project.name,
+                                expiration: t.expirationDate.toISOString(),
+                                status: t.status === 'ACTIVE' ? 'Active' : 'Expired'
+                            }))}
+                        />
                     </div>
 
                     <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 border border-blue-100 dark:border-blue-800">

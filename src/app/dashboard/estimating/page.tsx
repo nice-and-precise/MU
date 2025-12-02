@@ -21,10 +21,8 @@ export default async function EstimatingPage() {
         <div className="p-6 space-y-6">
             <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold tracking-tight">Estimating</h1>
-                <Link href="/dashboard/estimating/new">
-                    <Button>
-                        <Plus className="w-4 h-4 mr-2" /> New Estimate
-                    </Button>
+                <Link href="/dashboard/estimating/new" className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                    <Plus className="w-4 h-4 mr-2" /> New Estimate
                 </Link>
             </div>
 
@@ -38,9 +36,9 @@ export default async function EstimatingPage() {
                                         {estimate.name}
                                     </CardTitle>
                                     <span className={`px-2 py-1 rounded-full text-xs font-bold ${estimate.status === 'WON' ? 'bg-green-100 text-green-800' :
-                                            estimate.status === 'LOST' ? 'bg-red-100 text-red-800' :
-                                                estimate.status === 'SENT' ? 'bg-blue-100 text-blue-800' :
-                                                    'bg-gray-100 text-gray-800'
+                                        estimate.status === 'LOST' ? 'bg-red-100 text-red-800' :
+                                            estimate.status === 'SENT' ? 'bg-blue-100 text-blue-800' :
+                                                'bg-gray-100 text-gray-800'
                                         }`}>
                                         {estimate.status}
                                     </span>

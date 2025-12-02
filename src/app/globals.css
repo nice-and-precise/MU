@@ -154,5 +154,10 @@ body {
  }
   body {
     @apply bg-background text-foreground;
- }
+  }
+  
+  /* High contrast text for dark mode */
+  .dark .text-\[\#003366\] {
+    color: #4A90E2; /* Lighter blue for dark mode */
+  }
 }

@@ -1,4 +1,5 @@
 import { getSuperStats } from "@/app/actions/dashboard";
+import { CrewDispatch } from "@/components/financials/CrewDispatch";
 
 export default async function SuperDashboard() {
     const stats = await getSuperStats();
@@ -26,13 +27,7 @@ export default async function SuperDashboard() {
             </div>
 
             <div className="mt-8">
-                <h2 className="text-xl font-bold mb-4 text-[#003366] flex items-center">
-                    <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
-                    Active Crews
-                </h2>
-                <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-                    <p className="text-gray-500 italic">Crew locations and status will appear here.</p>
-                </div>
+                <CrewDispatch />
             </div>
         </div>
     );
