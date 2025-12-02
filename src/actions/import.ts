@@ -4,9 +4,12 @@ import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 import { parseWitsml } from '@/lib/parsers/witsml';
 import { parseCsv } from '@/lib/parsers/csv';
+import { requireAuth } from '@/lib/auth-utils';
 
 export async function importSurveyData(formData: FormData) {
     try {
+        await requireAuth();
+
         const file = formData.get('file') as File;
         const projectId = formData.get('projectId') as string;
 
@@ -14,9 +17,21 @@ export async function importSurveyData(formData: FormData) {
             return { success: false, error: 'Missing file or project ID' };
         }
 
+        // Validation
+        const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+        if (file.size > MAX_SIZE) {
+            return { success: false, error: 'File size exceeds 5MB limit' };
+        }
+
+        const extension = file.name.split('.').pop()?.toLowerCase();
+        const allowedExtensions = ['csv', 'xml', 'witsml'];
+        if (!extension || !allowedExtensions.includes(extension)) {
+            return { success: false, error: 'Invalid file type. Allowed: .csv, .xml, .witsml' };
+        }
+
         const buffer = await file.arrayBuffer();
         const content = new TextDecoder().decode(buffer);
-        const extension = file.name.split('.').pop()?.toLowerCase();
+        // extension is already declared above
 
         let points: any[] = [];
 

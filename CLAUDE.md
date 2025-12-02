@@ -37,6 +37,15 @@ npm audit || yarn audit || pnpm audit
 - Semantic HTML with proper heading hierarchy
 - Error boundaries and user-friendly error messages
 
+## Best Practices (Learned)
+- **Next.js Server Components**:
+    - `PageProps` params are Promises in Next.js 15+: `params: Promise<{ id: string }>`
+    - `next/dynamic` with `ssr: false` CANNOT be used directly in Server Components. Create a Client Component wrapper.
+- **Prisma**:
+    - Always verify field names (e.g., `Invoice.currentDue` vs `total`, `Inspection.createdAt` vs `date`).
+- **Performance**:
+    - Lazy load heavy visualizations (Charts, 3D) using the wrapper pattern.
+
 ## Git Workflow
 - Branch naming: `audit/[type]-[description]`
 - Commit format: `[type]: description` (fix, feat, docs, refactor, test)

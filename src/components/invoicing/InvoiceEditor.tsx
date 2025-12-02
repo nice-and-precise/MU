@@ -1,20 +1,11 @@
 'use client';
 
-import { generateInvoicePDF } from '@/lib/pdf';
-// ... existing imports ...
-
-// ... inside component ...
-{
-    isReadOnly && (
-        <Button variant="outline" onClick={() => generateInvoicePDF(invoice)}>
-            <Download className="w-4 h-4 mr-2" /> Export PDF
-        </Button>
-    )
-}
+import { useState } from 'react';
 import { updateInvoice, finalizeInvoice } from '@/actions/invoicing';
+import { generateInvoicePDF } from '@/lib/pdf';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Loader2, Save, Lock, Download } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -111,7 +102,7 @@ export default function InvoiceEditor({ invoice }: InvoiceEditorProps) {
                         </>
                     )}
                     {isReadOnly && (
-                        <Button variant="outline">
+                        <Button variant="outline" onClick={() => generateInvoicePDF(invoice)}>
                             <Download className="w-4 h-4 mr-2" /> Export PDF
                         </Button>
                     )}

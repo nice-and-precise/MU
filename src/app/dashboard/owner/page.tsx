@@ -1,6 +1,5 @@
 import { getOwnerStats } from "@/app/actions/dashboard";
-
-import { ProductionChart } from "@/components/dashboard/ProductionChart";
+import ProductionChartWrapper from "@/components/dashboard/ProductionChartWrapper";
 import { MapPin } from "lucide-react";
 import Link from "next/link";
 
@@ -37,7 +36,7 @@ export default async function OwnerDashboard() {
                 {/* Production Chart */}
                 <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
                     <h3 className="text-lg font-bold text-gray-900 mb-4">Weekly Production</h3>
-                    <ProductionChart />
+                    <ProductionChartWrapper />
                 </div>
 
                 {/* Active Operations Map Widget */}

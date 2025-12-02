@@ -3,6 +3,7 @@
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth-utils';
 import { revalidatePath } from 'next/cache';
 
 // --- Punch List ---
@@ -15,8 +16,11 @@ export async function createPunchItem(data: {
     assigneeId?: string;
     dueDate?: Date
 }) {
-    const session = await getServerSession(authOptions);
-    if (!session) return { success: false, error: 'Unauthorized' };
+    try {
+        const session = await requireAuth();
+    } catch (e) {
+        return { success: false, error: 'Unauthorized' };
+    }
 
     try {
         const item = await prisma.punchItem.create({
@@ -42,8 +46,11 @@ export async function updatePunchItem(id: string, data: {
     assigneeId?: string;
     completedAt?: Date
 }) {
-    const session = await getServerSession(authOptions);
-    if (!session) return { success: false, error: 'Unauthorized' };
+    try {
+        const session = await requireAuth();
+    } catch (e) {
+        return { success: false, error: 'Unauthorized' };
+    }
 
     try {
         const item = await prisma.punchItem.update({

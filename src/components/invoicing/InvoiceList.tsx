@@ -32,7 +32,11 @@ export default function InvoiceList({ projectId }: InvoiceListProps) {
         setCreating(true);
         const res = await createInvoice(projectId);
         if (res.success) {
-            router.push(`/dashboard/invoices/${res.data.id}`);
+            if (res.data) {
+                router.push(`/dashboard/invoices/${res.data.id}`);
+            } else {
+                alert('Failed to create invoice: No data returned');
+            }
         } else {
             alert(res.error || 'Failed to create invoice');
             setCreating(false);
@@ -69,8 +73,8 @@ export default function InvoiceList({ projectId }: InvoiceListProps) {
                                 <TableCell>{new Date(inv.periodEnd).toLocaleDateString()}</TableCell>
                                 <TableCell>
                                     <span className={`px-2 py-1 rounded text-xs font-medium ${inv.status === 'PAID' ? 'bg-green-100 text-green-800' :
-                                            inv.status === 'SUBMITTED' ? 'bg-blue-100 text-blue-800' :
-                                                'bg-gray-100 text-gray-800'
+                                        inv.status === 'SUBMITTED' ? 'bg-blue-100 text-blue-800' :
+                                            'bg-gray-100 text-gray-800'
                                         }`}>
                                         {inv.status}
                                     </span>
