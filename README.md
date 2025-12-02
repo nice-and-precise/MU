@@ -2,28 +2,31 @@
 
 > **Status**: 🚀 Active Development | **Mode**: Turbo ⚡ | **Stack**: Next.js + TypeScript + Supabase
 
-A comprehensive SaaS platform for **Horizontal Directional Drilling (HDD)** operations, combining high-performance engineering with modern field management. Designed to bridge the gap between office planning and field execution.
+**The Operating System for Horizontal Directional Drilling.**
+
+HDD-Nexus bridges the gap between precision engineering and rugged field execution. It is a comprehensive SaaS platform that transforms how drilling contractors plan, execute, and track their operations—from the bid to the final bore log.
 
 ---
 
 ## 📸 Visual Overview
 
-### Asset Management
-*Track rigs, locators, and support equipment with real-time status.*
-![Asset Management](./docs/images/asset_management.png)
+### 🌍 Live Fleet Command
+*Real-time satellite tracking of all assets with interactive status and telemetry.*
+![Fleet Tracking](./docs/images/fleet_tracking_demo.png)
 
-### Live Dashboard Tour
-*Interactive tour of the project dashboard and linear progress tracking.*
+### 🏗️ 3D Digital Twin
+*Interactive subsurface visualization with soil layers, bore paths, and utility crossings.*
+![3D Visualization](./docs/images/3d_vis_demo.png)
+
+### 📊 Tactical Dashboard
+*Centralized control center for project management, dispatch, and financial performance.*
 ![Dashboard Tour](./docs/images/dashboard_tour.webp)
-
-### Landing Page
-*Public facing portal for stakeholders.*
-![Landing Page](./docs/images/landing_tour.webp)
 
 ---
 
-## 🏗 Architecture
+## 🏗 Architecture & Data Flow
 
+### System Architecture
 ```mermaid
 graph TD
     User[User / Field Crew] -->|HTTPS/PWA| NextJS[Next.js Frontend]
@@ -48,85 +51,54 @@ graph TD
     end
 ```
 
-### 📡 WITSML Data Flow
-
+### 📡 Live Fleet Tracking Flow
 ```mermaid
 sequenceDiagram
-    participant Rig as Drilling Rig
-    participant API as /api/witsml
+    participant Truck as Vehicle GPS
+    participant API as /api/telemetry
     participant DB as Supabase
-    participant UI as Live Dashboard
-    participant 3D as 3D Engine
+    participant Map as Live Fleet Map
     
-    Rig->>API: POST WITSML (XML/JSON)
-    API->>DB: Store TelemetryLog
-    UI->>API: SSE Connection (/stream)
-    API-->>UI: Real-time Updates
-    UI->>3D: Update Trajectory
-    3D->>3D: Check Collisions
-    UI->>UI: Update Steering Rose
+    Truck->>API: POST GPS/Status (JSON)
+    API->>DB: Update Asset Location
+    Map->>API: Poll / Stream Updates
+    API-->>Map: { lat, lng, speed, status }
+    Map->>Map: Animate Marker
+    Note over Map: User clicks marker
+    Map->>Map: Show Sidebar Details
 ```
 
 ---
 
 ## 🚀 Key Features
 
-### 1. 🚜 Asset Management
-- **Fleet Tracking**: Manage Drills, Excavators, Trucks, and Locators.
-- **Maintenance**: Schedule and track equipment maintenance.
-- **Usage Logs**: Track hours and utilization by project.
+### 1. 🌍 Live Operations Command
+- **Fleet Tracking**: Real-time satellite map of all vehicles and equipment.
+- **Interactive Telemetry**: Click any asset to view speed, heading, fuel, and assigned crew.
+- **Status Monitoring**: Visual indicators for Moving, Working, and Stopped assets.
+- **Tactical Dashboard**: High-contrast "Day Mode" for field visibility.
 
-### 2. 📈 Production & Engineering
-- **Digital Bore Logs**: Real-time rod-by-rod logging.
-- **As-Built Generation**: Automated profile views and PDF exports.
-- **Physics Engine**: ASTM F1962 Pullback & Delft Frac-Out modeling.
-- **Rod Planner**: Integrated trajectory planning.
+### 2. 🏗️ 3D Digital Twin
+- **Subsurface Visualization**: Render bore paths, soil layers, and obstacles in a fully interactive 3D environment.
+- **Demo Mode**: One-click simulation of complex drilling scenarios (Urban, River Crossing, Rock).
+- **Collision Avoidance**: Visual indicators for proximity to gas, water, and fiber lines.
 
-### 3. 💰 Financials
-- **Estimating**: Create professional bids with labor, equipment, and material line items.
-- **Job Costing**: Real-time profitability tracking (Budget vs Actual).
-- **Invoicing**: AIA-style progress billing (G702/G703) with retainage.
-- **Payroll**: Employee management with QuickBooks-compatible fields (SSN, Tax Status).
+### 3. 💰 Financial Intelligence
+- **Smart Estimating**: Build bids using "Kits" (e.g., 100' Bore Kit) and live inventory pricing.
+- **Job Costing**: Real-time "Budget vs Actual" tracking.
+- **AIA Invoicing**: Generate G702/G703 style progress billings.
+- **QuickBooks Integration**: Seamless sync of employees and payroll data.
 
-### 4. 👷 Field Operations
-- **Crew Management**: Employee directory and digital time cards.
-- **Dispatch**: Drag-and-drop crew and asset assignment.
-- **Inventory**: Track fluids, pipe, tooling, and assets with low-stock alerts.
-- **Safety**: Toolbox Talks (signatures), JSAs, and Vehicle Inspections.
-- **Quality Control**: Punch Lists and Photo Gallery.
+### 4. 👷 Field & Crew Management
+- **Smart Dispatch**: Drag-and-drop assignment of crews and equipment to projects.
+- **Mobile Time Cards**: GPS-verified clock-ins for field staff.
+- **Safety Compliance**: Digital Toolbox Talks, JSAs, and Vehicle Inspections (DVIR).
+- **Quality Control**: Punch lists and photo documentation directly from the field.
 
-### 5. 🌍 Digital Subsurface
-- **3D Visualization**: Interactive view of bore paths and soil layers.
-- **Geotech Integration**: Manage soil borings and stratigraphy.
-- **Collision Detection**: Real-time alerts for utility proximity.
-- **Robust 3D Engine**: WebGL context loss handling and auto-recovery.
-
-### 6. 📡 Live Operations
-- **Real-Time Telemetry**: Ingest WITSML data streams.
-- **Live Dashboard**: "Tactical Dashboard" with High Contrast Day Mode.
-- **Live Tracking**: Real-time GPS location of fleet assets.
-- **Steering Rose**: Modernized UI with traffic light deviation alerts.
-
-### 7. Live Fleet Tracking
-- **Real-time Map**: View all assets on a satellite map.
-- **Interactive Details**: Click on any vehicle to see assigned job, crew, speed, and ETA.
-- **Status Indicators**: Color-coded markers for Moving, Working, and Stopped assets.
-
-### 8. 3D Visualization (Digital Twin)
-- **Bore Path Rendering**: Visualize the underground bore path in 3D.
-- **Demo Mode**: Toggle a realistic demo simulation to showcase capabilities.
-- **Contextual Data**: View soil layers, depth markers, and steering orientation.
-
-### 9. Owner Command Center
-- **Project Controls**: Centralized dashboard for owners to manage crew, assets, and safety.
-- **Live Operations Map**: High-level view of all active projects.
-- **Integrations**: QuickBooks Online configuration.
-- **Preferences**: System-wide dark mode and notification settings.
-
-### 10. ♿ Accessibility
-- **Zoom Support**: Enabled pinch-to-zoom for better mobile usability.
-- **Screen Reader Support**: ARIA labels on all form inputs and icon-only buttons.
-- **Semantic HTML**: Valid nesting of interactive elements.
+### 5. 📉 Engineering & Planning
+- **Rod-by-Rod Planning**: Design trajectories with precise pitch and depth targets.
+- **Physics Engine**: Automated ASTM F1962 Pullback and Frac-Out calculations.
+- **As-Built Generation**: One-click generation of professional profile views and bore logs.
 
 ---
 
@@ -148,7 +120,8 @@ sequenceDiagram
 1.  **Install Dependencies**: `npm install`
 2.  **Configure Environment**: Ensure `.env` has valid Supabase credentials.
 3.  **Sync Database**: `npx prisma db push`
-4.  **Run Dev Server**: `npm run dev`
+4.  **Seed Data**: `npx prisma db seed` (Populates demo data)
+5.  **Run Dev Server**: `npm run dev`
 
 ## ⚡ Low-Spec Development Mode
 
