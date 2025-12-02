@@ -10,8 +10,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Trash2, Save, ArrowLeft, Loader2, Download } from 'lucide-react';
+import { Plus, Trash2, Save, ArrowLeft, Loader2, Download, Package } from 'lucide-react';
 import Link from 'next/link';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { getInventoryItems } from '@/actions/inventory';
 
 interface EstimateEditorProps {
     estimate: any;
@@ -57,6 +59,63 @@ export default function EstimateEditor({ estimate }: EstimateEditorProps) {
     const handleUpdateLine = async (id: string, field: string, value: any) => {
         // Optimistic update could go here, for now just server action
         await updateLineItem(id, { [field]: value });
+        router.refresh();
+    };
+
+    // Inventory & Assemblies
+    const [isInventoryOpen, setIsInventoryOpen] = useState(false);
+    const [inventoryItems, setInventoryItems] = useState<any[]>([]);
+    const [loadingInventory, setLoadingInventory] = useState(false);
+
+    const handleOpenInventory = async () => {
+        setIsInventoryOpen(true);
+        if (inventoryItems.length === 0) {
+            setLoadingInventory(true);
+            const res = await getInventoryItems();
+            if (res.success && res.data) {
+                setInventoryItems(res.data);
+            }
+            setLoadingInventory(false);
+        }
+    };
+
+    const handleAddFromInventory = (item: any) => {
+        setNewLine({
+            description: item.name,
+            quantity: 1,
+            unit: item.unit,
+            unitCost: item.costPerUnit || 0,
+            markup: 0.15
+        });
+        setIsInventoryOpen(false);
+    };
+
+    const handleAddAssembly = async (type: 'BORE_100' | 'BORE_500' | 'POTHOLE') => {
+        setLoading(true);
+        const assemblies = {
+            'BORE_100': [
+                { description: 'Directional Bore - 2" HDPE', quantity: 100, unit: 'LF', unitCost: 12.00, markup: 0.20 },
+                { description: 'Bore Crew (Foreman, Op, Labor)', quantity: 4, unit: 'HR', unitCost: 225.00, markup: 0.15 },
+                { description: 'Drill Rig (D24x40)', quantity: 4, unit: 'HR', unitCost: 150.00, markup: 0.15 },
+            ],
+            'BORE_500': [
+                { description: 'Directional Bore - 4" HDPE', quantity: 500, unit: 'LF', unitCost: 18.00, markup: 0.25 },
+                { description: 'Bore Crew (Foreman, Op, Labor)', quantity: 20, unit: 'HR', unitCost: 225.00, markup: 0.15 },
+                { description: 'Drill Rig (D40x55)', quantity: 20, unit: 'HR', unitCost: 220.00, markup: 0.15 },
+                { description: 'Vac Truck Support', quantity: 20, unit: 'HR', unitCost: 110.00, markup: 0.15 },
+            ],
+            'POTHOLE': [
+                { description: 'Vacuum Pothole (0-6ft)', quantity: 1, unit: 'EA', unitCost: 350.00, markup: 0.20 },
+                { description: 'Vac Truck', quantity: 2, unit: 'HR', unitCost: 110.00, markup: 0.15 },
+                { description: 'Laborer', quantity: 2, unit: 'HR', unitCost: 45.00, markup: 0.15 },
+            ]
+        };
+
+        const items = assemblies[type];
+        for (const item of items) {
+            await addLineItem(estimate.id, item);
+        }
+        setLoading(false);
         router.refresh();
     };
 
@@ -114,6 +173,47 @@ export default function EstimateEditor({ estimate }: EstimateEditorProps) {
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle>Line Items</CardTitle>
+                    <div className="flex gap-2">
+                        <Dialog open={isInventoryOpen} onOpenChange={setIsInventoryOpen}>
+                            <DialogTrigger asChild>
+                                <Button variant="outline" size="sm" onClick={handleOpenInventory}>
+                                    <Package className="w-4 h-4 mr-2" /> From Inventory
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                                <DialogHeader>
+                                    <DialogTitle>Select Inventory Item</DialogTitle>
+                                </DialogHeader>
+                                <div className="space-y-4">
+                                    <Input placeholder="Search inventory..." className="mb-4" />
+                                    {loadingInventory ? (
+                                        <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>
+                                    ) : (
+                                        <div className="grid grid-cols-1 gap-2">
+                                            {inventoryItems.map((item: any) => (
+                                                <div key={item.id} className="flex justify-between items-center p-3 border rounded hover:bg-slate-50 cursor-pointer" onClick={() => handleAddFromInventory(item)}>
+                                                    <div>
+                                                        <div className="font-bold">{item.name}</div>
+                                                        <div className="text-xs text-muted-foreground">SKU: {item.sku} • On Hand: {item.quantityOnHand} {item.unit}</div>
+                                                    </div>
+                                                    <div className="font-bold text-green-700">
+                                                        ${item.costPerUnit?.toFixed(2)}/{item.unit}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </DialogContent>
+                        </Dialog>
+
+                        <Button variant="secondary" size="sm" onClick={() => handleAddAssembly('BORE_100')}>
+                            <Plus className="w-4 h-4 mr-2" /> 100' Bore Kit
+                        </Button>
+                        <Button variant="secondary" size="sm" onClick={() => handleAddAssembly('POTHOLE')}>
+                            <Plus className="w-4 h-4 mr-2" /> Pothole Kit
+                        </Button>
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <Table>

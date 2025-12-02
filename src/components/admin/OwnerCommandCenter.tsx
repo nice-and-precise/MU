@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MapPin, Users, Truck, FileText, BarChart3 } from "lucide-react";
 import { TicketManager } from "@/components/safety/TicketManager";
+import Link from "next/link";
 
 export function OwnerCommandCenter() {
     return (
@@ -21,14 +22,14 @@ export function OwnerCommandCenter() {
                     </div>
 
                     {/* Overlay Pins (Mock) */}
-                    <div className="absolute top-1/4 left-1/4 bg-white p-2 rounded shadow-lg flex items-center gap-2 cursor-pointer hover:scale-105 transition-transform">
+                    <button className="absolute top-1/4 left-1/4 bg-white p-2 rounded shadow-lg flex items-center gap-2 hover:scale-105 transition-transform focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="View Project Alpha">
                         <div className="h-3 w-3 bg-green-500 rounded-full animate-pulse" />
                         <span className="font-bold text-sm">Project Alpha</span>
-                    </div>
-                    <div className="absolute bottom-1/3 right-1/3 bg-white p-2 rounded shadow-lg flex items-center gap-2 cursor-pointer hover:scale-105 transition-transform">
+                    </button>
+                    <button className="absolute bottom-1/3 right-1/3 bg-white p-2 rounded shadow-lg flex items-center gap-2 hover:scale-105 transition-transform focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="View Project Beta">
                         <div className="h-3 w-3 bg-orange-500 rounded-full" />
                         <span className="font-bold text-sm">Project Beta</span>
-                    </div>
+                    </button>
                 </div>
 
                 {/* Control Panel */}
@@ -55,9 +56,9 @@ export function OwnerCommandCenter() {
                                             <div className="flex justify-between"><span>Bob Johnson (Lab)</span> <span className="text-gray-400">○ Off</span></div>
                                         </div>
                                     </div>
-                                    <button className="w-full py-2 bg-blue-600 text-white rounded font-bold text-sm hover:bg-blue-700">
+                                    <Link href="/dashboard/crew" className="block w-full py-2 bg-blue-600 text-white rounded font-bold text-sm hover:bg-blue-700 text-center">
                                         Manage Crew
-                                    </button>
+                                    </Link>
                                 </TabsContent>
 
                                 <TabsContent value="assets" className="space-y-4 mt-4">
@@ -69,9 +70,9 @@ export function OwnerCommandCenter() {
                                             <li>Trailer #5</li>
                                         </ul>
                                     </div>
-                                    <button className="w-full py-2 bg-orange-600 text-white rounded font-bold text-sm hover:bg-orange-700">
+                                    <Link href="/dashboard/crew" className="block w-full py-2 bg-orange-600 text-white rounded font-bold text-sm hover:bg-orange-700 text-center">
                                         Assign Equipment
-                                    </button>
+                                    </Link>
                                 </TabsContent>
 
                                 <TabsContent value="docs" className="space-y-4 mt-4">

@@ -52,6 +52,15 @@ async function main() {
     create: { email: 'mechanic@midwestunderground.com', name: 'Dave Fixit', role: 'MECHANIC', password: passwordHash },
   });
 
+  // Famous People Seed Data
+  await prisma.user.upsert({ where: { email: 'george@midwestunderground.com' }, update: {}, create: { email: 'george@midwestunderground.com', name: 'George Washington', role: 'FOREMAN', password: passwordHash } });
+  await prisma.user.upsert({ where: { email: 'abe@midwestunderground.com' }, update: {}, create: { email: 'abe@midwestunderground.com', name: 'Abraham Lincoln', role: 'OPERATOR', password: passwordHash } });
+  await prisma.user.upsert({ where: { email: 'ben@midwestunderground.com' }, update: {}, create: { email: 'ben@midwestunderground.com', name: 'Benjamin Franklin', role: 'LOCATOR', password: passwordHash } });
+  await prisma.user.upsert({ where: { email: 'teddy@midwestunderground.com' }, update: {}, create: { email: 'teddy@midwestunderground.com', name: 'Teddy Roosevelt', role: 'LABORER', password: passwordHash } });
+  await prisma.user.upsert({ where: { email: 'amelia@midwestunderground.com' }, update: {}, create: { email: 'amelia@midwestunderground.com', name: 'Amelia Earhart', role: 'OPERATOR', password: passwordHash } });
+  await prisma.user.upsert({ where: { email: 'tom@midwestunderground.com' }, update: {}, create: { email: 'tom@midwestunderground.com', name: 'Thomas Edison', role: 'LOCATOR', password: passwordHash } });
+  await prisma.user.upsert({ where: { email: 'henry@midwestunderground.com' }, update: {}, create: { email: 'henry@midwestunderground.com', name: 'Henry Ford', role: 'MECHANIC', password: passwordHash } });
+
   const users = [owner, superint, foreman, operator, laborer, mechanic];
 
   // --- 2. COST CATEGORIES & ITEMS ---
