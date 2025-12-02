@@ -3,8 +3,9 @@ import { prisma } from "@/lib/prisma"; // Direct access for users list
 import PunchList from "@/components/qc/PunchList";
 import PhotoGallery from "@/components/qc/PhotoGallery";
 
-export default async function QCPage({ params }: { params: { id: string } }) {
-    const projectId = params.id;
+export default async function QCPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
+    const projectId = id;
     const [punchItems, photos, users] = await Promise.all([
         getPunchList(projectId),
         getProjectPhotos(projectId),

@@ -37,6 +37,11 @@ model User {
   ticket811Responses    Ticket811Response[]
   createdInvoices       Invoice[]
   assignedPunchItems    PunchItem[]
+  potholes              Pothole[]
+  jobAssets             JobAsset[]
+  jobDocuments          JobDocument[]          @relation("DocumentCreator")
+  dailyNotes            DailyNote[]            @relation("NoteAuthor")
+
 
   @@index([email])
   @@index([role])
@@ -53,9 +58,14 @@ model Project {
   location              String?
   customerName          String?
   customerContact       String?
+  latitude              Float?
+  longitude             Float?
+  radius                Float                  @default(500) // Geofence radius in feet
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
   createdById           String
+  qboCustomerId         String?
+  machineRate           Float?
   assets                Asset[]
   bores                 Bore[]
   changeOrders          ChangeOrder[]
@@ -67,6 +77,7 @@ model Project {
   inventoryTransactions InventoryTransaction[]
   obstacles             Obstacle[]
   pits                  Pit[]
+  potholes              Pothole[]
   createdBy             User                   @relation("ProjectCreator", fields: [createdById], references: [id])
   rfis                  RFI[]
   stationProgress       StationProgress[]
@@ -79,10 +90,17 @@ model Project {
   jsas                  JSA[]
   punchItems            PunchItem[]
   photos                Photo[]
+  jobAssets             JobAsset[]
+  jobDocuments          JobDocument[]
+  dailyNotes            DailyNote[]
 
   @@index([status])
   @@index([createdById])
 }
+
+
+
+
 
 model Bore {
   id              String         @id @default(cuid())
@@ -144,10 +162,28 @@ model RodPass {
   updatedAt        DateTime  @updatedAt
   bore             Bore      @relation(fields: [boreId], references: [id], onDelete: Cascade)
   loggedBy         User      @relation(fields: [loggedById], references: [id])
+  pullbackForce    Float?
+  returnsVisual    String?   // "Full Returns", "Partial Loss", "Total Loss"
 
   @@index([boreId])
   @@index([sequence])
   @@index([loggedById])
+}
+
+model Pothole {
+  id                    String   @id @default(cuid())
+  projectId             String
+  project               Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  utilityType           String
+  depth                 Float
+  visualVerificationPhoto String // URL to photo
+  notes                 String?
+  createdById           String
+  createdBy             User     @relation(fields: [createdById], references: [id])
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([projectId])
 }
 
 model TelemetryLog {
@@ -712,7 +748,7 @@ model Asset {
   type         String
   model        String?
   serialNumber String?
-  status       String    @default("AVAILABLE")
+  status       String    @default("Active") // Active, Maintenance, Retired
   projectId    String?
   purchaseDate DateTime?
   hours        Float?
@@ -721,9 +757,11 @@ model Asset {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   project      Project?  @relation(fields: [projectId], references: [id])
+  hourlyRate   Float?
   maintenanceLogs MaintenanceLog[]
   usageLogs       EquipmentUsage[]
   inspections     Inspection[]
+  jobAssets       JobAsset[]
 
   @@index([projectId])
   @@index([status])
@@ -871,8 +909,12 @@ model Employee {
   firstName   String
   lastName    String
   role        String     // e.g., "Foreman", "Operator", "Laborer"
+  position    String?    // Detailed position e.g. "Drill Operator", "Locator"
   hourlyRate  Float      @default(0)
-  crews       Crew[]
+  burdenRate  Float?
+  qboEmployeeId String?
+  crews       Crew[]     @relation("CrewMembers")
+  foremanCrews Crew[]    @relation("CrewForeman")
   timeCards   TimeCard[]
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
@@ -881,8 +923,9 @@ model Employee {
 model Crew {
   id        String     @id @default(cuid())
   name      String
-  foremanId String?
-  foreman   Employee?  @relation(fields: [foremanId], references: [id])
+  foremanId String
+  foreman   Employee   @relation("CrewForeman", fields: [foremanId], references: [id])
+  members   Employee[] @relation("CrewMembers")
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 }
@@ -896,7 +939,52 @@ model TimeCard {
   date       DateTime
   hours      Float
   code       String   // e.g., "Drilling", "Mobilization"
+  payrollItem String? // QBO Payroll Item Ref
+  serviceItem String? // QBO Service Item Ref
+  clockInTime DateTime?
+  clockOutTime DateTime?
+  clockInLat  Float?
+  clockInLong Float?
+  isGeofenced Boolean    @default(false)
   notes      String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+model JobAsset {
+  id          String   @id @default(cuid())
+  assetId     String
+  asset       Asset    @relation(fields: [assetId], references: [id])
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id])
+  assignedById String
+  assignedBy  User     @relation(fields: [assignedById], references: [id])
+  assignedDate DateTime @default(now())
+  returnedDate DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model JobDocument {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id])
+  name        String
+  type        String   // Plan, Permit, Safety
+  url         String
+  createdAt   DateTime @default(now())
+  createdById String
+  createdBy   User     @relation("DocumentCreator", fields: [createdById], references: [id])
+}
+
+model DailyNote {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id])
+  date        DateTime
+  content     String
+  authorId    String
+  author      User     @relation("NoteAuthor", fields: [authorId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
