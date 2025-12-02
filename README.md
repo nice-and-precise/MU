@@ -90,6 +90,8 @@ sequenceDiagram
 
 ### 4. 👷 Field Operations
 - **Crew Management**: Employee directory and digital time cards.
+- **Dispatch**: Drag-and-drop crew and asset assignment.
+- **Inventory**: Track fluids, pipe, tooling, and assets with low-stock alerts.
 - **Safety**: Toolbox Talks (signatures), JSAs, and Vehicle Inspections.
 - **Quality Control**: Punch Lists and Photo Gallery.
 
@@ -102,12 +104,19 @@ sequenceDiagram
 ### 6. 📡 Live Operations
 - **Real-Time Telemetry**: Ingest WITSML data streams.
 - **Live Dashboard**: "Tactical Dashboard" with High Contrast Day Mode.
+- **Live Tracking**: Real-time GPS location of fleet assets.
 - **Steering Rose**: Modernized UI with traffic light deviation alerts.
 
 ### 7. ⚙️ System Administration
+- **Command Center**: Owner-level view of all project controls and safety stats.
 - **Role-Based Access**: Admin, Foreman, and Crew roles.
 - **Integrations**: QuickBooks Online configuration.
 - **Preferences**: System-wide dark mode and notification settings.
+
+### 8. ♿ Accessibility
+- **Zoom Support**: Enabled pinch-to-zoom for better mobile usability.
+- **Screen Reader Support**: ARIA labels on all form inputs and icon-only buttons.
+- **Semantic HTML**: Valid nesting of interactive elements.
 
 ---
 
