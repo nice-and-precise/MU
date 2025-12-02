@@ -310,6 +310,34 @@ const CameraController = ({ viewMode, flyThrough, stations }: { viewMode: string
 export default function Borehole3D({ stations, ghostPath = [], obstacles = [], targets = [], viewMode = 'iso', flyThrough = false }: Borehole3DProps) {
     const isOrtho = viewMode === 'top' || viewMode === 'side';
     const [contextLost, setContextLost] = useState(false);
+    const [demoMode, setDemoMode] = useState(false);
+
+    // Generate demo path if demoMode is active
+    const activeStations = useMemo(() => {
+        if (demoMode) {
+            const demoStations: SurveyStation[] = [];
+            const length = 1000;
+            const steps = 50;
+            for (let i = 0; i <= steps; i++) {
+                const md = (i / steps) * length;
+                // Create a sine wave path
+                const tvd = Math.sin(i * 0.2) * 20 + (i * 2); // Undulating depth
+                const east = md;
+                const north = Math.sin(i * 0.1) * 50; // S-curve
+
+                demoStations.push({
+                    md,
+                    tvd,
+                    north,
+                    east,
+                    inc: 90 + Math.cos(i * 0.2) * 10,
+                    azi: Math.cos(i * 0.1) * 20
+                });
+            }
+            return demoStations;
+        }
+        return stations;
+    }, [stations, demoMode]);
 
     return (
         <div className="h-full w-full bg-slate-900 rounded-lg overflow-hidden relative">
@@ -325,6 +353,16 @@ export default function Borehole3D({ stations, ghostPath = [], obstacles = [], t
                     </button>
                 </div>
             )}
+
+            <div className="absolute top-4 right-4 z-10 flex gap-2">
+                <button
+                    onClick={() => setDemoMode(!demoMode)}
+                    className={`px-3 py-1 rounded text-xs font-bold transition-colors ${demoMode ? 'bg-blue-600 text-white' : 'bg-white/10 text-white hover:bg-white/20'}`}
+                >
+                    {demoMode ? 'Disable Demo' : 'Load Demo Bore'}
+                </button>
+            </div>
+
             <Canvas
                 gl={{ powerPreference: "high-performance" }}
                 onCreated={({ gl }) => {
@@ -351,11 +389,11 @@ export default function Borehole3D({ stations, ghostPath = [], obstacles = [], t
                 <ambientLight intensity={0.7} />
                 <directionalLight position={[100, 200, 50]} intensity={1} castShadow />
 
-                <CameraController viewMode={viewMode} flyThrough={flyThrough} stations={stations} />
+                <CameraController viewMode={viewMode} flyThrough={flyThrough} stations={activeStations} />
 
                 <Center>
                     <group>
-                        <BoreholeTube stations={stations} />
+                        <BoreholeTube stations={activeStations} />
                         {ghostPath.length > 0 && (
                             <BoreholeTube stations={ghostPath} color="cyan" dashed={true} diameter={0.5} />
                         )}
@@ -369,6 +407,19 @@ export default function Borehole3D({ stations, ghostPath = [], obstacles = [], t
 
                         {targets.map(t => (
                             <TargetBox key={t.id} target={t} />
+                        ))}
+
+                        {/* Depth Markers along the path */}
+                        {activeStations.filter((_, i) => i % 5 === 0).map((s, i) => (
+                            <group key={i} position={[s.east, -s.tvd + 10, -s.north]}>
+                                <Text fontSize={5} color="white" anchorX="center" anchorY="bottom">
+                                    {Math.round(s.md)}'
+                                </Text>
+                                <mesh position={[0, -5, 0]}>
+                                    <sphereGeometry args={[0.5]} />
+                                    <meshBasicMaterial color="white" />
+                                </mesh>
+                            </group>
                         ))}
                     </group>
                 </Center>

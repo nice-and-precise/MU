@@ -11,14 +11,18 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { SurveyStation } from '@/lib/drilling/types';
 
 // Mock Data for Scenarios
+// Mock Data for Scenarios
 const SCENARIOS = {
     urban: {
         name: "Urban Utility Corridor",
         description: "Navigate a crowded utility easement with gas, water, and fiber lines.",
         obstacles: [
-            { id: 'g1', type: 'gas', x: 200, y: 5, z: 0, diameter: 4, length: 1000, azimuth: 90 },
-            { id: 'w1', type: 'water', x: 220, y: 8, z: 0, diameter: 12, length: 1000, azimuth: 90 },
-            { id: 'f1', type: 'fiber', x: 180, y: 3, z: 0, diameter: 2, length: 1000, azimuth: 90 },
+            // Gas Line: East-West at Depth 5ft, North 0
+            { id: 'g1', name: 'Gas Main', type: 'gas', startX: 0, startY: 5, startZ: 0, endX: 1000, endY: 5, endZ: 0, diameter: 4, safetyBuffer: 2 },
+            // Water Main: East-West at Depth 8ft, North 10
+            { id: 'w1', name: 'Water Main', type: 'water', startX: 0, startY: 8, startZ: 10, endX: 1000, endY: 8, endZ: 10, diameter: 12, safetyBuffer: 3 },
+            // Fiber: Crossing North-South at East 500, Depth 3ft
+            { id: 'f1', name: 'Fiber Optic', type: 'fiber', startX: 500, startY: 3, startZ: -50, endX: 500, endY: 3, endZ: 50, diameter: 2, safetyBuffer: 2 },
         ],
         targets: [
             { id: 't1', x: 500, y: 10, z: 0, width: 20, height: 20, depth: 20 }
@@ -97,10 +101,9 @@ export default function ScenariosPage() {
             </div>
 
             <div className="flex-1 bg-slate-900 relative">
-                {/* @ts-ignore - Obstacle type mismatch in mock vs component, casting/ignoring for demo */}
                 <Borehole3D
                     stations={scenario.stations}
-                    obstacles={scenario.obstacles as any}
+                    obstacles={scenario.obstacles}
                     targets={scenario.targets}
                     viewMode="iso"
                 />
