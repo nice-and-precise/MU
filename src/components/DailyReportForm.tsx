@@ -3,6 +3,17 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 
 export default function DailyReportForm({ projects }: { projects: any[] }) {
     const router = useRouter();
@@ -31,52 +42,56 @@ export default function DailyReportForm({ projects }: { projects: any[] }) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-            <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Project</label>
-                <select
-                    required
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm p-2"
+        <form onSubmit={handleSubmit} className="space-y-6 bg-card p-6 rounded-xl shadow-sm border border-border">
+            <div className="space-y-2">
+                <Label htmlFor="project">Project</Label>
+                <Select
                     value={formData.projectId}
-                    onChange={(e) => setFormData({ ...formData, projectId: e.target.value })}
+                    onValueChange={(value) => setFormData({ ...formData, projectId: value })}
                 >
-                    <option value="">Select a project...</option>
-                    {projects.map((p) => (
-                        <option key={p.id} value={p.id}>
-                            {p.name}
-                        </option>
-                    ))}
-                </select>
+                    <SelectTrigger id="project">
+                        <SelectValue placeholder="Select a project..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {projects.map((p) => (
+                            <SelectItem key={p.id} value={p.id}>
+                                {p.name}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
             </div>
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Date</label>
-                <input
+            <div className="space-y-2">
+                <Label htmlFor="date">Date</Label>
+                <Input
+                    id="date"
                     type="date"
                     required
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm p-2"
                     value={formData.reportDate}
                     onChange={(e) => setFormData({ ...formData, reportDate: e.target.value })}
                 />
             </div>
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
-                <textarea
+            <div className="space-y-2">
+                <Label htmlFor="notes">Notes</Label>
+                <Textarea
+                    id="notes"
                     rows={4}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm p-2"
                     value={formData.notes}
                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 />
             </div>
 
-            <button
+            <Button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                variant="secondary"
+                className="w-full font-bold"
             >
-                {loading ? <Loader2 className="animate-spin h-5 w-5" /> : "Create Report"}
-            </button>
+                {loading ? <Loader2 className="animate-spin h-5 w-5 mr-2" /> : null}
+                {loading ? "Creating..." : "Create Report"}
+            </Button>
         </form>
     );
 }

@@ -3,6 +3,7 @@
 import React, { useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { FileText, User, Calendar } from "lucide-react";
 
 interface Report {
@@ -29,9 +30,9 @@ export default function ReportsTable({ reports }: ReportsTableProps) {
     });
 
     return (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden flex flex-col h-[600px]">
+        <div className="bg-white rounded-lg shadow-sm border border-border overflow-hidden flex flex-col h-[600px]">
             <div className="overflow-x-auto flex-1 flex flex-col">
-                <div className="bg-gray-50 text-gray-700 font-bold uppercase tracking-wider border-b border-gray-200 flex min-w-[800px]">
+                <div className="bg-muted text-muted-foreground font-bold font-heading uppercase tracking-wider border-b border-border flex min-w-[800px]">
                     <div className="px-6 py-4 w-1/5">Date</div>
                     <div className="px-6 py-4 w-1/4">Project</div>
                     <div className="px-6 py-4 w-1/4">Submitted By</div>
@@ -57,21 +58,21 @@ export default function ReportsTable({ reports }: ReportsTableProps) {
                             return (
                                 <div
                                     key={report.id}
-                                    className="absolute top-0 left-0 w-full flex hover:bg-blue-50/50 transition-colors border-b border-gray-100"
+                                    className="absolute top-0 left-0 w-full flex hover:bg-muted/50 transition-colors border-b border-border"
                                     style={{
                                         height: `${virtualRow.size}px`,
                                         transform: `translateY(${virtualRow.start}px)`,
                                     }}
                                 >
-                                    <div className="px-6 py-4 w-1/5 text-gray-900 font-medium flex items-center">
-                                        <Calendar className="h-4 w-4 mr-2 text-gray-400 flex-shrink-0" />
+                                    <div className="px-6 py-4 w-1/5 text-foreground font-medium flex items-center font-sans">
+                                        <Calendar className="h-4 w-4 mr-2 text-muted-foreground flex-shrink-0" />
                                         {new Date(report.reportDate).toLocaleDateString()}
                                     </div>
-                                    <div className="px-6 py-4 w-1/4 text-gray-600 truncate">
+                                    <div className="px-6 py-4 w-1/4 text-muted-foreground truncate font-sans">
                                         {report.project.name}
                                     </div>
-                                    <div className="px-6 py-4 w-1/4 text-gray-600 flex items-center">
-                                        <User className="h-4 w-4 mr-2 text-gray-400 flex-shrink-0" />
+                                    <div className="px-6 py-4 w-1/4 text-muted-foreground flex items-center font-sans">
+                                        <User className="h-4 w-4 mr-2 text-muted-foreground flex-shrink-0" />
                                         <span className="truncate">{report.createdBy.name}</span>
                                     </div>
                                     <div className="px-6 py-4 w-1/6">
@@ -87,12 +88,11 @@ export default function ReportsTable({ reports }: ReportsTableProps) {
                                         </span>
                                     </div>
                                     <div className="px-6 py-4 w-1/6 text-right">
-                                        <Link
-                                            href={`/dashboard/reports/${report.id}`}
-                                            className="text-[#003366] hover:text-[#002244] font-bold hover:underline"
-                                        >
-                                            View
-                                        </Link>
+                                        <Button asChild variant="link" className="font-bold">
+                                            <Link href={`/dashboard/reports/${report.id}`}>
+                                                View
+                                            </Link>
+                                        </Button>
                                     </div>
                                 </div>
                             );

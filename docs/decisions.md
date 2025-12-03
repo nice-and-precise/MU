@@ -51,3 +51,7 @@
 ## 2025-12-01: Full TypeScript Implementation
 - **Decision**: Prioritize TypeScript implementation for all core logic (Physics, Math) over Rust.
 - **Rationale**: Faster iteration, easier deployment (Vercel/Next.js compatible), and sufficient performance for current scale. Rust remains an option for specific heavy compute tasks if needed.
+
+## 2025-12-03: Brand & Accessibility Enforcement
+- **Decision**: Centralize all brand colors into semantic CSS variables (`--secondary`, `--accent`) in `globals.css` and enforce their usage in components.
+- **Rationale**: A critical audit revealed that global tokens were defaulting to white/gray, breaking the brand identity and accessibility (contrast). Enforcing tokens ensures consistency and WCAG compliance across the platform.
