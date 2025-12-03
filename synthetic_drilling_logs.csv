@@ -1,0 +1,12 @@
+Time,Depth,Thrust_Pressure,Rotation_Pressure,Fluid_Flow,Formation
+0,0.0,1200,800,40,Topsoil
+1,0.5,1250,820,40,Topsoil
+2,1.0,1300,850,42,Clay
+3,1.5,1350,900,42,Clay
+4,2.0,1400,950,45,Clay
+5,2.5,1450,1000,45,Clay/Shale Mix
+6,3.0,1500,1100,48,Clay/Shale Mix
+7,3.5,1550,1200,50,Shale
+8,4.0,1600,1300,50,Shale
+9,4.5,1650,1400,52,Rock (Granite)
+10,5.0,2000,2500,55,Rock (Granite)
