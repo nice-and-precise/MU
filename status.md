@@ -27,6 +27,10 @@
         - **Testing:** Fixed infinite loop in `timeRules.ts` causing test hangs. All tests passed (25/25).
         - **Linting:** Ran auto-fix on codebase.
         - **Stability:** Verified core logic (Math, WITSML, 216D) via Vitest.
+    - **Phase 6 Complete (Advanced Engineering):**
+        - **Visualization:** Integrated `EngineeringCharts.tsx` into `RodPlanningGrid`.
+        - **Physics:** Visualized Pullback Force and Annular Pressure vs Depth.
+        - **UI:** Added Tabs for seamless switching between 3D View and Engineering Charts.
 
 - **Phase 3 Complete (Safety & QC):**
     - **Safety:** Implemented `ToolboxTalkForm`, `JSABuilder`, and 811 Ticket Management.

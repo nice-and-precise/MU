@@ -5,10 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Trash2, Save, Loader2, AlertTriangle, Settings2 } from "lucide-react";
 import Borehole3D from '../drilling/Borehole3D';
+import EngineeringCharts from './EngineeringCharts';
 import { SurveyStation, Obstacle } from '@/lib/drilling/types';
-import { calculatePathWithRust } from '@/lib/api/engine';
 import { checkCollision, CollisionResult } from '@/lib/drilling/math/collision';
 import { getProjectObstacles } from '@/actions/obstacles';
 import { useParams } from 'next/navigation';
@@ -351,50 +352,72 @@ export default function RodPlanningGrid() {
                 </CardContent>
             </Card>
 
-            {/* Right: 3D Visualization */}
-            <Card className="lg:col-span-2 flex flex-col h-full overflow-hidden">
-                <CardHeader className="pb-2 flex flex-row justify-between items-center">
-                    <CardTitle>3D Preview</CardTitle>
-                    <div className="flex items-center gap-4">
-                        {hasCollision && (
-                            <div className="flex items-center text-red-600 animate-pulse font-bold">
-                                <AlertTriangle className="w-5 h-5 mr-2" />
-                                COLLISION DETECTED
-                            </div>
-                        )}
-                        {!hasCollision && hasWarning && (
-                            <div className="flex items-center text-orange-500 font-bold">
-                                <AlertTriangle className="w-5 h-5 mr-2" />
-                                PROXIMITY WARNING
-                            </div>
-                        )}
-                        {isCalculating && <Loader2 className="w-4 h-4 animate-spin text-slate-400" />}
-                    </div>
-                </CardHeader>
-                <CardContent className="flex-1 p-0 relative min-h-[400px]">
-                    <Borehole3D
-                        stations={calculatedPath}
-                        ghostPath={[]}
-                        viewMode="iso"
-                        obstacles={obstacles} // Pass obstacles to 3D view
-                    />
+            {/* Right: Visualization & Charts */}
+            <div className="lg:col-span-2 flex flex-col h-full overflow-hidden">
+                <Tabs defaultValue="3d" className="h-full flex flex-col">
+                    <div className="flex justify-between items-center mb-2">
+                        <TabsList>
+                            <TabsTrigger value="3d">3D View</TabsTrigger>
+                            <TabsTrigger value="charts">Engineering Charts</TabsTrigger>
+                        </TabsList>
 
-                    {/* Collision Warnings Overlay */}
-                    {collisionResults.length > 0 && (
-                        <div className="absolute bottom-4 left-4 right-4 bg-black/80 text-white p-4 rounded-md max-h-[150px] overflow-y-auto z-10">
-                            <h4 className="font-bold mb-2 text-sm uppercase tracking-wider">Safety Alerts</h4>
-                            <ul className="space-y-1 text-sm">
-                                {collisionResults.map((r, i) => (
-                                    <li key={i} className={r.isCollision ? 'text-red-400' : 'text-orange-300'}>
-                                        {r.isCollision ? 'CRITICAL: ' : 'WARNING: '}
-                                        {r.minDistance.toFixed(1)}ft from {r.obstacleType} at {r.stationMd.toFixed(0)}ft MD
-                                    </li>
-                                ))}
-                            </ul>
+                        {/* Status Indicators */}
+                        <div className="flex items-center gap-4">
+                            {hasCollision && (
+                                <div className="flex items-center text-red-600 animate-pulse font-bold text-sm">
+                                    <AlertTriangle className="w-4 h-4 mr-1" />
+                                    COLLISION
+                                </div>
+                            )}
+                            {!hasCollision && hasWarning && (
+                                <div className="flex items-center text-orange-500 font-bold text-sm">
+                                    <AlertTriangle className="w-4 h-4 mr-1" />
+                                    WARNING
+                                </div>
+                            )}
+                            {isCalculating && <Loader2 className="w-4 h-4 animate-spin text-slate-400" />}
                         </div>
-                    )}
-                </CardContent>
-            </Card>
+                    </div>
+
+                    <TabsContent value="3d" className="flex-1 mt-0 relative min-h-0">
+                        <Card className="h-full flex flex-col">
+                            <CardContent className="flex-1 p-0 relative">
+                                <Borehole3D
+                                    stations={calculatedPath}
+                                    ghostPath={[]}
+                                    viewMode="iso"
+                                    obstacles={obstacles}
+                                />
+                                {/* Collision Overlay */}
+                                {collisionResults.length > 0 && (
+                                    <div className="absolute bottom-4 left-4 right-4 bg-black/80 text-white p-4 rounded-md max-h-[150px] overflow-y-auto z-10">
+                                        <h4 className="font-bold mb-2 text-sm uppercase tracking-wider">Safety Alerts</h4>
+                                        <ul className="space-y-1 text-sm">
+                                            {collisionResults.map((r, i) => (
+                                                <li key={i} className={r.isCollision ? 'text-red-400' : 'text-orange-300'}>
+                                                    {r.isCollision ? 'CRITICAL: ' : 'WARNING: '}
+                                                    {r.minDistance.toFixed(1)}ft from {r.obstacleType} at {r.stationMd.toFixed(0)}ft MD
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    <TabsContent value="charts" className="flex-1 mt-0 overflow-y-auto">
+                        <EngineeringCharts
+                            data={rods.map((r, i) => ({
+                                md: calculatedPath[i + 1]?.md || 0,
+                                tvd: calculatedPath[i + 1]?.tvd || 0,
+                                pullback: r.pullback || 0,
+                                pMax: r.pMax || 0
+                            }))}
+                        />
+                    </TabsContent>
+                </Tabs>
+            </div>
         </div>
     );
 }
