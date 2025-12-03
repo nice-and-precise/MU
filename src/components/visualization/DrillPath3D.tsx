@@ -103,7 +103,7 @@ export default function DrillPath3D() {
     return (
         <div className="h-[500px] w-full bg-black rounded-xl border border-gray-800 overflow-hidden relative">
             <div className="absolute top-4 left-4 z-10">
-                <h3 className="text-neon-blue font-bold text-lg">3D Borehole View</h3>
+                <h3 className="text-sky-400 font-bold text-lg">3D Borehole View</h3>
                 <p className="text-xs text-gray-500">
                     {wasmLoaded ? "Powered by Rust/WASM Core (Simulated)" : "Loading Core..."}
                 </p>
@@ -127,8 +127,8 @@ export default function DrillPath3D() {
                 )}
 
                 {/* Bit Position */}
-                <mesh position={bitPosition}>
-                    <coneGeometry args={[3, 8, 16]} rotation={[Math.PI, 0, 0]} />
+                <mesh position={bitPosition} rotation={[Math.PI, 0, 0]}>
+                    <coneGeometry args={[3, 8, 16]} />
                     <meshStandardMaterial color="red" emissive="red" emissiveIntensity={0.8} />
                 </mesh>
             </Canvas>

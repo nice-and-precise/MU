@@ -24,7 +24,13 @@ export default function NewEstimatePage() {
             if (res.success && res.data) {
                 // Success - redirect handled by router.push
                 console.log("Redirecting to:", `/dashboard/estimating/${res.data.id}`);
-                router.push(`/dashboard/estimating/${res.data.id}`);
+                try {
+                    router.push(`/dashboard/estimating/${res.data.id}`);
+                } catch (navError) {
+                    console.error("Navigation error:", navError);
+                    alert("Estimate created, but failed to redirect. Please check the list.");
+                    setLoading(false);
+                }
             } else {
                 console.error("Estimate creation failed:", res.error);
                 alert(res.error || 'Failed to create estimate');

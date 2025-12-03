@@ -1,6 +1,6 @@
 # HDD-Nexus: Digital Subsurface Platform
 
-> **Status**: 🚀 Active Development | **Mode**: Turbo ⚡ | **Stack**: Next.js + TypeScript + Supabase
+> **Status**: 🚀 Active Development | **Mode**: Turbo ⚡ | **Stack**: Next.js + TypeScript + Supabase | **Phase**: Refinements & Polish
 
 **The Operating System for Horizontal Directional Drilling.**
 
@@ -91,6 +91,7 @@ sequenceDiagram
 
 ### 4. 👷 Field & Crew Management
 - **Smart Dispatch**: Drag-and-drop assignment of crews and equipment to projects.
+- **Employee Management**: Comprehensive profiles with DOB, Hire Date, and encrypted SSN storage.
 - **Mobile Time Cards**: GPS-verified clock-ins for field staff.
 - **Safety Compliance**: Digital Toolbox Talks, JSAs, and Vehicle Inspections (DVIR).
 - **Quality Control**: Punch lists and photo documentation directly from the field.
@@ -102,7 +103,7 @@ sequenceDiagram
 
 ### 6. 🧠 Drilling Operations (New)
 - **Rust/WASM Core**: High-performance physics engine for real-time torque & drag and hydraulics.
-- **AI Copilot**: Intelligent mud mix optimization and drilling advice.
+- **Drilling Advisor**: Intelligent mud mix optimization and drilling advice.
 - **3D Borehole View**: Realistic visualization of the wellbore with surface context.
 
 ---

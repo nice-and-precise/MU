@@ -31,6 +31,13 @@ const BoreholeTube = ({ stations, diameter = 1, color = "orange", dashed = false
     const path = useMemo(() => {
         if (stations.length < 2) return null;
         const points = stations.map(s => new THREE.Vector3(s.east, -s.tvd, -s.north));
+
+        // Validate points to prevent NaN crashes
+        if (points.some(p => isNaN(p.x) || isNaN(p.y) || isNaN(p.z))) {
+            console.warn("Invalid points detected in BoreholeTube path");
+            return null;
+        }
+
         return new THREE.CatmullRomCurve3(points);
     }, [stations]);
 
@@ -98,15 +105,23 @@ const ObstacleMesh = ({ obs }: { obs: Obstacle }) => {
     else if (typeLower.includes('abandoned')) color = '#64748b';
 
     // Calculate geometry from start/end points
-    const start = new THREE.Vector3(obs.startX, -obs.startY, -obs.startZ); // Assuming Y is depth in DB? No, Z is depth usually.
-    // Wait, in BoreholeTube we used: new THREE.Vector3(s.east, -s.tvd, -s.north)
-    // So: X=East, Y=-TVD(Depth), Z=-North
-    // In DB: startX, startY, startZ. Let's assume X=East, Y=North, Z=Depth(TVD)
-    const p1 = new THREE.Vector3(obs.startX, -obs.startY, -obs.startZ);
+    const startX = obs.startX;
+    const startY = -obs.startY;
+    const startZ = -obs.startZ;
+
+    if (isNaN(startX) || isNaN(startY) || isNaN(startZ)) return null;
+
+    const p1 = new THREE.Vector3(startX, startY, startZ);
 
     let p2: THREE.Vector3;
     if (obs.endX !== null && obs.endX !== undefined) {
-        p2 = new THREE.Vector3(obs.endX, -(obs.endY || obs.startY), -(obs.endZ || obs.startZ));
+        const endX = obs.endX;
+        const endY = -(obs.endY || obs.startY);
+        const endZ = -(obs.endZ || obs.startZ);
+
+        if (isNaN(endX) || isNaN(endY) || isNaN(endZ)) return null;
+
+        p2 = new THREE.Vector3(endX, endY, endZ);
     } else {
         // Point obstacle (e.g. manhole) - make it a small vertical cylinder or sphere
         p2 = p1.clone().add(new THREE.Vector3(0, 5, 0)); // 5ft tall marker

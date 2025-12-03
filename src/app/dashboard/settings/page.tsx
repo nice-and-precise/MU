@@ -7,7 +7,7 @@ export default async function SettingsPage() {
     return (
         <div className="p-8 max-w-4xl">
             <div className="mb-8 border-b border-gray-200 pb-4">
-                <h1 className="text-3xl font-bold text-[#003366] uppercase tracking-tight">System Settings</h1>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white uppercase tracking-tight">System Settings</h1>
                 <p className="text-gray-500 mt-1">Configuration and Preferences</p>
             </div>
 
@@ -118,7 +118,7 @@ export default async function SettingsPage() {
                 </div>
 
                 <div className="flex justify-end">
-                    <button className="px-6 py-3 bg-[#003366] text-white font-bold rounded hover:bg-[#002244] transition-colors shadow-sm">
+                    <button className="px-6 py-3 bg-blue-600 text-white font-bold rounded hover:bg-blue-700 transition-colors shadow-sm">
                         Save Changes
                     </button>
                 </div>

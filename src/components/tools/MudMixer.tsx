@@ -56,7 +56,7 @@ export default function MudMixer() {
 
     return (
         <div className="p-6 bg-gray-900 rounded-xl border border-gray-700 shadow-2xl">
-            <h2 className="text-2xl font-bold text-neon-green mb-6">Mud Mixing Calculator</h2>
+            <h2 className="text-2xl font-bold text-emerald-400 mb-6">Mud Mixing Calculator</h2>
 
             <div className="grid grid-cols-2 gap-6 mb-6">
                 <div>
@@ -87,25 +87,25 @@ export default function MudMixer() {
                 <h3 className="text-lg font-semibold text-white mb-2">Recommended Mix</h3>
                 <div className="flex justify-between text-gray-300">
                     <span>Bentonite (50lb bags):</span>
-                    <span className="font-bold text-neon-blue">{mix.bentonite.toFixed(1)}</span>
+                    <span className="font-bold text-sky-400">{mix.bentonite.toFixed(1)}</span>
                 </div>
                 <div className="flex justify-between text-gray-300">
                     <span>Polymer (jugs):</span>
-                    <span className="font-bold text-neon-blue">{mix.polymer.toFixed(1)}</span>
+                    <span className="font-bold text-sky-400">{mix.polymer.toFixed(1)}</span>
                 </div>
             </div>
 
             <button
                 onClick={optimizeWithAI}
                 disabled={loading}
-                className="w-full py-3 bg-blue-600 text-white font-bold rounded hover:bg-blue-700 transition-colors"
+                className="w-full py-3 bg-blue-900 text-white font-bold rounded hover:bg-blue-800 transition-colors uppercase tracking-wider"
             >
-                {loading ? 'Optimizing...' : 'Optimize Mix'}
+                {loading ? 'CALCULATING...' : 'CALCULATE OPTIMAL MIX'}
             </button>
 
             {advice && (
-                <div className="mt-6 p-4 bg-gray-800 rounded border-l-4 border-neon-green text-sm text-gray-300 whitespace-pre-wrap">
-                    <strong className="block text-white mb-2">Optimization Result:</strong>
+                <div className="mt-6 p-4 bg-gray-800 rounded border-l-4 border-emerald-500 text-sm text-gray-300 whitespace-pre-wrap font-mono">
+                    <strong className="block text-white mb-2">ADVISOR OUTPUT:</strong>
                     {advice}
                 </div>
             )}

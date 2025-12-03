@@ -151,6 +151,14 @@ export function EmployeeManager({ initialEmployees }: EmployeeManagerProps) {
                                         <Label>Home Address</Label>
                                         <Input value={formData.address || ""} onChange={e => handleChange("address", e.target.value)} />
                                     </div>
+                                    <div className="space-y-2">
+                                        <Label>Date of Birth</Label>
+                                        <Input
+                                            type="date"
+                                            value={formData.dob ? new Date(formData.dob).toISOString().split('T')[0] : ""}
+                                            onChange={e => handleChange("dob", e.target.value ? new Date(e.target.value) : null)}
+                                        />
+                                    </div>
                                 </div>
                             </div>
 
@@ -192,6 +200,14 @@ export function EmployeeManager({ initialEmployees }: EmployeeManagerProps) {
                                             <SelectItem value="LEAVE">On Leave</SelectItem>
                                         </SelectContent>
                                     </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Hire Date</Label>
+                                    <Input
+                                        type="date"
+                                        value={formData.hireDate ? new Date(formData.hireDate).toISOString().split('T')[0] : ""}
+                                        onChange={e => handleChange("hireDate", e.target.value ? new Date(e.target.value) : null)}
+                                    />
                                 </div>
                             </div>
 

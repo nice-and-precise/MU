@@ -3,12 +3,14 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
-import { Menu, X, Lock } from "lucide-react";
+import { Menu, X, Lock, LayoutDashboard } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 export default function Navigation() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { scrollY } = useScroll();
+    const { data: session } = useSession();
 
     useMotionValueEvent(scrollY, "change", (latest) => {
         setIsScrolled(latest > 50);
@@ -21,6 +23,10 @@ export default function Navigation() {
         { name: "Safety", href: "#safety" },
         { name: "Contact", href: "#contact" },
     ];
+
+    const portalLink = session ? "/dashboard" : "/login";
+    const portalText = session ? "Dashboard" : "Client Portal";
+    const PortalIcon = session ? LayoutDashboard : Lock;
 
     return (
         <motion.nav
@@ -52,13 +58,13 @@ export default function Navigation() {
                         </Link>
                     ))}
 
-                    {/* Client Portal Button */}
+                    {/* Client Portal / Dashboard Button */}
                     <Link
-                        href="/login"
+                        href={portalLink}
                         className="group flex items-center space-x-2 px-5 py-2 border border-white/30 rounded-full text-white hover:bg-white hover:text-charcoal transition-all duration-300"
                     >
-                        <Lock className="w-4 h-4" />
-                        <span className="font-sans text-sm font-medium">Client Portal</span>
+                        <PortalIcon className="w-4 h-4" />
+                        <span className="font-sans text-sm font-medium">{portalText}</span>
                     </Link>
                 </div>
 
@@ -89,12 +95,12 @@ export default function Navigation() {
                             </Link>
                         ))}
                         <Link
-                            href="/login"
+                            href={portalLink}
                             className="flex items-center space-x-2 px-8 py-3 border border-white/30 rounded-full text-white hover:bg-white hover:text-charcoal transition-all duration-300"
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
-                            <Lock className="w-5 h-5" />
-                            <span className="font-sans text-lg font-medium">Client Portal</span>
+                            <PortalIcon className="w-5 h-5" />
+                            <span className="font-sans text-lg font-medium">{portalText}</span>
                         </Link>
                     </motion.div>
                 )}

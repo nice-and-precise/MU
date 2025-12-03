@@ -13,31 +13,19 @@ The system accepts drilling data via a REST API endpoint. While we support the W
 
 ## Supported Formats
 
-### 1. JSON (Recommended)
-Send a JSON object or array of objects with the following structure:
-```json
-{
-  "boreId": "bore-uuid-123",
-  "depth": 15.0,        // Rod length or incremental depth in feet
-  "pitch": 2.5,         // Percentage or Degrees (system assumes Degrees)
-  "azimuth": 185.0,     // Compass heading
-  "timestamp": "2023-10-27T10:00:00Z"
-}
+### 1. WITSML XML (v1.3.1 / v1.4.1) - **Currently Supported**
+Send a raw XML string containing `trajectory` or `log` objects.
+```xml
+<trajectorys xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+  <trajectory uidWell="well-1" uidWellbore="bore-1" uid="traj-1">
+    <trajectoryStation uid="stn-1">
+      <md uom="ft">100.0</md>
+      <incl uom="dega">2.5</incl>
+      <azi uom="dega">45.0</azi>
+    </trajectoryStation>
+  </trajectory>
+</trajectorys>
 ```
 
-### 2. CSV (DCI Export Style)
-Send a raw CSV string. The system expects the following column order (no header required if strictly following this):
-`Timestamp, BoreID, Depth, Pitch, Azimuth`
-
-Example:
-```csv
-2023-10-27T10:00:00Z,bore-123,15,2.5,185
-```
-
-## Configuring Vermeer / DCI DigiTrak
-1.  **Export LWD Data**: Use the DCI LWD Mobile App to export your bore log.
-2.  **Select Format**: Choose "CSV" or "Text" export.
-3.  **Upload**: Use the "Import Data" feature in the Midwest Underground Dashboard, or use a custom script to POST the file to the API endpoint above.
-
-## Future WITSML Support
-Native WITSML XML support (v1.3.1 / v1.4.1) is partially supported via the `/api/witsml` endpoint (POST XML). Full TCP listener support is planned.
+### 2. JSON / CSV - **Planned**
+Direct JSON and CSV ingestion is currently in development. For now, please convert data to WITSML XML or use the manual import tools in the dashboard.

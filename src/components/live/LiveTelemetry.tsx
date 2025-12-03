@@ -157,9 +157,20 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
 
     const handleSimulate = async () => {
         setIsSimulating(true);
-        await simulateDrillingData(boreId);
-        await fetchData(); // Immediate update
-        setIsSimulating(false);
+        try {
+            const result = await simulateDrillingData(boreId);
+            if (result.success) {
+                await fetchData(); // Immediate update
+            } else {
+                console.error("Simulation failed:", result.error);
+                alert("Failed to simulate data packet: " + result.error);
+            }
+        } catch (error) {
+            console.error("Error triggering simulation:", error);
+            alert("An unexpected error occurred during simulation.");
+        } finally {
+            setIsSimulating(false);
+        }
     };
 
     const handleImport = async (stations: SurveyStation[]) => {
