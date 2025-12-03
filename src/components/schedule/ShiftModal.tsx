@@ -60,7 +60,7 @@ export function ShiftModal({ isOpen, onClose, shift, crews, employees, projects 
         }
     }, [shift, isOpen]);
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (force: boolean = false) => {
         setIsLoading(true);
         const startDateTime = new Date(`${formData.date}T${formData.startTime}`);
         const endDateTime = new Date(`${formData.date}T${formData.endTime}`);
@@ -79,7 +79,8 @@ export function ShiftModal({ isOpen, onClose, shift, crews, employees, projects 
                     employeeId: formData.resourceType === 'EMPLOYEE' ? formData.resourceId : undefined,
                     startTime: startDateTime,
                     endTime: endDateTime,
-                    notes: formData.notes
+                    notes: formData.notes,
+                    force
                 });
             }
             router.refresh();
