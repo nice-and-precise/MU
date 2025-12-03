@@ -49,10 +49,10 @@ export function ShiftCard({ shift }: ShiftCardProps) {
                 </div>
             </CardHeader>
             <CardContent className="p-4 pt-2 space-y-3">
-                {shift.project.address && (
+                {shift.project.location && (
                     <div className="flex items-start gap-2 text-sm text-gray-600">
                         <MapPin className="w-4 h-4 mt-0.5 shrink-0" />
-                        <span>{shift.project.address}</span>
+                        <span>{shift.project.location}</span>
                     </div>
                 )}
                 {shift.notes && (
@@ -65,7 +65,7 @@ export function ShiftCard({ shift }: ShiftCardProps) {
                 <Button
                     variant="outline"
                     className="w-full"
-                    onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(shift.project.address || '')}`, '_blank')}
+                    onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(shift.project.location || '')}`, '_blank')}
                 >
                     <Navigation className="w-4 h-4 mr-2" /> Map
                 </Button>
