@@ -1,4 +1,4 @@
-import { getEmployee, updateEmployee } from "@/actions/labor";
+import { getEmployee, updateEmployee } from "@/actions/employees";
 import { notFound, redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,8 @@ import { revalidatePath } from "next/cache";
 
 export default async function EmployeeEditPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const employee = await getEmployee(id);
+    const response = await getEmployee(id);
+    const employee = response.success ? response.data : null;
 
     if (!employee) {
         notFound();
@@ -19,16 +20,14 @@ export default async function EmployeeEditPage({ params }: { params: Promise<{ i
     async function update(formData: FormData) {
         "use server";
         const data = {
-            firstName: formData.get("firstName"),
-            lastName: formData.get("lastName"),
-            role: formData.get("role"),
+            firstName: formData.get("firstName") as string,
+            lastName: formData.get("lastName") as string,
+            role: formData.get("role") as string,
             hourlyRate: Number(formData.get("hourlyRate")),
-            email: formData.get("email"),
-            phone: formData.get("phone"),
-            address: formData.get("address"),
-            ssn: formData.get("ssn"),
-            // dob: formData.get("dob") ? new Date(formData.get("dob") as string) : null, // Handle date parsing if needed
-            // hireDate: formData.get("hireDate") ? new Date(formData.get("hireDate") as string) : null,
+            email: formData.get("email") as string,
+            phone: formData.get("phone") as string,
+            address: formData.get("address") as string,
+            ssn: formData.get("ssn") as string,
         };
 
         await updateEmployee(id, data);

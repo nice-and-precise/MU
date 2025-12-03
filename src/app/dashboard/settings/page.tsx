@@ -1,8 +1,9 @@
 import { EmployeeManager } from "@/components/financials/EmployeeManager";
-import { getEmployees } from "@/actions/staff";
+import { getEmployees } from "@/actions/employees";
 
 export default async function SettingsPage() {
-    const { data: employees } = await getEmployees();
+    const { data } = await getEmployees();
+    const employees = data || [];
 
     return (
         <div className="p-8 max-w-4xl">

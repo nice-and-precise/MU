@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UserCog, Briefcase, MapPin, Plus, Save, Loader2 } from "lucide-react";
-import { updateEmployee, createEmployee } from "@/actions/staff";
+import { updateEmployee, createEmployee } from "@/actions/employees";
 import { Employee, Crew, CrewMember } from "@prisma/client";
 
 type EmployeeWithRelations = Employee & {

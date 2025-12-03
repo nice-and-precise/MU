@@ -7,7 +7,7 @@ import { Users, UserPlus, X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Employee, Asset, Project } from "@prisma/client";
-import { dispatchCrew } from "@/actions/staff";
+import { dispatchCrew } from "@/actions/crews";
 
 interface CrewDispatchProps {
     variant?: "default" | "owner";

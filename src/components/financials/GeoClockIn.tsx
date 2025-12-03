@@ -5,7 +5,7 @@ import { BigButton } from "@/components/ui/BigButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Clock, AlertTriangle, Loader2 } from "lucide-react";
 import { InspectionChecklist } from "@/components/field/InspectionChecklist";
-import { clockIn, clockOut, getClockStatus } from "@/actions/staff";
+import { clockIn, clockOut, getClockStatus } from "@/actions/time";
 
 // Haversine formula to calculate distance in feet
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number) {

@@ -104,6 +104,7 @@ model Project {
   gsocTickets           GsocTicket[]
   damageEvents          DamageEvent[]
   complianceEvents      ComplianceEvent[]
+  shifts                Shift[]
 
   @@index([status])
   @@index([createdById])
@@ -774,6 +775,7 @@ model Asset {
   usageLogs       EquipmentUsage[]
   inspections     Inspection[]
   jobAssets       JobAsset[]
+  shiftAssignments ShiftAsset[]
 
   @@index([projectId])
   @@index([status])
@@ -956,6 +958,7 @@ model Employee {
   documents   StaffDocument[]
   reviews     PerformanceReview[]
   statusHistory EmploymentStatusHistory[]
+  shifts        Shift[]
   
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
@@ -978,6 +981,7 @@ model Crew {
   foremanId String
   foreman   Employee   @relation("CrewForeman", fields: [foremanId], references: [id])
   members   CrewMember[]
+  shifts    Shift[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 }
@@ -1312,4 +1316,55 @@ model ComplianceEvent {
   @@index([projectId])
   @@index([ticketId])
   @@index([eventType])
+}
+
+// --- Scheduling Models ---
+
+model Shift {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  crewId      String?
+  crew        Crew?    @relation(fields: [crewId], references: [id])
+  employeeId  String?
+  employee    Employee? @relation(fields: [employeeId], references: [id])
+  
+  startTime   DateTime
+  endTime     DateTime
+  
+  status      String   @default("SCHEDULED") // SCHEDULED, CONFIRMED, COMPLETED, CANCELLED
+  notes       String?
+  
+  assets      ShiftAsset[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([crewId])
+  @@index([employeeId])
+  @@index([startTime])
+}
+
+model ShiftAsset {
+  id        String   @id @default(cuid())
+  shiftId   String
+  shift     Shift    @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  assetId   String
+  asset     Asset    @relation(fields: [assetId], references: [id])
+  
+  createdAt DateTime @default(now())
+
+  @@index([shiftId])
+  @@index([assetId])
+}
+
+model ScheduleTemplate {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  data        String   // JSON blob
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
