@@ -114,17 +114,20 @@ export default function Project3DViewer({ initialStations, obstacles = [], targe
                 </div>
 
                 <div className="flex-1 flex flex-col gap-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex flex-col items-center justify-center border border-gray-200 dark:border-gray-700 flex-1">
-                        <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Steering Orientation</h3>
-                        <SteeringGauge toolface={0} targetToolface={90} />
-                        <div className="mt-4 grid grid-cols-2 gap-4 w-full text-center">
-                            <div>
-                                <div className="text-xs text-gray-500 uppercase">Pitch</div>
-                                <div className="text-xl font-mono font-bold text-purple-500">{currentStation.inc.toFixed(1)}%</div>
+                    <div className="bg-slate-900 rounded-xl shadow-lg p-6 flex flex-col items-center justify-center border border-slate-800 flex-1 relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-slate-800/50 to-transparent pointer-events-none"></div>
+                        <h3 className="text-xs font-bold text-slate-400 mb-4 uppercase tracking-widest z-10">Steering Orientation</h3>
+                        <div className="relative z-10 scale-110">
+                            <SteeringGauge toolface={0} targetToolface={90} />
+                        </div>
+                        <div className="mt-6 grid grid-cols-2 gap-8 w-full text-center z-10">
+                            <div className="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
+                                <div className="text-[10px] text-slate-400 uppercase tracking-wider mb-1">Pitch</div>
+                                <div className="text-2xl font-mono font-bold text-purple-400">{currentStation.inc.toFixed(1)}%</div>
                             </div>
-                            <div>
-                                <div className="text-xs text-gray-500 uppercase">Azimuth</div>
-                                <div className="text-xl font-mono font-bold text-emerald-500">{currentStation.azi.toFixed(1)}°</div>
+                            <div className="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
+                                <div className="text-[10px] text-slate-400 uppercase tracking-wider mb-1">Azimuth</div>
+                                <div className="text-2xl font-mono font-bold text-emerald-400">{currentStation.azi.toFixed(1)}°</div>
                             </div>
                         </div>
                     </div>

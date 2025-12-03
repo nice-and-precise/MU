@@ -9,7 +9,8 @@
     "screenSize": "1920x911",
     "consoleLogs": [],
     "userInfo": null,
-    "screenshot": "/bug_reports/bug-1764518500472.png"
+    "screenshot": "/bug_reports/bug-1764518500472.png",
+    "status": "fixed"
   },
   {
     "id": "1764638923367",
@@ -28,7 +29,8 @@
       "name": "John Owner",
       "email": "owner@midwestunderground.com"
     },
-    "screenshot": "/bug_reports/bug-1764638923366.png"
+    "screenshot": "/bug_reports/bug-1764638923366.png",
+    "status": "fixed"
   },
   {
     "id": "1764639025729",
@@ -47,7 +49,8 @@
       "name": "John Owner",
       "email": "owner@midwestunderground.com"
     },
-    "screenshot": "/bug_reports/bug-1764639025727.png"
+    "screenshot": "/bug_reports/bug-1764639025727.png",
+    "status": "open"
   },
   {
     "id": "1764639103582",
@@ -66,7 +69,8 @@
       "name": "John Owner",
       "email": "owner@midwestunderground.com"
     },
-    "screenshot": "/bug_reports/bug-1764639103581.png"
+    "screenshot": "/bug_reports/bug-1764639103581.png",
+    "status": "fixed"
   },
   {
     "id": "1764646834696",
@@ -84,7 +88,8 @@
       "name": "John Owner",
       "email": "owner@midwestunderground.com"
     },
-    "screenshot": "/bug_reports/bug-1764646834692.png"
+    "screenshot": "/bug_reports/bug-1764646834692.png",
+    "status": "fixed"
   },
   {
     "id": "1764646908578",
@@ -116,7 +121,8 @@
       "name": "John Owner",
       "email": "owner@midwestunderground.com"
     },
-    "screenshot": "/bug_reports/bug-1764646908577.png"
+    "screenshot": "/bug_reports/bug-1764646908577.png",
+    "status": "fixed"
   },
   {
     "id": "1764646970281",
@@ -179,7 +185,8 @@
       "name": "John Owner",
       "email": "owner@midwestunderground.com"
     },
-    "screenshot": "/bug_reports/bug-1764646970280.png"
+    "screenshot": "/bug_reports/bug-1764646970280.png",
+    "status": "fixed"
   },
   {
     "id": "1764646994340",
@@ -242,7 +249,8 @@
       "name": "John Owner",
       "email": "owner@midwestunderground.com"
     },
-    "screenshot": "/bug_reports/bug-1764646994338.png"
+    "screenshot": "/bug_reports/bug-1764646994338.png",
+    "status": "fixed"
   },
   {
     "id": "1764647076427",
@@ -308,7 +316,8 @@
       "name": "John Owner",
       "email": "owner@midwestunderground.com"
     },
-    "screenshot": "/bug_reports/bug-1764647076426.png"
+    "screenshot": "/bug_reports/bug-1764647076426.png",
+    "status": "fixed"
   },
   {
     "id": "1764647694012",
@@ -374,7 +383,8 @@
       "name": "John Owner",
       "email": "owner@midwestunderground.com"
     },
-    "screenshot": "/bug_reports/bug-1764647694011.png"
+    "screenshot": "/bug_reports/bug-1764647694011.png",
+    "status": "fixed"
   },
   {
     "id": "1764720726252",
@@ -423,7 +433,8 @@
       "name": "John Owner",
       "email": "owner@midwestunderground.com"
     },
-    "screenshot": "/bug_reports/bug-1764720726246.png"
+    "screenshot": "/bug_reports/bug-1764720726246.png",
+    "status": "fixed"
   },
   {
     "id": "1764734021942",
@@ -441,7 +452,8 @@
       "name": "John Owner",
       "email": "owner@midwestunderground.com"
     },
-    "screenshot": "/bug_reports/bug-1764734021940.png"
+    "screenshot": "/bug_reports/bug-1764734021940.png",
+    "status": "fixed"
   },
   {
     "id": "1764734104829",
@@ -461,7 +473,8 @@
       "name": "John Owner",
       "email": "owner@midwestunderground.com"
     },
-    "screenshot": "/bug_reports/bug-1764734104828.png"
+    "screenshot": "/bug_reports/bug-1764734104828.png",
+    "status": "fixed"
   },
   {
     "id": "1764734144258",
@@ -481,6 +494,133 @@
       "name": "John Owner",
       "email": "owner@midwestunderground.com"
     },
-    "screenshot": "/bug_reports/bug-1764734144257.png"
+    "screenshot": "/bug_reports/bug-1764734144257.png",
+    "status": "fixed"
+  },
+  {
+    "id": "1764786232107",
+    "timestamp": "2025-12-03T18:23:51.951Z",
+    "description": "need to address the colors of text and the background, it is difficult to read, check for accessibility standards, apply the changes globally across the entire site ",
+    "element": "div.space-y-8.p-6 (Crew Members\n0 Assigned\nEMPLOYEE\nSelect Employee\nR...)",
+    "path": "/dashboard/crew",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "screenSize": "1920x911",
+    "consoleLogs": [
+      "[LOG] [Fast Refresh] done in 412ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 921ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[WARN] The width(-1) and height(-1) of chart should be greater than 0,\n       please check the style of container, or the props width(100%) and height(100%),\n       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the\n       height and width.",
+      "[WARN] The width(-1) and height(-1) of chart should be greater than 0,\n       please check the style of container, or the props width(100%) and height(100%),\n       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the\n       height and width.",
+      "[LOG] [Fast Refresh] done in 107ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 4170ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[WARN] %c%s%c [next-auth][warn][DEBUG_ENABLED] background: #e6e6e6;background: light-dark(rgba(0,0,0,0.1), rgba(255,255,255,0.25));color: #000000;color: light-dark(#000000, #ffffff);border-radius: 2px  Server   \nhttps://next-auth.js.org/warnings#debug_enabled",
+      "[LOG] [Fast Refresh] done in 1335ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 241ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 619ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 2442ms"
+    ],
+    "userInfo": {
+      "name": "John Owner",
+      "email": "owner@midwestunderground.com"
+    },
+    "screenshot": "/bug_reports/bug-1764786232106.png",
+    "status": "fixed"
+  },
+  {
+    "id": "1764786302816",
+    "timestamp": "2025-12-03T18:25:02.784Z",
+    "description": "3D Context Lost\nThe graphics driver crashed or was reset.\n\ndouble check this stuff since we added more RUST and math compute stuff ",
+    "element": "div.absolute.inset-0.z-50.flex.flex-col.items-center.justify-center.bg-black/80.text-white (3D Context Lost\n\nThe graphics driver crashed or wa...)",
+    "path": "/dashboard/map/scenarios",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "screenSize": "1920x911",
+    "consoleLogs": [
+      "[WARN] WebGL Context Lost",
+      "[WARN] WebGL Context Lost",
+      "[LOG] THREE.WebGLRenderer: Context Lost.",
+      "[LOG] [Fast Refresh] done in 148ms",
+      "[LOG] [Fast Refresh] rebuilding"
+    ],
+    "userInfo": {
+      "name": "John Owner",
+      "email": "owner@midwestunderground.com"
+    },
+    "screenshot": "/bug_reports/bug-1764786302816.png",
+    "status": "fixed"
+  },
+  {
+    "id": "1764786426806",
+    "timestamp": "2025-12-03T18:27:06.770Z",
+    "description": "build this out so when I click on the button it takes me to the employee profile page to edit their information, research other SaaS and use them for inspiration on how it should function",
+    "element": "div.bg-card.text-card-foreground.flex.flex-col.gap-6.rounded-xl.border.py-6.shadow-sm (Employee Directory\nAdd Employee\nEthan Abbott\n\nFore...)",
+    "path": "/dashboard/labor",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "screenSize": "1920x911",
+    "consoleLogs": [],
+    "userInfo": {
+      "name": "John Owner",
+      "email": "owner@midwestunderground.com"
+    },
+    "screenshot": "/bug_reports/bug-1764786426805.png",
+    "status": "fixed"
+  },
+  {
+    "id": "1764786499283",
+    "timestamp": "2025-12-03T18:28:19.250Z",
+    "description": "dont use the same profile pic more than once, if you need more profile pics make some fake ones and you can use the profile pics you already have for inspiration ",
+    "element": "div.grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-3.gap-4 (Ethan Abbott\n\nForeman • $37/hr\n\nBrant Abernathy\n\nO...)",
+    "path": "/dashboard/labor",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "screenSize": "1920x911",
+    "consoleLogs": [],
+    "userInfo": {
+      "name": "John Owner",
+      "email": "owner@midwestunderground.com"
+    },
+    "screenshot": "/bug_reports/bug-1764786499282.png",
+    "status": "fixed"
+  },
+  {
+    "id": "1764786558288",
+    "timestamp": "2025-12-03T18:29:18.256Z",
+    "description": "Labor Management is not visible in the navbar and that should be addressed. look for any other pages that are not connected to a navbar as well and address that as well",
+    "element": "nav.flex-1.px-4.space-y-6.mt-6.overflow-y-auto (OVERVIEW\n\nDashboard\nProjects\n3D Maps\nLive Tracking...)",
+    "path": "/dashboard/labor",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "screenSize": "1920x911",
+    "consoleLogs": [],
+    "userInfo": {
+      "name": "John Owner",
+      "email": "owner@midwestunderground.com"
+    },
+    "screenshot": "/bug_reports/bug-1764786558287.png",
+    "status": "fixed"
+  },
+  {
+    "id": "1764786701889",
+    "timestamp": "2025-12-03T18:31:41.857Z",
+    "description": "these all look like the same project, make sure we dont have duplicates that are confusing the data and how everything works together and ensure the dummy data is all indeed separate and ties to specific jobs, assets people and so on",
+    "element": "div.grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-3.gap-6 (Fiber Expansion Phase 1\nMinneapolis, MN\n1 Active B...)",
+    "path": "/dashboard/map",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "screenSize": "1920x911",
+    "consoleLogs": [
+      "[LOG] [Fast Refresh] done in 528ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[WARN] The width(-1) and height(-1) of chart should be greater than 0,\n       please check the style of container, or the props width(100%) and height(100%),\n       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the\n       height and width.",
+      "[WARN] The width(-1) and height(-1) of chart should be greater than 0,\n       please check the style of container, or the props width(100%) and height(100%),\n       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the\n       height and width."
+    ],
+    "userInfo": {
+      "name": "John Owner",
+      "email": "owner@midwestunderground.com"
+    },
+    "screenshot": "/bug_reports/bug-1764786701888.png",
+    "status": "fixed"
   }
 ]

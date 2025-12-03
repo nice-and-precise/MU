@@ -38,7 +38,7 @@ export default function Navigation() {
         >
             <div className="container mx-auto px-6 flex justify-between items-center">
                 {/* Logo */}
-                <Link href="/" className="relative z-50 bg-white/10 backdrop-blur-sm p-2 rounded-lg hover:bg-white/20 transition-colors">
+                <Link href="/" className="relative z-50 bg-charcoal/80 backdrop-blur-md p-2 rounded-lg hover:bg-charcoal/90 transition-colors border border-white/10">
                     <img
                         src="/images/MidwestUnderground_Logo (1).png"
                         alt="Midwest Underground"
@@ -61,7 +61,7 @@ export default function Navigation() {
                     {/* Client Portal / Dashboard Button */}
                     <Link
                         href={portalLink}
-                        className="group flex items-center space-x-2 px-5 py-2 border border-white/30 rounded-full text-white hover:bg-white hover:text-charcoal transition-all duration-300"
+                        className="group relative z-50 cursor-pointer flex items-center space-x-2 px-5 py-2 border border-white/30 rounded-full text-white hover:bg-white hover:text-charcoal transition-all duration-300"
                     >
                         <PortalIcon className="w-4 h-4" />
                         <span className="font-sans text-sm font-medium">{portalText}</span>

@@ -108,10 +108,10 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
     }
 
     return (
-        <Card className="max-w-4xl mx-auto shadow-lg border-t-4 border-t-[#003366]">
-            <CardHeader className="bg-slate-50 border-b">
+        <Card className="max-w-4xl mx-auto shadow-lg border-t-4 border-t-[#003366] bg-white dark:bg-slate-900">
+            <CardHeader className="bg-slate-50 dark:bg-slate-800 border-b dark:border-slate-700">
                 <CardTitle className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-[#003366]">
+                    <div className="flex items-center gap-2 text-[#003366] dark:text-blue-400">
                         <Users className="h-6 w-6" />
                         {variant === "owner" ? "Advanced Crew Dispatch" : "Crew Dispatch"}
                     </div>
@@ -214,7 +214,7 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
                                 <div key={member.id} className="flex items-center justify-between p-4 bg-white rounded-xl border shadow-sm hover:shadow-md transition-shadow group">
                                     <div className="flex items-center gap-3">
                                         <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold text-white ${member.role === 'FOREMAN' ? 'bg-blue-600' :
-                                                member.role === 'OPERATOR' ? 'bg-orange-500' : 'bg-slate-500'
+                                            member.role === 'OPERATOR' ? 'bg-orange-500' : 'bg-slate-500'
                                             }`}>
                                             {member.firstName[0]}{member.lastName[0]}
                                         </div>

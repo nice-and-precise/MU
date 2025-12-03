@@ -177,7 +177,7 @@ const TargetBox = ({ target }: { target: TargetZone }) => {
 
 const VoxelSoilLayers = () => {
     // Voxel Grid Parameters
-    const gridSize = 20; // Size of each voxel cube
+    const gridSize = 40; // Size of each voxel cube (Increased for performance)
     const rangeX = 1000; // Total width
     const rangeZ = 1000; // Total length
     const rangeY = 100;  // Depth

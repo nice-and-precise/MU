@@ -31,7 +31,51 @@ export async function createEmployee(data: { firstName: string; lastName: string
 export async function getEmployees() {
     const session = await getServerSession(authOptions);
     if (!session) return [];
-    return await prisma.employee.findMany({ orderBy: { lastName: 'asc' } });
+    return await prisma.employee.findMany({
+        orderBy: { lastName: 'asc' },
+        include: { user: true }
+    });
+}
+
+export async function getEmployee(id: string) {
+    const session = await getServerSession(authOptions);
+    if (!session) return null;
+    return await prisma.employee.findUnique({
+        where: { id },
+        include: { user: true }
+    });
+}
+
+export async function updateEmployee(id: string, data: any) {
+    const session = await getServerSession(authOptions);
+    if (!session) return { success: false, error: 'Unauthorized' };
+
+    try {
+        const employee = await prisma.employee.update({
+            where: { id },
+            data: {
+                firstName: data.firstName,
+                lastName: data.lastName,
+                role: data.role,
+                hourlyRate: data.hourlyRate,
+                email: data.email,
+                phone: data.phone,
+                address: data.address,
+                ssn: data.ssn,
+                dob: data.dob,
+                status: data.status,
+                hireDate: data.hireDate,
+                payType: data.payType,
+                taxStatus: data.taxStatus,
+            }
+        });
+        revalidatePath('/dashboard/labor');
+        revalidatePath(`/dashboard/labor/${id}`);
+        return { success: true, data: employee };
+    } catch (error) {
+        console.error('Failed to update employee:', error);
+        return { success: false, error: 'Failed to update employee' };
+    }
 }
 
 // --- Crews ---

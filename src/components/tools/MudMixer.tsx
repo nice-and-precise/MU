@@ -98,14 +98,14 @@ export default function MudMixer() {
             <button
                 onClick={optimizeWithAI}
                 disabled={loading}
-                className="w-full py-3 bg-blue-900 text-white font-bold rounded hover:bg-blue-800 transition-colors uppercase tracking-wider"
+                className="w-full py-3 bg-gradient-to-r from-slate-700 to-slate-800 border border-slate-600 text-white font-bold rounded hover:from-slate-600 hover:to-slate-700 transition-all uppercase tracking-wider shadow-lg"
             >
                 {loading ? 'CALCULATING...' : 'CALCULATE OPTIMAL MIX'}
             </button>
 
             {advice && (
                 <div className="mt-6 p-4 bg-gray-800 rounded border-l-4 border-emerald-500 text-sm text-gray-300 whitespace-pre-wrap font-mono">
-                    <strong className="block text-white mb-2">ADVISOR OUTPUT:</strong>
+                    <strong className="block text-white mb-2">SYSTEM RECOMMENDATION:</strong>
                     {advice}
                 </div>
             )}

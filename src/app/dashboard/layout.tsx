@@ -82,6 +82,14 @@ export default async function DashboardLayout({
                             <Users className="h-4 w-4" />
                             <span className="text-sm">Dispatch</span>
                         </Link>
+                        <Link href="/dashboard/labor" className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition-colors">
+                            <Users className="h-4 w-4" />
+                            <span className="text-sm">Labor Management</span>
+                        </Link>
+                        <Link href="/dashboard/assets" className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition-colors">
+                            <Package className="h-4 w-4" />
+                            <span className="text-sm">Assets</span>
+                        </Link>
                         {session.user.role === "OWNER" && (
                             <>
                                 <Link href="/dashboard/admin" className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition-colors">

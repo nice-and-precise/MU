@@ -110,10 +110,16 @@ export default async function SettingsPage() {
 
                 {/* Employee Management */}
                 <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                        <span className="w-1 h-6 bg-green-600 mr-3 rounded-sm"></span>
-                        Employee Management
-                    </h2>
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-lg font-bold text-gray-900 flex items-center">
+                            <span className="w-1 h-6 bg-green-600 mr-3 rounded-sm"></span>
+                            Employee Management
+                        </h2>
+                        <a href="/dashboard/labor" className="text-blue-600 hover:text-blue-800 font-medium text-sm">
+                            Manage All Employees &rarr;
+                        </a>
+                    </div>
+                    <p className="text-gray-500 mb-4">Manage your workforce, assign roles, and track certifications.</p>
                     <EmployeeManager initialEmployees={employees || []} />
                 </div>
 

@@ -140,6 +140,21 @@ For systems with limited RAM (e.g., 16GB), use the optimized startup script:
 
 ---
 
+## 🐛 Bug Reporting & Quality Assurance
+
+We maintain a rigorous quality assurance process. Reported issues are tracked in `bug_reports.json`.
+
+- **Tracking**: All bugs are logged with timestamps, descriptions, and screenshots.
+- **Status**: Bugs are marked as `open` or `fixed` in the system.
+- **Recent Fixes**:
+    - Addressed critical navigation issues (Client Portal, Sidebar).
+    - Improved UI contrast and accessibility on Dashboard and Crew pages.
+    - Enhanced 3D visualization stability and performance.
+    - Implemented Employee Management and Editing features.
+    - Cleaned up duplicate data entries.
+
+---
+
 ## 📂 Documentation Index
 
 - [Architecture](./docs/architecture.md) - System design and tech stack.

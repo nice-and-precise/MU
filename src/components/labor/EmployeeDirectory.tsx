@@ -86,14 +86,30 @@ export default function EmployeeDirectory({ employees }: EmployeeDirectoryProps)
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {employees.map(emp => (
-                        <div key={emp.id} className="flex items-center gap-3 p-4 border rounded-lg hover:bg-slate-50 transition-colors">
-                            <div className="p-2 bg-blue-100 text-blue-600 rounded-full">
-                                {emp.role === 'Foreman' ? <HardHat className="w-5 h-5" /> : <User className="w-5 h-5" />}
+                        <div key={emp.id} className="relative group p-4 border rounded-lg hover:bg-slate-50 transition-colors">
+                            <div className="flex items-center gap-3">
+                                <div className="h-12 w-12 rounded-full overflow-hidden bg-slate-100 flex items-center justify-center border border-slate-200">
+                                    {emp.user?.avatar ? (
+                                        <img src={emp.user.avatar} alt={`${emp.firstName} ${emp.lastName}`} className="h-full w-full object-cover" />
+                                    ) : (
+                                        <div className="text-slate-400">
+                                            {emp.role === 'Foreman' ? <HardHat className="w-6 h-6" /> : <User className="w-6 h-6" />}
+                                        </div>
+                                    )}
+                                </div>
+                                <div>
+                                    <h3 className="font-bold">{emp.firstName} {emp.lastName}</h3>
+                                    <p className="text-sm text-muted-foreground">{emp.role} • ${emp.hourlyRate}/hr</p>
+                                </div>
                             </div>
-                            <div>
-                                <h3 className="font-bold">{emp.firstName} {emp.lastName}</h3>
-                                <p className="text-sm text-muted-foreground">{emp.role} • ${emp.hourlyRate}/hr</p>
-                            </div>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
+                                onClick={() => router.push(`/dashboard/labor/${emp.id}`)}
+                            >
+                                Edit
+                            </Button>
                         </div>
                     ))}
                     {employees.length === 0 && !showForm && (

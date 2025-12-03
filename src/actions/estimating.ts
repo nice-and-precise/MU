@@ -12,6 +12,7 @@ export async function createEstimate(data: { name: string; customerName?: string
     if (!session) return { success: false, error: 'Unauthorized' };
 
     try {
+        console.log("Creating estimate with data:", data);
         const estimate = await prisma.estimate.create({
             data: {
                 name: data.name,
