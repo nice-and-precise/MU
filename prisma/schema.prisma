@@ -44,6 +44,9 @@ model User {
   expenses              Expense[]
   employee              Employee?
 
+  whiteLiningSnapshots  WhiteLiningSnapshot[]
+  complianceEvents      ComplianceEvent[]
+
   @@index([email])
   @@index([role])
 }
@@ -97,6 +100,10 @@ model Project {
   incidents             SafetyIncident[]
   timeEntries           TimeEntry[]
   expenses              Expense[]
+
+  gsocTickets           GsocTicket[]
+  damageEvents          DamageEvent[]
+  complianceEvents      ComplianceEvent[]
 
   @@index([status])
   @@index([createdById])
@@ -1173,4 +1180,136 @@ model Expense {
   @@index([projectId])
   @@index([category])
   @@index([date])
+}
+// ... existing code ...
+
+// --- 216D Compliance Models ---
+
+model GsocTicket {
+  id                     String                @id @default(cuid())
+  projectId              String
+  project                Project               @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  ticketNumber           String
+  ticketType             String                // NORMAL, EMERGENCY, MEET, UPDATE, DESIGN, PLANNING
+  filedAt                DateTime              // When GSOC confirmed
+  legalLocateReadyAt     DateTime?             // Computed: 48h rule
+  legalExcavationStartAt DateTime?             // Computed: 48h rule or post-meet
+  startTimeFromGsoc      DateTime              // The start time on the ticket
+  expirationAt           DateTime?             // 14 days rule
+  status                 String                @default("DRAFT") // DRAFT, SUBMITTED, LOCATES_DUE, LOCATES_COMPLETE, EXPIRED, CANCELLED
+  whiteLining            WhiteLiningSnapshot?
+  meetTicket             MeetTicket?
+  remarks                LocateRemark[]
+  damageEvents           DamageEvent[]
+  complianceEvents       ComplianceEvent[]
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
+
+  @@index([projectId])
+  @@index([ticketNumber])
+  @@index([status])
+}
+
+model WhiteLiningSnapshot {
+  id               String     @id @default(cuid())
+  ticketId         String     @unique
+  gsocTicket       GsocTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  capturedByUserId String
+  capturedBy       User       @relation(fields: [capturedByUserId], references: [id])
+  capturedAt       DateTime   @default(now())
+  locationGeometry String?    // PostGIS polygon/multipolygon as WKT or GeoJSON string for now
+  fieldDescription String
+  markColor        String     @default("WHITE") // WHITE, BLACK
+  isOverMarked     Boolean    @default(false)
+  photoUrls        String     @default("[]") // JSON array of strings
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  @@index([capturedByUserId])
+}
+
+model MeetTicket {
+  id                       String         @id @default(cuid())
+  ticketId                 String         @unique
+  gsocTicket               GsocTicket     @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  requiredReason           String?        // LENGTH_1MILE, ADJACENT_TICKETS_1MILE, CROSSES_COUNTY, OPTIONAL_COMPLEXITY
+  meetRequestedAt          DateTime?
+  meetScheduledFor         DateTime?
+  meetHeldAt               DateTime?
+  meetLocation             String?
+  documentationUrl         String?
+  agreementMeetNotRequired Boolean        @default(false)
+  agreementNotes           String?
+  attendees                MeetAttendee[]
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+}
+
+model MeetAttendee {
+  id           String     @id @default(cuid())
+  meetTicketId String
+  meetTicket   MeetTicket @relation(fields: [meetTicketId], references: [id], onDelete: Cascade)
+  name         String
+  company      String?
+  role         String?    // EXCAVATOR, FACILITY_OPERATOR, LOCATOR, OWNER
+  phone        String?
+  email        String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([meetTicketId])
+}
+
+model LocateRemark {
+  id           String     @id @default(cuid())
+  ticketId     String
+  gsocTicket   GsocTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  type         String     // REMARK_REQUESTED, REMARK_COMPLETED
+  reason       String?    // MARKS_OBLITERATED, WRONG_LOCATION, ADDITIONAL_AREA, OTHER
+  requestedAt  DateTime   @default(now())
+  completedAt  DateTime?
+  notes        String?
+  photoUrls    String     @default("[]")
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([ticketId])
+}
+
+model DamageEvent {
+  id                         String     @id @default(cuid())
+  ticketId                   String?
+  gsocTicket                 GsocTicket? @relation(fields: [ticketId], references: [id])
+  projectId                  String
+  project                    Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  occurredAt                 DateTime
+  facilityType               String     // GAS, ELECTRIC, WATER, FIBER, SEWER, UNKNOWN
+  contactWasMade             Boolean    @default(true)
+  notifiedOperatorsAt        DateTime?
+  emergencyServicesContacted Boolean    @default(false)
+  description                String
+  photoUrls                  String     @default("[]")
+  createdAt                  DateTime   @default(now())
+  updatedAt                  DateTime   @updatedAt
+
+  @@index([ticketId])
+  @@index([projectId])
+}
+
+model ComplianceEvent {
+  id          String      @id @default(cuid())
+  projectId   String
+  project     Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  ticketId    String?
+  gsocTicket  GsocTicket? @relation(fields: [ticketId], references: [id])
+  eventType   String      // TICKET_FILED, WHITE_LINING_CAPTURED, MEET_SCHEDULED, MEET_HELD, REMARK_REQUESTED, etc.
+  timestamp   DateTime    @default(now())
+  details     String?     // JSON or text details
+  createdById String?
+  createdBy   User?       @relation(fields: [createdById], references: [id])
+  createdAt   DateTime    @default(now())
+
+  @@index([projectId])
+  @@index([ticketId])
+  @@index([eventType])
 }

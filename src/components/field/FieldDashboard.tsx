@@ -9,6 +9,8 @@ import { InventoryManager } from "@/components/field/InventoryManager";
 import { InspectionChecklist } from "@/components/field/InspectionChecklist";
 import { BigButton } from "@/components/ui/BigButton";
 import { MapPin, CloudSun, FileText, Truck, AlertTriangle } from "lucide-react";
+import { RemarkForm } from "@/components/216d/RemarkForm";
+import { DamageForm } from "@/components/216d/DamageForm";
 
 interface FieldDashboardProps {
     userRole: "Foreman" | "Operator" | "Laborer";
@@ -38,6 +40,8 @@ export function FieldDashboard({
 }) {
     const [activeTab, setActiveTab] = useState("overview");
     const [selectedAssetForInspection, setSelectedAssetForInspection] = useState<any>(null);
+    const [showRemarkForm, setShowRemarkForm] = useState(false);
+    const [showDamageForm, setShowDamageForm] = useState(false);
 
     return (
         <div className="w-full max-w-4xl mx-auto p-4 space-y-4">
@@ -62,6 +66,7 @@ export function FieldDashboard({
                     <TabsTrigger value="crew" className="text-lg">Crew</TabsTrigger>
                     <TabsTrigger value="docs" className="text-lg">Docs</TabsTrigger>
                     <TabsTrigger value="time" className="text-lg">Time</TabsTrigger>
+                    <TabsTrigger value="safety" className="text-lg">Safety</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview" className="space-y-4">
@@ -195,6 +200,76 @@ export function FieldDashboard({
                         geofenceRadius={500}
                         employeeId={currentUserId}
                     />
+                </TabsContent>
+
+                <TabsContent value="safety" className="space-y-4">
+                    {!showRemarkForm && !showDamageForm ? (
+                        <div className="space-y-4">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <AlertTriangle className="h-5 w-5 text-amber-500" /> 216D Compliance
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <BigButton
+                                        label="REQUEST REMARK / DAMAGED MARKS"
+                                        variant="secondary"
+                                        onClick={() => setShowRemarkForm(true)}
+                                        className="bg-amber-100 text-amber-900 hover:bg-amber-200"
+                                    />
+                                    <BigButton
+                                        label="REPORT FACILITY DAMAGE / CONTACT"
+                                        variant="destructive"
+                                        onClick={() => setShowDamageForm(true)}
+                                    />
+                                </CardContent>
+                            </Card>
+
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Safety Documents</CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-2">
+                                    <BigButton label="VIEW 811 TICKET" variant="outline" onClick={() => alert("View Ticket")} />
+                                    <BigButton label="JSA / TAILGATE" variant="outline" onClick={() => alert("JSA")} />
+                                </CardContent>
+                            </Card>
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            <BigButton
+                                label="BACK TO SAFETY MENU"
+                                variant="outline"
+                                onClick={() => { setShowRemarkForm(false); setShowDamageForm(false); }}
+                                className="mb-4"
+                            />
+                            {showRemarkForm && (
+                                <Card>
+                                    <CardHeader><CardTitle>Locate Remark Request</CardTitle></CardHeader>
+                                    <CardContent>
+                                        <RemarkForm
+                                            projectId={projectId}
+                                            ticketId="CURRENT_TICKET_ID" // TODO: Fetch active ticket
+                                            onClose={() => setShowRemarkForm(false)}
+                                        />
+                                    </CardContent>
+                                </Card>
+                            )}
+                            {showDamageForm && (
+                                <Card>
+                                    <CardHeader><CardTitle className="text-red-600">Damage Event Report</CardTitle></CardHeader>
+                                    <CardContent>
+                                        <DamageForm
+                                            projectId={projectId}
+                                            ticketId="CURRENT_TICKET_ID"
+                                            onClose={() => setShowDamageForm(false)}
+                                        />
+                                    </CardContent>
+                                </Card>
+                            )}
+                        </div>
+                    )}
                 </TabsContent>
             </Tabs>
         </div>

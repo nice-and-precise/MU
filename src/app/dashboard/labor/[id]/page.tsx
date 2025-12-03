@@ -8,8 +8,9 @@ import { ArrowLeft, Save } from "lucide-react";
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
 
-export default async function EmployeeEditPage({ params }: { params: { id: string } }) {
-    const employee = await getEmployee(params.id);
+export default async function EmployeeEditPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
+    const employee = await getEmployee(id);
 
     if (!employee) {
         notFound();
@@ -30,7 +31,7 @@ export default async function EmployeeEditPage({ params }: { params: { id: strin
             // hireDate: formData.get("hireDate") ? new Date(formData.get("hireDate") as string) : null,
         };
 
-        await updateEmployee(params.id, data);
+        await updateEmployee(id, data);
         redirect("/dashboard/labor");
     }
 

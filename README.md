@@ -121,6 +121,16 @@ sequenceDiagram
 
 ---
 
+## 216D Compliance Layer
+This project includes a full implementation of Minnesota Statute 216D (Gopher State One Call) compliance.
+- **Ticket Tracking**: Manage GSOC tickets and status.
+- **Time Rules**: Automated calculation of Legal Locate Ready and Excavation Start times (48h rule).
+- **White Lining**: Enforced photo evidence of white lining before ticket filing.
+- **Meet Tickets**: Workflow for long projects (>1 mile) requiring meet tickets.
+- **Field Ops**: Capture "Remark Requests" and "Damage Events" from the field dashboard.
+
+See [216D Compliance Docs](docs/216D-Compliance.md) for details.
+
 ## 🏁 Getting Started
 
 1.  **Install Dependencies**: `npm install`
