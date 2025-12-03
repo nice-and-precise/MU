@@ -17,7 +17,11 @@ export async function getShifts(start: Date, end: Date) {
             },
             include: {
                 project: true,
-                crew: true,
+                crew: {
+                    include: {
+                        members: true
+                    }
+                },
                 employee: true,
                 assets: {
                     include: {
