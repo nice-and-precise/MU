@@ -15,6 +15,10 @@
         - Refined "MudMixer" UI (Industrial colors, removed AI branding).
         - Enhanced "Employee Management" with DOB and Hire Date fields.
         - Updated "Settings" page colors for better readability.
+    - **Brand & Accessibility Audit (Critical):**
+        - **Global Tokens:** Fixed critical mismatch in `globals.css` where Secondary and Accent colors were incorrect.
+        - **Refactoring:** Updated `LiveFleetMap` and `OwnerCommandCenter` to use semantic brand tokens and shared components.
+        - **Compliance:** Verified typography and color contrast across key views.
 
 - **Phase 3 Complete (Safety & QC):**
     - **Safety:** Implemented `ToolboxTalkForm`, `JSABuilder`, and 811 Ticket Management.

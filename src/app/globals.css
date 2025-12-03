@@ -5,8 +5,8 @@
 
 :root { /* Midwest Charcoal */
   --primary: oklch(0.205 0 0);
-  --secondary: oklch(0.97 0 0); /* Safety Orange */
-  --accent: oklch(0.97 0 0); /* Sky Blue */
+  --secondary: oklch(0.646 0.222 41.116); /* Safety Orange #FF6700 approx */
+  --accent: oklch(0.623 0.168 256.6); /* Sky Blue #4A90E2 approx */
 
   --color-charcoal: #2A2A2A;
   --color-orange: #FF6700;
@@ -19,14 +19,14 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
+  --secondary-foreground: oklch(0.145 0 0); /* Dark text on Orange */
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --accent-foreground: oklch(0.985 0 0); /* White text on Blue */
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --ring: oklch(0.623 0.168 256.6); /* Ring matches Accent (Sky Blue) */
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
