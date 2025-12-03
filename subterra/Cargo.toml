@@ -7,8 +7,8 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-bevy = { version = "0.14", default-features = false, features = ["webgl2", "x11", "tonemapping_luts", "default_font"] }
-tokio = { version = "1.0", features = ["full"] }
+bevy = { version = "0.14", default-features = false, features = ["webgl2", "x11", "tonemapping_luts", "default_font", "bevy_pbr", "bevy_render", "bevy_core_pipeline", "bevy_asset", "bevy_scene", "bevy_winit"] }
+tokio = { version = "1.0", features = ["sync", "macros", "rt"] }
 rand = "0.8"
 getrandom = { version = "0.2", features = ["js"] }
 getrandom_03 = { package = "getrandom", version = "0.3", features = ["wasm_js"] }

@@ -1,6 +1,8 @@
 use crate::telemetry::DrillTelemetry;
+use bevy::color::{Color, LinearRgba};
 use bevy::prelude::*;
 use noise::{NoiseFn, Perlin};
+use rand::Rng;
 
 pub struct VoxelPlugin;
 
@@ -52,9 +54,9 @@ fn setup_voxel_grid(
 
                 // Determine material based on noise (Soil vs Rock)
                 let color = if noise_val > 0.2 {
-                    Color::rgb(0.8, 0.2, 0.2) // Rock (Red)
+                    Color::srgb(0.8, 0.2, 0.2) // Rock (Red)
                 } else {
-                    Color::rgba(0.4, 0.3, 0.2, 0.3) // Soil (Brown, Transparent)
+                    Color::srgba(0.4, 0.3, 0.2, 0.3) // Soil (Brown, Transparent)
                 };
 
                 commands.spawn((
@@ -83,8 +85,8 @@ fn setup_voxel_grid(
         PbrBundle {
             mesh: meshes.add(Sphere::new(0.3)),
             material: materials.add(StandardMaterial {
-                base_color: Color::rgb(0.0, 1.0, 0.0), // Green glowing bit
-                emissive: Color::rgb(0.0, 1.0, 0.0).into(),
+                base_color: Color::srgb(0.0, 1.0, 0.0), // Green glowing bit
+                emissive: Color::srgb(0.0, 1.0, 0.0).into(),
                 ..default()
             }),
             transform: Transform::from_xyz(0.0, 0.0, 0.0),
@@ -116,15 +118,15 @@ fn update_drill_visualization(
         // Hard rock warning
         if let Ok(handle) = material_query.get_single_mut() {
             if let Some(mat) = materials.get_mut(handle) {
-                mat.base_color = Color::rgb(1.0, 0.0, 0.0); // Red warning
-                mat.emissive = LinearRgba::red().into();
+                mat.base_color = Color::srgb(1.0, 0.0, 0.0); // Red warning
+                mat.emissive = Color::srgb(1.0, 0.0, 0.0).into();
             }
         }
     } else {
         if let Ok(handle) = material_query.get_single_mut() {
             if let Some(mat) = materials.get_mut(handle) {
-                mat.base_color = Color::rgb(0.0, 1.0, 0.0); // Green ok
-                mat.emissive = LinearRgba::green().into();
+                mat.base_color = Color::srgb(0.0, 1.0, 0.0); // Green ok
+                mat.emissive = Color::srgb(0.0, 1.0, 0.0).into();
             }
         }
     }

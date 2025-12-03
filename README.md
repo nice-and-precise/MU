@@ -95,4 +95,4 @@ graph TD
    ```
 
 4. **Access Interface**:
-   Navigate to `http://localhost:3000/subterra`.
+   Navigate to `http://localhost:3000/dashboard/subterra`.

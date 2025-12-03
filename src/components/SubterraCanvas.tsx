@@ -20,14 +20,21 @@ export default function SubterraCanvas() {
                 // @ts-ignore
                 const module = await import("@/subterra-wasm/subterra.js");
                 await module.default(); // init
-                module.run_app();
-                setWasmModule(module);
 
+                try {
+                    module.run_app();
+                } catch (e: any) {
+                    // Bevy/Winit throws an exception to break control flow on web. This is expected.
+                    if (!e.message.includes("Using exceptions for control flow")) {
+                        throw e;
+                    }
+                }
+
+                setWasmModule(module);
                 setIsLoading(false);
             } catch (err) {
                 console.error("Failed to load Subterra WASM:", err);
                 // Don't show error to user in mock mode, just log it
-                // setError("Failed to initialize Cognitive Interface."); 
                 setIsLoading(false);
             }
         };

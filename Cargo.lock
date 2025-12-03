@@ -546,6 +546,7 @@ dependencies = [
  "bevy_ecs",
  "bevy_gizmos_macros",
  "bevy_math",
+ "bevy_pbr",
  "bevy_reflect",
  "bevy_render",
  "bevy_time",
@@ -603,6 +604,8 @@ checksum = "45d435cac77c568f3aef65f786a5fee0e53c81950c5258182dd2c1d6cd6c4fec"
 dependencies = [
  "bevy_a11y",
  "bevy_app",
+ "bevy_asset",
+ "bevy_color",
  "bevy_core",
  "bevy_core_pipeline",
  "bevy_derive",
