@@ -1,11 +1,11 @@
 {
-    "name": "HDD Nexus",
-    "short_name": "HDD Nexus",
+    "name": "Midwest Underground",
+    "short_name": "MU Ops",
     "description": "Horizontal Directional Drilling Operations Platform",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#0f172a",
-    "theme_color": "#0f172a",
+    "background_color": "#2A2A2A",
+    "theme_color": "#FF6700",
     "icons": [
         {
             "src": "/icons/icon-192x192.png",

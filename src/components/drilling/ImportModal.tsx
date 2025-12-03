@@ -37,7 +37,7 @@ export default function ImportModal({ isOpen, onClose, onImport }: ImportModalPr
         let headerFound = false;
         let mdIdx = 0, incIdx = 1, aziIdx = 2;
 
-        for (let line of lines) {
+        for (const line of lines) {
             const parts = line.split(',').map(p => p.trim());
             if (parts.length < 3) continue;
 

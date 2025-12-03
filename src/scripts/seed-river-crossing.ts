@@ -77,7 +77,7 @@ async function main() {
     // 4. Generate Telemetry Logs (Simulate Drilling)
     // Path: Entry (0,0) -> Build to 12 deg -> Hold -> Drop -> Exit
     const logs = [];
-    let currentDepth = 0;
+    const currentDepth = 0;
     let currentPitch = 0; // Starts horizontal? No, entry angle usually.
     // Let's say entry angle is 12 deg (Pitch = -12? or +12? Down is usually negative pitch in some conventions, or positive inclination)
     // In our system: Pitch 0 = Horizontal. + = Up, - = Down.

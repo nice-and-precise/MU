@@ -160,7 +160,7 @@ export function calculateDetailedPullback(
         // Or calculate from Inc/Azi change.
         // Let's use the DLS stored in the station if available, or calc it.
 
-        let dls = curr.dls || 0;
+        const dls = curr.dls || 0;
         // If DLS is missing, we could calc it, but let's assume trajectory has it.
 
         // Bend angle in radians

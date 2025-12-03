@@ -16,7 +16,7 @@ export interface MagneticParams {
  * True Azimuth = Magnetic Azimuth + Declination
  */
 export function calculateTrueAzimuth(rawAzimuth: number, declination: number): number {
-    let trueAzimuth = rawAzimuth + declination;
+    const trueAzimuth = rawAzimuth + declination;
     return normalizeAzimuth(trueAzimuth);
 }
 
@@ -27,7 +27,7 @@ export function calculateTrueAzimuth(rawAzimuth: number, declination: number): n
  */
 export function calculateGridAzimuth(rawAzimuth: number, params: MagneticParams): number {
     const { declination, gridConvergence, interferenceOffset = 0 } = params;
-    let gridAzimuth = rawAzimuth + declination - gridConvergence + interferenceOffset;
+    const gridAzimuth = rawAzimuth + declination - gridConvergence + interferenceOffset;
     return normalizeAzimuth(gridAzimuth);
 }
 

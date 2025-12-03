@@ -49,7 +49,7 @@ export function calculateBorePath(stations: SurveyStation[], startPoint: Point3D
 
         // Dogleg Severity (Angle between two vectors)
         // cos(DL) = cos(I1)cos(I2) + sin(I1)sin(I2)cos(A2-A1)
-        let dl = Math.acos(Math.cos(i1) * Math.cos(i2) + Math.sin(i1) * Math.sin(i2) * Math.cos(a2 - a1));
+        const dl = Math.acos(Math.cos(i1) * Math.cos(i2) + Math.sin(i1) * Math.sin(i2) * Math.cos(a2 - a1));
 
         // Ratio factor (RF) = 2/DL * tan(DL/2)
         // Handle small angles to avoid division by zero

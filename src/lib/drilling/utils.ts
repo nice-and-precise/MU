@@ -59,7 +59,7 @@ export function convertBoreToTrajectory(bore: BoreInput): SurveyStation[] | null
                 // For now, assume start is at surface with same angle as first rod (simplified)
                 // Or better: Entry Angle from Plan if available.
                 let startInc = points[0].inc;
-                let startAzi = points[0].azi;
+                const startAzi = points[0].azi;
 
                 if (bore.borePlan?.entryAngle) {
                     // Entry Angle is usually given as positive degrees down (e.g. 12 deg)
