@@ -61,6 +61,10 @@ export default async function DashboardLayout({
                             <ClipboardCheck className="h-4 w-4" />
                             <span className="text-sm">Quality Control</span>
                         </Link>
+                        <Link href="/dashboard/drilling" className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition-colors">
+                            <Activity className="h-4 w-4" />
+                            <span className="text-sm">Drilling Ops</span>
+                        </Link>
                     </div>
 
                     {/* Management Group */}

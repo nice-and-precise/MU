@@ -10,6 +10,10 @@
  * - Capstan effect (curvature friction) - Simplified as a safety factor for this implementation
  */
 
+/**
+ * @deprecated This module has been ported to Rust/WASM in `src/lib/drilling/core-rs`.
+ * Please use the WASM implementation for performance.
+ */
 import { SoilLayerInput } from './hydraulics';
 
 export type PipeMaterial = 'HDPE' | 'PVC' | 'Steel' | 'Ductile Iron';

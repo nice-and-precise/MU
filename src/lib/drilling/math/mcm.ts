@@ -1,3 +1,7 @@
+/**
+ * @deprecated This module has been ported to Rust/WASM in `src/lib/drilling/core-rs`.
+ * Please use the WASM implementation for performance.
+ */
 import { SurveyStation } from '../types';
 
 const PI = Math.PI;

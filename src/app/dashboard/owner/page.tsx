@@ -17,7 +17,7 @@ export default async function OwnerDashboard() {
     return (
         <div className="p-8 space-y-8">
             <div className="border-b border-gray-200 pb-4">
-                <h1 className="text-3xl font-bold text-blue-900 dark:text-blue-400 uppercase tracking-tight">Owner Dashboard</h1>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white uppercase tracking-tight">OWNERSHIP DASHBOARD</h1>
                 {/* Rebuild Trigger */}
                 <p className="text-gray-500 mt-1">Financial & Project Overview</p>
             </div>

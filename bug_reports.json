@@ -375,5 +375,112 @@
       "email": "owner@midwestunderground.com"
     },
     "screenshot": "/bug_reports/bug-1764647694011.png"
+  },
+  {
+    "id": "1764720726252",
+    "timestamp": "2025-12-03T00:12:05.233Z",
+    "description": "change the text OWNERSHIP DASHBOARD\n",
+    "element": "h1.text-3xl.font-bold.text-blue-900.dark:text-blue-400.uppercase.tracking-tight (OWNER DASHBOARD)",
+    "path": "/dashboard/owner",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "screenSize": "1920x826",
+    "consoleLogs": [
+      "[LOG] [Fast Refresh] done in 1295ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 20533ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 1205ms",
+      "[WARN] The width(-1) and height(-1) of chart should be greater than 0,\n       please check the style of container, or the props width(100%) and height(100%),\n       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the\n       height and width.",
+      "[WARN] The width(-1) and height(-1) of chart should be greater than 0,\n       please check the style of container, or the props width(100%) and height(100%),\n       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the\n       height and width.",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 111ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 8458ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 250ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 1717ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 6089ms",
+      "[LOG] THREE.WebGLRenderer: Context Lost.",
+      "[ERROR] THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. {\"metadata\":{\"version\":4.7,\"type\":\"BufferGeometry\",\"generator\":\"BufferGeometry.toJSON\"},\"uuid\":\"e644104b-a1b3-4c64-b770-3814c77e2913\",\"type\":\"CylinderGeometry\",\"radiusTop\":2.0833333333333335,\"radiusBottom\":2.0833333333333335,\"height\":null,\"radialSegments\":16,\"heightSegments\":1,\"openEnded\":false,\"thetaStart\":0,\"thetaLength\":6.283185307179586}",
+      "[ERROR] THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. {\"metadata\":{\"version\":4.7,\"type\":\"BufferGeometry\",\"generator\":\"BufferGeometry.toJSON\"},\"uuid\":\"32d725c3-e27d-4f4c-9175-656662338d9b\",\"type\":\"CylinderGeometry\",\"radiusTop\":0.08333333333333333,\"radiusBottom\":0.08333333333333333,\"height\":null,\"radialSegments\":16,\"heightSegments\":1,\"openEnded\":false,\"thetaStart\":0,\"thetaLength\":6.283185307179586}",
+      "[ERROR] THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. {\"metadata\":{\"version\":4.7,\"type\":\"BufferGeometry\",\"generator\":\"BufferGeometry.toJSON\"},\"uuid\":\"53a4e3fd-a689-4a78-9e23-324ac0e0b652\",\"type\":\"CylinderGeometry\",\"radiusTop\":2.5,\"radiusBottom\":2.5,\"height\":null,\"radialSegments\":16,\"heightSegments\":1,\"openEnded\":false,\"thetaStart\":0,\"thetaLength\":6.283185307179586}",
+      "[ERROR] THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. {\"metadata\":{\"version\":4.7,\"type\":\"BufferGeometry\",\"generator\":\"BufferGeometry.toJSON\"},\"uuid\":\"bc890e66-9aff-46e2-92ee-cacdbb83a0f1\",\"type\":\"CylinderGeometry\",\"radiusTop\":0.5,\"radiusBottom\":0.5,\"height\":null,\"radialSegments\":16,\"heightSegments\":1,\"openEnded\":false,\"thetaStart\":0,\"thetaLength\":6.283185307179586}",
+      "[ERROR] THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. {\"metadata\":{\"version\":4.7,\"type\":\"BufferGeometry\",\"generator\":\"BufferGeometry.toJSON\"},\"uuid\":\"6f700c8b-1d43-412d-b094-30be6532c6a0\",\"type\":\"CylinderGeometry\",\"radiusTop\":2.1666666666666665,\"radiusBottom\":2.1666666666666665,\"height\":null,\"radialSegments\":16,\"heightSegments\":1,\"openEnded\":false,\"thetaStart\":0,\"thetaLength\":6.283185307179586}",
+      "[ERROR] THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. {\"metadata\":{\"version\":4.7,\"type\":\"BufferGeometry\",\"generator\":\"BufferGeometry.toJSON\"},\"uuid\":\"30b3338e-4f21-40a7-98da-5965e58a75b1\",\"type\":\"CylinderGeometry\",\"radiusTop\":0.16666666666666666,\"radiusBottom\":0.16666666666666666,\"height\":null,\"radialSegments\":16,\"heightSegments\":1,\"openEnded\":false,\"thetaStart\":0,\"thetaLength\":6.283185307179586}",
+      "[ERROR] THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. {\"metadata\":{\"version\":4.7,\"type\":\"BufferGeometry\",\"generator\":\"BufferGeometry.toJSON\"},\"uuid\":\"90a7bbb1-d8b6-42b2-8301-bca14fc20234\",\"type\":\"CylinderGeometry\",\"radiusTop\":2.0833333333333335,\"radiusBottom\":2.0833333333333335,\"height\":null,\"radialSegments\":16,\"heightSegments\":1,\"openEnded\":false,\"thetaStart\":0,\"thetaLength\":6.283185307179586}",
+      "[ERROR] THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. {\"metadata\":{\"version\":4.7,\"type\":\"BufferGeometry\",\"generator\":\"BufferGeometry.toJSON\"},\"uuid\":\"b06262aa-d629-4ed8-a3b5-65a3e391b989\",\"type\":\"CylinderGeometry\",\"radiusTop\":0.08333333333333333,\"radiusBottom\":0.08333333333333333,\"height\":null,\"radialSegments\":16,\"heightSegments\":1,\"openEnded\":false,\"thetaStart\":0,\"thetaLength\":6.283185307179586}",
+      "[ERROR] THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. {\"metadata\":{\"version\":4.7,\"type\":\"BufferGeometry\",\"generator\":\"BufferGeometry.toJSON\"},\"uuid\":\"1f5651d8-63f0-4d92-99df-c8c7e25c7124\",\"type\":\"CylinderGeometry\",\"radiusTop\":2.5,\"radiusBottom\":2.5,\"height\":null,\"radialSegments\":16,\"heightSegments\":1,\"openEnded\":false,\"thetaStart\":0,\"thetaLength\":6.283185307179586}",
+      "[ERROR] THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. {\"metadata\":{\"version\":4.7,\"type\":\"BufferGeometry\",\"generator\":\"BufferGeometry.toJSON\"},\"uuid\":\"643295b5-a49d-47b4-9876-946d9a11e414\",\"type\":\"CylinderGeometry\",\"radiusTop\":0.5,\"radiusBottom\":0.5,\"height\":null,\"radialSegments\":16,\"heightSegments\":1,\"openEnded\":false,\"thetaStart\":0,\"thetaLength\":6.283185307179586}",
+      "[ERROR] THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. {\"metadata\":{\"version\":4.7,\"type\":\"BufferGeometry\",\"generator\":\"BufferGeometry.toJSON\"},\"uuid\":\"522c9000-7094-471b-8892-0a1f6ab2dd31\",\"type\":\"CylinderGeometry\",\"radiusTop\":2.1666666666666665,\"radiusBottom\":2.1666666666666665,\"height\":null,\"radialSegments\":16,\"heightSegments\":1,\"openEnded\":false,\"thetaStart\":0,\"thetaLength\":6.283185307179586}",
+      "[ERROR] THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. {\"metadata\":{\"version\":4.7,\"type\":\"BufferGeometry\",\"generator\":\"BufferGeometry.toJSON\"},\"uuid\":\"267db0c2-6620-4609-8814-a68f7c42adb8\",\"type\":\"CylinderGeometry\",\"radiusTop\":0.16666666666666666,\"radiusBottom\":0.16666666666666666,\"height\":null,\"radialSegments\":16,\"heightSegments\":1,\"openEnded\":false,\"thetaStart\":0,\"thetaLength\":6.283185307179586}",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 1051ms",
+      "[LOG] [Fast Refresh] rebuilding"
+    ],
+    "userInfo": {
+      "name": "John Owner",
+      "email": "owner@midwestunderground.com"
+    },
+    "screenshot": "/bug_reports/bug-1764720726246.png"
+  },
+  {
+    "id": "1764734021942",
+    "timestamp": "2025-12-03T03:53:41.708Z",
+    "description": "remove emojis and remove mention of AI use colors that match not AI looking purples\n",
+    "element": "button.w-full.py-3.bg-gradient-to-r.from-purple-600.to-blue-600.text-white.font-bold.rounded.hover:opacity-90.transition-opacity (✨ Optimize Mix with AI)",
+    "path": "/dashboard/drilling",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "screenSize": "1920x911",
+    "consoleLogs": [
+      "[LOG] [Fast Refresh] done in 517ms",
+      "[LOG] [Fast Refresh] rebuilding"
+    ],
+    "userInfo": {
+      "name": "John Owner",
+      "email": "owner@midwestunderground.com"
+    },
+    "screenshot": "/bug_reports/bug-1764734021940.png"
+  },
+  {
+    "id": "1764734104829",
+    "timestamp": "2025-12-03T03:55:04.791Z",
+    "description": "this should have a more realistic view that is more easy to understand, this should represent what it would look like in reality so research this and then execute your plan",
+    "element": "canvas ()",
+    "path": "/dashboard/drilling",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "screenSize": "1920x911",
+    "consoleLogs": [
+      "[LOG] [Fast Refresh] done in 3351ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 517ms",
+      "[LOG] [Fast Refresh] rebuilding"
+    ],
+    "userInfo": {
+      "name": "John Owner",
+      "email": "owner@midwestunderground.com"
+    },
+    "screenshot": "/bug_reports/bug-1764734104828.png"
+  },
+  {
+    "id": "1764734144258",
+    "timestamp": "2025-12-03T03:55:44.215Z",
+    "description": "I dont see where this is in the side navbar\n",
+    "element": "div.min-h-screen.bg-black.text-white.font-mono.p-4 (MU DRILLOS\n\nLIVE OPERATION: RIG-042\n\nBIT DEPTH\n4,2...)",
+    "path": "/dashboard/drilling",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "screenSize": "1920x911",
+    "consoleLogs": [
+      "[LOG] [Fast Refresh] done in 3351ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 517ms",
+      "[LOG] [Fast Refresh] rebuilding"
+    ],
+    "userInfo": {
+      "name": "John Owner",
+      "email": "owner@midwestunderground.com"
+    },
+    "screenshot": "/bug_reports/bug-1764734144257.png"
   }
 ]

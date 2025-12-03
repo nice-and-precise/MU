@@ -55,3 +55,8 @@ public/swe-worker-*.js
 engine/target/
 
 .vercel
+
+
+# Added by cargo
+
+/target

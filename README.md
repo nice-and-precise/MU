@@ -100,6 +100,11 @@ sequenceDiagram
 - **Physics Engine**: Automated ASTM F1962 Pullback and Frac-Out calculations.
 - **As-Built Generation**: One-click generation of professional profile views and bore logs.
 
+### 6. 🧠 Drilling Operations (New)
+- **Rust/WASM Core**: High-performance physics engine for real-time torque & drag and hydraulics.
+- **AI Copilot**: Intelligent mud mix optimization and drilling advice.
+- **3D Borehole View**: Realistic visualization of the wellbore with surface context.
+
 ---
 
 ## 🛠 Tech Stack
@@ -108,7 +113,7 @@ sequenceDiagram
 |-----------|------------|-------------|
 | **Frontend** | Next.js 16 | App Router, Server Actions, React Server Components |
 | **UI** | Tailwind + Shadcn | Modern, responsive, accessible components |
-| **Logic** | TypeScript | Core drilling math and physics (migrated from Rust for velocity) |
+| **Compute** | Rust + WASM | High-performance physics engine (MCM, Torque & Drag, Hydraulics) |
 | **Database** | Supabase | Cloud-hosted PostgreSQL with PostGIS |
 | **ORM** | Prisma | Type-safe database access |
 | **3D** | Three.js + R3F | High-performance WebGL visualization |
@@ -121,7 +126,8 @@ sequenceDiagram
 2.  **Configure Environment**: Ensure `.env` has valid Supabase credentials.
 3.  **Sync Database**: `npx prisma db push`
 4.  **Seed Data**: `npx prisma db seed` (Populates demo data)
-5.  **Run Dev Server**: `npm run dev`
+5.  **Build WASM Core**: `scripts/build-wasm.sh` (Optional: App falls back to Mock Mode if skipped)
+6.  **Run Dev Server**: `npm run dev`
 
 ## ⚡ Low-Spec Development Mode
 
