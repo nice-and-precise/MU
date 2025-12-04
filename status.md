@@ -40,4 +40,5 @@
 ## Next Steps
 1.  **Pilot Launch:** Onboard initial crew lead and office admin.
 2.  **Hardware Integration:** Begin Phase 2 (CAN Bus / Edge Device).
-3.  **Mobile App:** Explore native mobile wrapper for field crews.
+3.  **ITICnxt Integration:** Execute Phase 5 (API Integration) after field validation.
+4.  **Mobile App:** Explore native mobile wrapper for field crews.
