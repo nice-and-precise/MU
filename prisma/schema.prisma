@@ -34,7 +34,6 @@ model User {
   auditLogs             ReportAudit[]
   rodPasses             RodPass[]
   tmTickets             TMTicket[]
-  ticket811Responses    Ticket811Response[]
   createdInvoices       Invoice[]
   assignedPunchItems    PunchItem[]
   potholes              Pothole[]
@@ -398,39 +397,74 @@ model ChangeOrder {
 }
 
 model Ticket811 {
-  id             String              @id @default(cuid())
-  projectId      String
-  ticketNumber   String
-  ticketDate     DateTime
-  expirationDate DateTime
-  status         String              @default("ACTIVE")
-  notes          String?
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
-  project        Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  responses      Ticket811Response[]
+  id                  String              @id @default(cuid())
+  ticketNumber        String              @unique
+  type                String              @default("NORMAL") // Normal, Emergency, Meet, etc.
+  status              String              @default("ACTIVE") // Active, Expired, Closed
+  
+  // Dates
+  submittedAt         DateTime
+  workToBeginDate     DateTime
+  expirationDate      DateTime
+  
+  // Contact Info
+  company             String
+  caller              String
+  phone               String
+  email               String?
+  
+  // Location
+  workSiteAddress     String
+  city                String?
+  county              String?
+  nearestIntersection String?
+  gpsCoordinates      String?
+  
+  // Details
+  markingInstructions String?
+  workDescription     String?
+  duration            String?
+  explosives          Boolean             @default(false)
+  tunneling           Boolean             @default(false)
+  rightOfWay          Boolean             @default(false)
+  
+  // Utilities
+  utilitiesNotified   String              @default("[]") // JSON array of utility names
+  
+  // Links
+  mapLink             String?
+  
+  // Internal
+  projectId           String?
+  notes               String?
+  
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  
+  project             Project?            @relation(fields: [projectId], references: [id])
+  responses           Ticket811Response[]
 
   @@index([projectId])
   @@index([expirationDate])
   @@index([status])
+  @@index([ticketNumber])
 }
 
 model Ticket811Response {
   id               String    @id @default(cuid())
   ticketId         String
   utilityName      String
-  responseType     String?
-  responseDate     DateTime
-  locatePhotos     String    @default("[]")
-  marksDescription String?
-  respondedById    String
+  status           String    // Marked, Clear, Conflict, etc.
+  responseDate     DateTime?
+  notes            String?
+  
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
-  respondedBy      User      @relation(fields: [respondedById], references: [id])
+  
   ticket           Ticket811 @relation(fields: [ticketId], references: [id], onDelete: Cascade)
 
   @@index([ticketId])
-  @@index([respondedById])
+  @@index([utilityName])
 }
 
 model Event {

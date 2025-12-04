@@ -66,7 +66,7 @@ export default function Hero() {
                 >
                     <a
                         href="#contact"
-                        className="inline-flex items-center space-x-3 bg-orange hover:bg-orange/90 text-white px-8 py-4 rounded-full font-bold text-lg transition-all transform hover:scale-105 shadow-lg shadow-orange/20 hover:shadow-orange/40"
+                        className="inline-flex items-center space-x-3 bg-orange hover:bg-orange/90 text-charcoal px-8 py-4 rounded-full font-bold text-lg transition-all transform hover:scale-105 shadow-lg shadow-orange/20 hover:shadow-orange/40"
                     >
                         <span>Launch Project</span>
                         <ArrowRight className="w-5 h-5" />

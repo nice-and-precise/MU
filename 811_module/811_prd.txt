@@ -1,0 +1,689 @@
+Mailing Address
+E-mail Address
+Alternate Contact Name and Phone Number
+Explosives (yes/no)
+Tunneling & Boring (yes/no)
+Right of Way (ROW)
+Duration
+Type of Work
+Work Being Done For
+Street Address of Work Site (County, City/Township, Street address)
+Nearest Intersecting Street
+Marking instructions
+Driving Directions
+GPS Coordinates
+Township, Range, Section and Quarter Section (TRSQ)
+
+
+Ticket Types:
+
+Locate Request (Normal) - standard excavation
+Emergency (Immediate and Scheduled)
+Meet Request
+Non-Excavation Ticket
+Owner Inquiry
+Boundary Survey
+Engineering/Pre-Con Meet
+
+
+Key Data Flow:
+
+Submit ticket via ITIC (web) or phone
+Get confirmation email with MapLINK
+MapLINK provides access to ETM (Excavator Ticket Management)
+Ticket valid for 14 calendar days
+Can check positive response via Search & Status
+
+
+How 811spotter likely works:
+
+Forward GSOC confirmation emails to their system
+Parse email to extract ticket number, dates, utilities notified
+Store in database
+Calculate expiration dates
+Send reminder notifications
+Allow manual updates/notes
+Scrape Search & Status for positive response updates
+
+
+
+I'll develop a system that enables users to track and manage 811 tickets with robust features for manual tracking and automated updates. The platform will integrate email parsing, web scraping, and database management to provide comprehensive ticket lifecycle monitoring.Sorry about that! Let me continue and create the full reverse engineering specification.Creating comprehensive 811 ticket management system reverse engineering and build specification811_ticket_manager_spec.md811 Ticket Management System - Reverse Engineering & Build Specification
+Midwest Underground Custom SolutionDocument Version: 1.0
+Date: December 2025
+Purpose: Build a free/low-cost alternative to 811spotter ($100+/month) for managing GSOC locate ticketsExecutive Summary811spotter and similar services don't have special API access to GSOC. They work by:
+
+Email parsing - Forward GSOC confirmation emails to their system
+Web scraping - Periodically check Search & Status for positive responses
+Date calculations - Track 14-day expiration windows and send reminders
+Simple database - Store tickets, notes, photos, and status
+We can build this ourselves for essentially $0/month using:
+
+Gmail/Google Workspace (already have)
+Google Sheets or Airtable (free tier)
+Zapier (already budgeted at $20/month)
+Simple web app or Google Apps Script
+Part 1: GSOC Ticket Data Structure1.1 Complete Ticket Fields (from GSOC Handbook)FieldDescriptionData TypeRequiredTicket NumberUnique identifier assigned by GSOCString (format: YYYYMMDD-NNNNNN)YesTicket TypeLocate, Emergency, Meet, Non-Excavation, etc.EnumYesSubmission Date/TimeWhen ticket was filedDateTimeYesWork to Begin Date/TimeLegal start time (48hrs after submission)DateTimeYesExpiration Date/Time14 calendar days from start timeDateTimeCalculatedCaller NamePerson who submitted ticketStringYesCompany NameExcavator companyStringYesTelephone NumberPrimary contact phonePhoneYesAlternate ContactField contact name & phoneString + PhoneRecommendedEmail AddressFor confirmationsEmailRecommendedMailing AddressCompany addressAddressYesWork Site AddressExcavation locationAddressYesCountyCounty of work siteStringYesCity/TownshipMunicipalityStringYesNearest IntersectionCross streetStringYesGPS CoordinatesLat/Long of work siteCoordinatesOptionalTRSQTownship, Range, Section, QuarterStringOptionalMarking InstructionsSpecific area to markTextYesDriving DirectionsHow to get to siteTextYesType of WorkDescription of excavationTextYesWork Being Done ForCustomer/client nameStringYesDuration EstimateHow long work will takeStringYesExplosivesWill explosives be used?BooleanYesTunneling/BoringIs this HDD/boring work?BooleanYesRight of WayIs work in public ROW?BooleanYesMembers NotifiedList of utilities notifiedArrayGenerated1.2 Ticket TypesTypeCodeDescriptionResponse TimeNormal LocateLOCATEStandard excavation request48 hoursEmergency ImmediateEMERG-ILife/health/property danger NOW1hr contact, 3hr locateEmergency ScheduledEMERG-SEmergency but scheduled startBefore start timeMeet RequestMEETOn-site meeting with utilities48hrs to meet, 24hrs to digUpdate/RenewalUPDATEExtend or refresh existing ticket48 hoursCorrectionCORRECTFix minor info on existing ticketN/ACancellationCANCELCancel a ticketN/ANon-ExcavationNON-EXDesign phase marking request15 working daysBoundary SurveySURVEYLand surveyor request96 hoursEng/Pre-Con MeetENG-MEETDesign phase meeting15 working days1.3 Positive Response StatusesStatusMeaningCan Dig?MarkedFacilities marked at site✅ YesClear/No ConflictNo facilities in area✅ YesNot Yet RespondedAwaiting response❌ NoMarking Will Be DelayedCannot mark by start time❌ NoNot Complete/In ProgressPartial marking done❌ NoPart 2: How 811spotter Works (Reverse Engineered)2.1 Email Ingestion Flow┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│  Submit ticket  │────▶│  GSOC processes  │────▶│ Confirmation    │
+│  via ITIC/phone │     │  and assigns #   │     │ email sent      │
+└─────────────────┘     └──────────────────┘     └────────┬────────┘
+                                                          │
+                                                          ▼
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│  User forwards  │────▶│  811spotter      │────▶│ Parse & extract │
+│  or auto-forward│     │  receives email  │     │ ticket data     │
+└─────────────────┘     └──────────────────┘     └────────┬────────┘
+                                                          │
+                                                          ▼
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│  Dashboard      │◀────│  Store in DB     │◀────│ Calculate dates │
+│  shows tickets  │     │  with metadata   │     │ & set reminders │
+└─────────────────┘     └──────────────────┘     └─────────────────┘2.2 GSOC Confirmation Email StructureBased on GSOC documentation, confirmation emails contain:Subject: GSOC Ticket Confirmation - [TICKET_NUMBER]
+From: noreply@gopherstateonecall.org
+
+--------------------------------------------------
+GOPHER STATE ONE CALL
+LOCATE REQUEST CONFIRMATION
+--------------------------------------------------
+
+TICKET NUMBER: 20251203-123456
+TICKET TYPE: Normal
+
+SUBMITTED: 12/03/2025 10:30 AM
+WORK TO BEGIN: 12/05/2025 12:01 AM
+EXPIRES: 12/19/2025 12:01 AM
+
+COMPANY: Midwest Underground of Minnesota Inc
+CALLER: Kenny Fransen
+PHONE: (320) 382-6636
+ALTERNATE: [Field Contact] - [Phone]
+
+WORK SITE:
+123 Main Street
+Willmar, MN 56201
+Kandiyohi County
+
+NEAREST INTERSECTION: Highway 12
+
+MARKING INSTRUCTIONS:
+Mark from pedestal going east along white painted 
+route for 500ft. HDD bore path.
+
+MEMBERS NOTIFIED:
+- Xcel Energy (Electric) - (800) 895-1999
+- CenturyLink (Comm) - (800) 954-1211
+- City of Willmar (Water/Sewer) - (320) 235-4913
+[... more utilities ...]
+
+View ticket status and manage: [MapLINK URL HERE]
+--------------------------------------------------2.3 Key Data Extraction PointsFrom Email Subject:
+
+Ticket Number: GSOC Ticket Confirmation - (\d{8}-\d{6})
+From Email Body (Regex patterns):
+javascriptconst patterns = {
+  ticketNumber: /TICKET NUMBER:\s*(\d{8}-\d{6})/,
+  ticketType: /TICKET TYPE:\s*(.+)/,
+  submitted: /SUBMITTED:\s*(\d{2}\/\d{2}\/\d{4}\s+\d{1,2}:\d{2}\s+[AP]M)/,
+  workToBegin: /WORK TO BEGIN:\s*(\d{2}\/\d{2}\/\d{4}\s+\d{1,2}:\d{2}\s+[AP]M)/,
+  expires: /EXPIRES:\s*(\d{2}\/\d{2}\/\d{4}\s+\d{1,2}:\d{2}\s+[AP]M)/,
+  company: /COMPANY:\s*(.+)/,
+  caller: /CALLER:\s*(.+)/,
+  phone: /PHONE:\s*(.+)/,
+  workSite: /WORK SITE:\n(.+)\n(.+),\s*MN\s*(\d{5})/,
+  county: /County:\s*(.+)|(\w+)\s+County/,
+  membersNotified: /MEMBERS NOTIFIED:\n([\s\S]+?)(?=\n\nView|$)/
+};2.4 MapLINK URL StructureThe MapLINK in confirmation emails provides direct access to ETM:
+https://mn.itic.occinc.com/etm/ticket/[TICKET_NUMBER]?key=[AUTH_TOKEN]This URL allows:
+
+Viewing ticket details
+Checking positive response status
+Filing corrections/updates/cancellations
+Viewing work site map
+Part 3: DIY System Architecture3.1 Option A: Google Workspace + Sheets + Apps Script (FREE)Components:
+
+Gmail - Receive GSOC confirmations
+Google Sheets - Database for tickets
+Apps Script - Email parsing, automation, notifications
+Google Calendar - Expiration reminders
+Flow:
+Gmail Filter ──▶ Apps Script Trigger ──▶ Parse Email ──▶ Add to Sheets
+                                                              │
+     SMS/Email ◀── Apps Script ◀── Time-based Trigger ◀───────┘
+     Reminders     (checks expirations)3.2 Option B: Airtable + Zapier (Low-Cost)Components:
+
+Gmail - Receive GSOC confirmations
+Zapier - Email parsing and automation ($20/month - already budgeted)
+Airtable - Database with views, forms, mobile app (free tier)
+Flow:
+Gmail ──▶ Zapier (Email Parser) ──▶ Airtable (Database)
+                                          │
+     Slack/SMS ◀── Zapier ◀───────────────┘
+     Reminders     (scheduled checks)3.3 Option C: Custom Web App (Most Flexible)Stack:
+
+Frontend: React/Next.js (free hosting on Vercel)
+Backend: Node.js/Python on Railway/Render (free tier)
+Database: Supabase PostgreSQL (free tier)
+Email: Gmail API or Mailgun
+Notifications: Twilio SMS, Email, Push
+Part 4: Detailed Build Spec - Option A (Google Apps Script)4.1 Google Sheet StructureSheet 1: Tickets
+ColumnFieldTypeNotesATicket NumberTextPrimary keyBTicket TypeDropdownLocate, Meet, Emergency, etc.CStatusDropdownActive, Expired, Cancelled, CompleteDSubmittedDateTimeEWork to BeginDateTimeFExpiresDateTimeGDays Until ExpiryFormula=E-TODAY()HCompanyTextICallerTextJPhoneTextKWork Site AddressTextLCityTextMCountyTextNMarking InstructionsTextOWork DescriptionTextPUtilities NotifiedTextComma-separated listQAll Clear?CheckboxAll utilities responded?RProject/Job NameTextInternal referenceSCrew AssignedTextTNotesTextUMapLINKURLLink to ETMVCreatedDateTimeAuto-filledWLast UpdatedDateTimeAuto-filledSheet 2: Utilities
+ColumnFieldAUtility NameBType (Electric, Gas, Water, Telecom, etc.)CMarking Concerns PhoneDEmergency PhoneENotesSheet 3: Positive Responses
+ColumnFieldATicket NumberBUtility NameCResponse StatusDResponse DateENotes4.2 Apps Script: Email Parserjavascript/**
+ * 811 Ticket Manager - Email Parser
+ * Automatically parses GSOC confirmation emails and adds to spreadsheet
+ */
+
+// Configuration
+const SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID_HERE';
+const TICKETS_SHEET = 'Tickets';
+const GSOC_SENDER = 'noreply@gopherstateonecall.org';
+
+/**
+ * Main function - runs on time trigger (every 5 minutes)
+ */
+function parseGSOCEmails() {
+  const threads = GmailApp.search(`from:${GSOC_SENDER} is:unread`, 0, 50);
+  const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(TICKETS_SHEET);
+  
+  threads.forEach(thread => {
+    const messages = thread.getMessages();
+    messages.forEach(message => {
+      if (!message.isUnread()) return;
+      
+      try {
+        const ticketData = parseTicketEmail(message);
+        if (ticketData && ticketData.ticketNumber) {
+          addTicketToSheet(sheet, ticketData);
+          message.markRead();
+          
+          // Add label for processed emails
+          const label = GmailApp.getUserLabelByName('811-Processed') || 
+                        GmailApp.createLabel('811-Processed');
+          thread.addLabel(label);
+        }
+      } catch (e) {
+        console.error('Error parsing email:', e);
+      }
+    });
+  });
+}
+
+/**
+ * Parse GSOC confirmation email
+ */
+function parseTicketEmail(message) {
+  const body = message.getPlainBody();
+  const subject = message.getSubject();
+  
+  // Extract ticket number from subject or body
+  const ticketMatch = body.match(/TICKET NUMBER:\s*(\d{8}-\d{6})/);
+  if (!ticketMatch) return null;
+  
+  const ticket = {
+    ticketNumber: ticketMatch[1],
+    ticketType: extractField(body, /TICKET TYPE:\s*(.+)/),
+    submitted: parseGSOCDate(extractField(body, /SUBMITTED:\s*(.+)/)),
+    workToBegin: parseGSOCDate(extractField(body, /WORK TO BEGIN:\s*(.+)/)),
+    expires: parseGSOCDate(extractField(body, /EXPIRES:\s*(.+)/)),
+    company: extractField(body, /COMPANY:\s*(.+)/),
+    caller: extractField(body, /CALLER:\s*(.+)/),
+    phone: extractField(body, /PHONE:\s*(.+)/),
+    workSite: extractWorkSite(body),
+    markingInstructions: extractField(body, /MARKING INSTRUCTIONS:\n([\s\S]+?)(?=\nMEMBERS|$)/),
+    utilitiesNotified: extractUtilities(body),
+    mapLink: extractField(body, /(https:\/\/mn\.itic\.occinc\.com\/etm[^\s]+)/),
+    emailDate: message.getDate(),
+    rawEmail: body
+  };
+  
+  return ticket;
+}
+
+/**
+ * Helper: Extract field using regex
+ */
+function extractField(text, regex) {
+  const match = text.match(regex);
+  return match ? match[1].trim() : '';
+}
+
+/**
+ * Helper: Parse GSOC date format
+ */
+function parseGSOCDate(dateStr) {
+  if (!dateStr) return null;
+  // Format: 12/03/2025 10:30 AM
+  const match = dateStr.match(/(\d{2})\/(\d{2})\/(\d{4})\s+(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if (!match) return null;
+  
+  let [_, month, day, year, hours, minutes, ampm] = match;
+  hours = parseInt(hours);
+  if (ampm.toUpperCase() === 'PM' && hours !== 12) hours += 12;
+  if (ampm.toUpperCase() === 'AM' && hours === 12) hours = 0;
+  
+  return new Date(year, month - 1, day, hours, minutes);
+}
+
+/**
+ * Helper: Extract work site address
+ */
+function extractWorkSite(body) {
+  const match = body.match(/WORK SITE:\n([\s\S]+?)(?=\nNEAREST|MARKING|$)/);
+  if (!match) return '';
+  return match[1].trim().replace(/\n/g, ', ');
+}
+
+/**
+ * Helper: Extract utilities notified
+ */
+function extractUtilities(body) {
+  const match = body.match(/MEMBERS NOTIFIED:\n([\s\S]+?)(?=\n\nView|Click|$)/);
+  if (!match) return '';
+  
+  const utilities = match[1]
+    .split('\n')
+    .filter(line => line.trim().startsWith('-'))
+    .map(line => line.replace(/^-\s*/, '').split(' - ')[0].trim())
+    .join(', ');
+  
+  return utilities;
+}
+
+/**
+ * Add ticket to spreadsheet
+ */
+function addTicketToSheet(sheet, ticket) {
+  // Check if ticket already exists
+  const data = sheet.getDataRange().getValues();
+  const ticketCol = 0; // Column A
+  const existingRow = data.findIndex(row => row[ticketCol] === ticket.ticketNumber);
+  
+  const rowData = [
+    ticket.ticketNumber,
+    ticket.ticketType,
+    'Active', // Status
+    ticket.submitted,
+    ticket.workToBegin,
+    ticket.expires,
+    '', // Days until expiry (formula)
+    ticket.company,
+    ticket.caller,
+    ticket.phone,
+    ticket.workSite,
+    '', // City (parsed separately)
+    '', // County
+    ticket.markingInstructions,
+    '', // Work description
+    ticket.utilitiesNotified,
+    false, // All Clear checkbox
+    '', // Project name
+    '', // Crew assigned
+    '', // Notes
+    ticket.mapLink,
+    new Date(), // Created
+    new Date()  // Last Updated
+  ];
+  
+  if (existingRow > 0) {
+    // Update existing row (keep some fields)
+    const range = sheet.getRange(existingRow + 1, 1, 1, rowData.length);
+    const existing = range.getValues()[0];
+    rowData[16] = existing[16]; // Keep All Clear status
+    rowData[17] = existing[17]; // Keep Project name
+    rowData[18] = existing[18]; // Keep Crew assigned
+    rowData[19] = existing[19]; // Keep Notes
+    rowData[21] = existing[21]; // Keep Created date
+    range.setValues([rowData]);
+  } else {
+    // Add new row
+    sheet.appendRow(rowData);
+  }
+  
+  // Set formula for days until expiry
+  const lastRow = existingRow > 0 ? existingRow + 1 : sheet.getLastRow();
+  sheet.getRange(lastRow, 7).setFormula('=IF(F' + lastRow + '<>"",F' + lastRow + '-TODAY(),"")');
+}4.3 Apps Script: Expiration Checker & Notificationsjavascript/**
+ * Check for expiring tickets and send notifications
+ * Run daily at 7 AM
+ */
+function checkExpirations() {
+  const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(TICKETS_SHEET);
+  const data = sheet.getDataRange().getValues();
+  const headers = data[0];
+  
+  // Find column indices
+  const cols = {
+    ticketNumber: 0,
+    status: 2,
+    expires: 5,
+    workSite: 10,
+    crew: 18
+  };
+  
+  const today = new Date();
+  const notifications = {
+    expiresToday: [],
+    expiresIn2Days: [],
+    expiresIn3Days: []
+  };
+  
+  data.slice(1).forEach((row, index) => {
+    if (row[cols.status] !== 'Active') return;
+    
+    const expires = new Date(row[cols.expires]);
+    const daysUntil = Math.ceil((expires - today) / (1000 * 60 * 60 * 24));
+    
+    const ticketInfo = {
+      number: row[cols.ticketNumber],
+      expires: expires,
+      workSite: row[cols.workSite],
+      crew: row[cols.crew]
+    };
+    
+    if (daysUntil <= 0) {
+      // Mark as expired
+      sheet.getRange(index + 2, cols.status + 1).setValue('Expired');
+    } else if (daysUntil === 1) {
+      notifications.expiresToday.push(ticketInfo);
+    } else if (daysUntil === 2) {
+      notifications.expiresIn2Days.push(ticketInfo);
+    } else if (daysUntil === 3) {
+      notifications.expiresIn3Days.push(ticketInfo);
+    }
+  });
+  
+  // Send notification email
+  if (notifications.expiresToday.length > 0 || 
+      notifications.expiresIn2Days.length > 0) {
+    sendExpirationNotification(notifications);
+  }
+}
+
+/**
+ * Send expiration notification email
+ */
+function sendExpirationNotification(notifications) {
+  const recipients = 'kenny@midwestunderground.com'; // Configure this
+  
+  let body = '📋 811 TICKET EXPIRATION ALERT\n\n';
+  
+  if (notifications.expiresToday.length > 0) {
+    body += '🚨 EXPIRES TODAY - RENEW IMMEDIATELY:\n';
+    notifications.expiresToday.forEach(t => {
+      body += `  • ${t.number} - ${t.workSite}\n`;
+    });
+    body += '\n';
+  }
+  
+  if (notifications.expiresIn2Days.length > 0) {
+    body += '⚠️ EXPIRES IN 2 DAYS:\n';
+    notifications.expiresIn2Days.forEach(t => {
+      body += `  • ${t.number} - ${t.workSite}\n`;
+    });
+    body += '\n';
+  }
+  
+  if (notifications.expiresIn3Days.length > 0) {
+    body += '📅 EXPIRES IN 3 DAYS:\n';
+    notifications.expiresIn3Days.forEach(t => {
+      body += `  • ${t.number} - ${t.workSite}\n`;
+    });
+  }
+  
+  body += '\n---\nRenew tickets at: https://mn.itic.occinc.com\n';
+  body += 'Or call: 811 / (651) 454-0002\n';
+  
+  GmailApp.sendEmail(recipients, '🚨 811 Tickets Expiring Soon', body);
+}
+
+/**
+ * Create time-based triggers
+ */
+function createTriggers() {
+  // Delete existing triggers
+  ScriptApp.getProjectTriggers().forEach(trigger => {
+    ScriptApp.deleteTrigger(trigger);
+  });
+  
+  // Check emails every 5 minutes
+  ScriptApp.newTrigger('parseGSOCEmails')
+    .timeBased()
+    .everyMinutes(5)
+    .create();
+  
+  // Check expirations daily at 7 AM
+  ScriptApp.newTrigger('checkExpirations')
+    .timeBased()
+    .atHour(7)
+    .everyDays(1)
+    .create();
+}4.4 Apps Script: Positive Response Checkerjavascript/**
+ * Check positive response status for active tickets
+ * Uses GSOC Search & Status page scraping
+ * 
+ * NOTE: This is a simplified version. Full implementation would need
+ * to handle the actual GSOC website structure.
+ */
+function checkPositiveResponses() {
+  const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(TICKETS_SHEET);
+  const data = sheet.getDataRange().getValues();
+  
+  const cols = {
+    ticketNumber: 0,
+    status: 2,
+    allClear: 16,
+    mapLink: 20
+  };
+  
+  data.slice(1).forEach((row, index) => {
+    if (row[cols.status] !== 'Active') return;
+    
+    const ticketNumber = row[cols.ticketNumber];
+    
+    // Check positive response via GSOC search
+    // Note: This would need to be implemented based on actual GSOC response
+    // The Search & Status is at: https://gopherstateonecall.org/search
+    
+    try {
+      const searchUrl = `https://mn.itic.occinc.com/etm/api/ticket/${ticketNumber}/status`;
+      // This is a placeholder - actual implementation depends on GSOC's structure
+      
+      // For now, log that we would check
+      console.log(`Would check status for: ${ticketNumber}`);
+      
+    } catch (e) {
+      console.error(`Error checking ${ticketNumber}:`, e);
+    }
+  });
+}Part 5: Alternative Implementation with Zapier + Airtable5.1 Airtable Base StructureTable: Tickets
+Fields:
+- Ticket Number (Primary, Text)
+- Ticket Type (Single Select: Locate, Meet, Emergency, Update, etc.)
+- Status (Single Select: Active, Expired, Complete, Cancelled)
+- Submitted (Date/Time)
+- Work To Begin (Date/Time)
+- Expires (Date/Time)  
+- Days Until Expiry (Formula: DATETIME_DIFF({Expires}, TODAY(), 'days'))
+- Company (Text)
+- Caller (Text)
+- Phone (Phone)
+- Work Site (Long Text)
+- City (Text)
+- County (Single Select: Kandiyohi, Meeker, Swift, etc.)
+- Marking Instructions (Long Text)
+- Utilities Notified (Long Text)
+- All Responses Received (Checkbox)
+- Project (Link to Projects table)
+- Crew (Link to Crews table)
+- Notes (Long Text)
+- Photos (Attachment)
+- MapLINK (URL)
+- Email Raw (Long Text, hidden)
+- Created (Created Time)
+- Modified (Last Modified Time)Table: Positive Responses
+Fields:
+- Response ID (Auto Number)
+- Ticket (Link to Tickets)
+- Utility Name (Text)
+- Response Status (Single Select: Marked, Clear, Not Responded, Delayed, In Progress)
+- Response Date (Date)
+- Notes (Long Text)Table: Projects
+Fields:
+- Project Name (Text)
+- Client (Text)
+- Address (Text)
+- Start Date (Date)
+- Tickets (Link to Tickets)
+- Status (Single Select)5.2 Zapier WorkflowZap 1: New GSOC Email → Parse → Add to AirtableTrigger: Gmail - New Email Matching Search
+  Search: from:noreply@gopherstateonecall.org subject:Ticket Confirmation
+
+Action 1: Formatter by Zapier - Text
+  Extract Pattern: TICKET NUMBER:\s*(\d{8}-\d{6})
+  
+Action 2: Formatter by Zapier - Text  
+  Extract multiple patterns for all fields
+
+Action 3: Airtable - Find Record
+  Search for existing ticket number
+
+Action 4: Airtable - Create or Update Record
+  Map parsed fields to Airtable columnsZap 2: Daily Expiration Check → NotifyTrigger: Schedule by Zapier - Every Day at 7 AM
+
+Action 1: Airtable - Find Records
+  View: Active Tickets Expiring Soon
+  Filter: Days Until Expiry <= 3
+
+Action 2: Filter by Zapier
+  Only continue if records found
+
+Action 3: Formatter - Utilities
+  Create summary text
+
+Action 4: Gmail/Slack/SMS
+  Send notification with expiring ticketsZap 3: Ticket Marked Complete → Update StatusTrigger: Airtable - Updated Record
+  When "All Responses Received" = checked
+
+Action 1: Airtable - Update Record
+  Set Status = "Ready to Dig"
+  
+Action 2: Slack/SMS
+  Notify crew that ticket is readyPart 6: Web Scraping for Positive Response (Advanced)6.1 GSOC Search & Status AccessThe public Search & Status is available at:
+https://gopherstateonecall.org/searchThis does NOT require login and allows searching by:
+
+Ticket Number
+Address
+Caller information
+6.2 Scraping Strategy (Node.js with Puppeteer)javascriptconst puppeteer = require('puppeteer');
+
+async function checkTicketStatus(ticketNumber) {
+  const browser = await puppeteer.launch({ headless: true });
+  const page = await browser.newPage();
+  
+  try {
+    // Navigate to search page
+    await page.goto('https://mn.itic.occinc.com/search');
+    
+    // Enter ticket number
+    await page.type('#ticketNumber', ticketNumber);
+    await page.click('#searchButton');
+    
+    // Wait for results
+    await page.waitForSelector('.ticket-results', { timeout: 10000 });
+    
+    // Extract positive response data
+    const responses = await page.evaluate(() => {
+      const rows = document.querySelectorAll('.member-response-row');
+      return Array.from(rows).map(row => ({
+        utility: row.querySelector('.utility-name')?.textContent?.trim(),
+        status: row.querySelector('.response-status')?.textContent?.trim(),
+        date: row.querySelector('.response-date')?.textContent?.trim()
+      }));
+    });
+    
+    return responses;
+    
+  } catch (error) {
+    console.error('Error scraping ticket status:', error);
+    return null;
+  } finally {
+    await browser.close();
+  }
+}
+
+// Check all active tickets
+async function checkAllActiveTickets(tickets) {
+  for (const ticket of tickets) {
+    const responses = await checkTicketStatus(ticket.number);
+    if (responses) {
+      // Update database with response data
+      await updateTicketResponses(ticket.number, responses);
+      
+      // Check if all utilities responded
+      const allResponded = responses.every(r => 
+        r.status === 'Marked' || r.status === 'Clear'
+      );
+      
+      if (allResponded) {
+        await markTicketReady(ticket.number);
+      }
+    }
+    
+    // Rate limit to avoid overloading GSOC
+    await new Promise(resolve => setTimeout(resolve, 2000));
+  }
+}Part 7: Mobile Access Options7.1 Google Sheets Mobile App (Free)
+
+Native iOS/Android apps
+View and edit tickets on the go
+Push notifications for comments/changes
+7.2 Airtable Mobile App (Free)
+
+Full functionality on mobile
+Barcode scanner for ticket lookup
+Offline access
+Photo capture directly to records
+7.3 Custom PWA (Progressive Web App)
+
+Build with React/Vue
+Works offline
+Push notifications
+Install on home screen
+Part 8: Implementation RoadmapWeek 1: Foundation
+
+Create Google Sheet with proper structure
+Set up Gmail filter for GSOC emails
+Deploy initial Apps Script email parser
+Test with 2-3 real tickets
+Week 2: Automation
+
+Add expiration checking script
+Configure notification emails
+Set up time-based triggers
+Create Crew Assignment workflow
+Week 3: Enhancement
+
+Add positive response checking
+Create mobile-friendly views
+Train office staff on system
+Document procedures
+Week 4: Optimization
+
+Add project linking
+Create reporting dashboard
+Integrate with existing tools (Workyard, Xero)
+Gather feedback and iterate
+Part 9: Cost ComparisonItem811spotterDIY (Google)DIY (Airtable+Zapier)Base Cost$100/mo$0$0Per Ticket$1-2$0$0Est. Monthly (40 tickets)$140-180$0$0Annual Cost$1,680-2,160$0$0*Setup Time2 hours8-16 hours4-8 hoursMaintenanceVendorSelfSelfCustomizationLimitedFullFullMobile AppYesSheets appAirtable app*Zapier Professional at $20/month already budgeted for other integrationsSavings: $1,680-2,160 per yearPart 10: Future EnhancementsPhase 2 Features
+
+Auto-renewal reminders - Prompt to renew 3 days before expiry
+Crew assignment automation - Based on location/project
+Integration with BOREHOG - Link bore logs to tickets
+Map visualization - Plot all active tickets on map
+Phase 3 Features
+
+AI ticket analysis - Extract utility conflicts automatically
+Weather integration - Flag tickets when bad weather expected
+Customer portal - Let clients see ticket status
+Billing integration - Track ticket costs per project
+Appendix A: GSOC Contact InformationServicePhoneHoursLocate Requests811 or (651) 454-0002Mon-Fri 6am-6pm (Apr-Oct)Greater MN(800) 252-1166Mon-Fri 7am-5pm (Nov-Mar)Emergency ONLY(866) 640-363724/7Resource Center(651) 681-7326Business hoursEmail Supportcustomersupport@gopherstateonecall.orgWebsite: https://gopherstateonecall.org
+ITIC (Online Tickets): https://mn.itic.occinc.com
+Search & Status: https://gopherstateonecall.org/searchAppendix B: APWA Utility Color CodesColorUtility Type🔴 RedElectric power, cables, conduit🟡 YellowGas, oil, steam, petroleum🟠 OrangeCommunication, alarm, signal, cables🔵 BluePotable water🟢 GreenSewer, storm drain🟣 PurpleReclaimed water, irrigation⚪ WhiteProposed excavation🩷 PinkTemporary survey markingsDocument created for Midwest Underground of Minnesota
+Build your own 811 ticket manager and save $1,500+/year

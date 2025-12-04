@@ -43,11 +43,19 @@ export function TicketManager({ projectId, initialTickets = [] }: TicketManagerP
         setLoading(true);
 
         const res = await createTicket({
-            projectId,
             ticketNumber: newTicketNumber,
-            ticketDate: new Date(), // Assuming today is start date
-            expirationDate: new Date(expirationDate)
-        });
+            type: 'NORMAL',
+            status: 'ACTIVE',
+            submittedAt: new Date(),
+            workToBeginDate: new Date(),
+            expirationDate: new Date(expirationDate),
+            company: 'Midwest Underground',
+            caller: 'Unknown',
+            phone: 'Unknown',
+            workSiteAddress: 'Unknown',
+            utilitiesNotified: '[]',
+            projectId
+        } as any);
 
         if (res.success) {
             toast.success("Ticket Created");
@@ -55,8 +63,12 @@ export function TicketManager({ projectId, initialTickets = [] }: TicketManagerP
             setNewTicketNumber("");
             setExpirationDate("");
             // Refresh list
-            const updated = await getTickets(projectId);
-            setTickets(updated);
+            const updated = await getTickets({ projectId });
+            if (updated.success && updated.data) {
+                // Map to local Ticket interface if needed, or update local interface
+                // For now, just casting to any to avoid type mismatch with old interface
+                setTickets(updated.data as any);
+            }
         } else {
             toast.error("Failed to create ticket");
         }
@@ -64,7 +76,7 @@ export function TicketManager({ projectId, initialTickets = [] }: TicketManagerP
     };
 
     const filteredTickets = tickets.filter(t =>
-        t.number.includes(searchTerm) || (t.project && t.project.toLowerCase().includes(searchTerm.toLowerCase()))
+        t.number?.includes(searchTerm) || (t.project && t.project.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     return (
@@ -133,7 +145,7 @@ export function TicketManager({ projectId, initialTickets = [] }: TicketManagerP
                             />
 
                             <div className="mt-2 flex justify-end gap-2">
-                                <button className="text-xs text-blue-600 hover:underline">View Details</button>
+                                <a href={`/811/${ticket.id}`} className="text-xs text-blue-600 hover:underline">View Details</a>
                                 <span className="text-gray-300">|</span>
                                 <button className="text-xs text-blue-600 hover:underline">Renew</button>
                             </div>

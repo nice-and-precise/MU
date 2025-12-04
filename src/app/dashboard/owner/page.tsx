@@ -7,6 +7,7 @@ import { CrewDispatch } from "@/components/financials/CrewDispatch";
 import { getAvailableCrewMembers } from "@/actions/employees";
 import { getAssets } from "@/actions/assets";
 import { getActiveProjects } from "@/actions/projects";
+import { ExpiringTicketsWidget } from "@/components/dashboard/ExpiringTicketsWidget";
 
 export default async function OwnerDashboard() {
     const stats = await getOwnerStats();
@@ -58,6 +59,22 @@ export default async function OwnerDashboard() {
                 </div>
             </div>
 
+            {/* Alerts & Activity Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-1 h-full">
+                    <ExpiringTicketsWidget />
+                </div>
+                <div className="lg:col-span-2">
+                    <div className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700 p-6 shadow-sm h-full">
+                        <h2 className="text-xl font-bold mb-4 text-blue-900 dark:text-blue-400 flex items-center">
+                            <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
+                            Recent Activity
+                        </h2>
+                        <p className="text-gray-500 italic">No recent activity to display.</p>
+                    </div>
+                </div>
+            </div>
+
             {/* Charts & Maps Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Production Chart */}
@@ -88,15 +105,7 @@ export default async function OwnerDashboard() {
                 </div>
             </div>
 
-            <div className="mt-8">
-                <h2 className="text-xl font-bold mb-4 text-blue-900 dark:text-blue-400 flex items-center">
-                    <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
-                    Recent Activity
-                </h2>
-                <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-                    <p className="text-gray-500 italic">No recent activity to display.</p>
-                </div>
-            </div>
+
 
             <div className="mt-8">
                 <CrewDispatch

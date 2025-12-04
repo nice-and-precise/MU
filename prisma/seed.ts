@@ -462,7 +462,89 @@ async function main() {
 
   console.log('✅ Base Seed complete!');
 
-  // --- 10. EXECUTE HELPER SCRIPTS ---
+  // --- 10. 811 TICKETS (Phase 2) ---
+  console.log('Creating 811 Tickets...');
+
+  // 1. Active Ticket (Expiring Soon)
+  const activeTicket = await prisma.ticket811.create({
+    data: {
+      ticketNumber: '240101-001',
+      type: 'NORMAL',
+      status: 'ACTIVE',
+      submittedAt: faker.date.recent({ days: 10 }),
+      workToBeginDate: faker.date.recent({ days: 2 }),
+      expirationDate: faker.date.soon({ days: 2 }), // Expiring in 2 days
+      company: 'Midwest Underground',
+      caller: foreman.name || 'Foreman',
+      phone: '555-0123',
+      email: 'foreman@midwestunderground.com',
+      workSiteAddress: '123 Main St',
+      city: 'Minneapolis',
+      county: 'Hennepin',
+      nearestIntersection: 'Main St & 1st Ave',
+      markingInstructions: 'Mark entire lot',
+      projectId: fiberProject.id,
+      responses: {
+        create: [
+          { utilityName: 'Xcel Energy', status: 'Marked', responseDate: faker.date.recent({ days: 1 }), notes: 'Gas marked in yellow' },
+          { utilityName: 'CenturyLink', status: 'Clear', responseDate: faker.date.recent({ days: 1 }) },
+          { utilityName: 'Comcast', status: 'Not Responded' } // Not ready yet
+        ]
+      }
+    }
+  });
+
+  // 2. Ready to Dig Ticket
+  await prisma.ticket811.create({
+    data: {
+      ticketNumber: '240101-002',
+      type: 'NORMAL',
+      status: 'ACTIVE',
+      submittedAt: faker.date.recent({ days: 12 }),
+      workToBeginDate: faker.date.recent({ days: 5 }),
+      expirationDate: faker.date.soon({ days: 5 }),
+      company: 'Midwest Underground',
+      caller: foreman.name || 'Foreman',
+      phone: '555-0123',
+      email: 'foreman@midwestunderground.com',
+      workSiteAddress: '456 Lake Dr',
+      city: 'Spicer',
+      county: 'Kandiyohi',
+      projectId: resiProject.id,
+      responses: {
+        create: [
+          { utilityName: 'Xcel Energy', status: 'Clear', responseDate: faker.date.recent({ days: 2 }) },
+          { utilityName: 'Charter', status: 'Clear', responseDate: faker.date.recent({ days: 2 }) },
+          { utilityName: 'City Sewer', status: 'Marked', responseDate: faker.date.recent({ days: 2 }) }
+        ]
+      }
+    }
+  });
+
+  // 3. Expired Ticket
+  await prisma.ticket811.create({
+    data: {
+      ticketNumber: '231201-999',
+      type: 'EMERGENCY',
+      status: 'EXPIRED',
+      submittedAt: faker.date.past({ years: 0.1 }),
+      workToBeginDate: faker.date.past({ years: 0.1 }),
+      expirationDate: faker.date.recent({ days: 5 }), // Already expired
+      company: 'Midwest Underground',
+      caller: owner.name || 'Owner',
+      phone: '555-9999',
+      workSiteAddress: '789 River Rd',
+      city: 'St. Cloud',
+      county: 'Stearns',
+      responses: {
+        create: [
+          { utilityName: 'CenterPoint', status: 'Conflict', responseDate: faker.date.past({ years: 0.1 }), notes: 'High pressure main conflict' }
+        ]
+      }
+    }
+  });
+
+  // --- 11. EXECUTE HELPER SCRIPTS ---
   console.log('🚀 Running Helper Scripts...');
 
   const { execSync } = require('child_process');

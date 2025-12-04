@@ -8,6 +8,7 @@ import { MeetTicketForm } from "./MeetTicketForm";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, AlertTriangle } from "lucide-react";
+import { toast } from "sonner";
 
 interface ComplianceTabProps {
     projectId: string;
@@ -100,10 +101,39 @@ export function ComplianceTab({ projectId }: ComplianceTabProps) {
                                     </p>
                                 </div>
                             </div>
-                            <div className="mt-4">
-                                <Button variant="outline" className="w-full border-emerald-600 text-emerald-700 hover:bg-emerald-50">
-                                    View Compliance Packet
+                            <div className="mt-4 space-y-2">
+                                <Button
+                                    variant="outline"
+                                    className="w-full border-emerald-600 text-emerald-700 hover:bg-emerald-50"
+                                    onClick={() => {
+                                        import('@/lib/FieldGuideGenerator').then(mod => {
+                                            mod.generateFieldGuide(
+                                                complianceData.gsocTicket || {},
+                                                complianceData.whiteLining?.description || "No AMI generated."
+                                            );
+                                        });
+                                    }}
+                                >
+                                    Download Compliance Packet (PDF)
                                 </Button>
+
+                                {!complianceData.submitted ? (
+                                    <Button
+                                        className="w-full bg-emerald-600 hover:bg-emerald-700"
+                                        onClick={() => {
+                                            if (confirm("Confirm final submission to ITICnxt? This will lock the ticket.")) {
+                                                setComplianceData((prev: any) => ({ ...prev, submitted: true }));
+                                                toast.success("Ticket Submitted to ITICnxt!");
+                                            }
+                                        }}
+                                    >
+                                        Submit to ITICnxt (Simulate)
+                                    </Button>
+                                ) : (
+                                    <div className="p-2 bg-emerald-100 text-emerald-800 text-center rounded font-bold border border-emerald-200">
+                                        ✓ Submitted to ITICnxt
+                                    </div>
+                                )}
                             </div>
                         </CardContent>
                     </Card>

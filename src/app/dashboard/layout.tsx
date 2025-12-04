@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { LogOut, User, LayoutDashboard, HardHat, FileText, Settings, Activity, Calculator, Globe, Package, Users, ClipboardCheck, MapPin } from "lucide-react";
+import { LogOut, User, LayoutDashboard, HardHat, FileText, Settings, Activity, Calculator, Globe, Package, Users, ClipboardCheck, MapPin, Flag } from "lucide-react";
 
 export default async function DashboardLayout({
     children,
@@ -43,6 +43,10 @@ export default async function DashboardLayout({
                         <Link href="/dashboard/track" className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition-colors">
                             <MapPin className="h-4 w-4" />
                             <span className="text-sm">Live Tracking</span>
+                        </Link>
+                        <Link href="/811" className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition-colors">
+                            <Flag className="h-4 w-4" />
+                            <span className="text-sm">811 Tickets</span>
                         </Link>
                     </div>
 
