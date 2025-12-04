@@ -55,3 +55,11 @@
 ## 2025-12-03: Brand & Accessibility Enforcement
 - **Decision**: Centralize all brand colors into semantic CSS variables (`--secondary`, `--accent`) in `globals.css` and enforce their usage in components.
 - **Rationale**: A critical audit revealed that global tokens were defaulting to white/gray, breaking the brand identity and accessibility (contrast). Enforcing tokens ensures consistency and WCAG compliance across the platform.
+
+## 2025-12-03: Advanced Engineering Visualization
+- **Decision**: Integrate "Invisible Engineering" physics engine directly into the planning UI via `EngineeringCharts.tsx` (Chart.js) and `RodPlanningGrid.tsx`.
+- **Rationale**: Provides immediate feedback to engineers on Pullback Force and Annular Pressure, elevating the tool from a simple logger to a predictive engineering platform.
+
+## 2025-12-03: Infinite Loop Resolution
+- **Decision**: Removed legacy `while` loop logic in `timeRules.ts` that was causing test hangs.
+- **Rationale**: The loop was a vestige of an abandoned logic path and was blocking the CI/CD pipeline. Corrected logic relies on date iteration.
