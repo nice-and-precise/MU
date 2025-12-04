@@ -3,9 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
     Select,
@@ -14,84 +18,118 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form";
+
+const formSchema = z.object({
+    projectId: z.string().min(1, "Project is required"),
+    reportDate: z.string().min(1, "Date is required"),
+    notes: z.string().optional(),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 export default function DailyReportForm({ projects }: { projects: any[] }) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState({
-        projectId: "",
-        reportDate: new Date().toISOString().split("T")[0],
-        notes: "",
+
+    const form = useForm<FormValues>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            projectId: "",
+            reportDate: new Date().toISOString().split("T")[0],
+            notes: "",
+        },
     });
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const onSubmit = async (data: FormValues) => {
         setLoading(true);
-
         try {
             const { createDailyReport } = await import("@/app/actions/reports");
-            await createDailyReport(formData);
+            await createDailyReport(data);
+            toast.success("Daily report created successfully");
             router.push("/dashboard/reports");
             router.refresh();
         } catch (error: any) {
             console.error("Error submitting report:", error);
-            alert(error.message || "Failed to create report");
+            toast.error(error.message || "Failed to create report");
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6 bg-card p-6 rounded-xl shadow-sm border border-border">
-            <div className="space-y-2">
-                <Label htmlFor="project">Project</Label>
-                <Select
-                    value={formData.projectId}
-                    onValueChange={(value) => setFormData({ ...formData, projectId: value })}
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 bg-card p-6 rounded-xl shadow-sm border border-border">
+                <FormField
+                    control={form.control}
+                    name="projectId"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Project</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select a project..." />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    {projects.map((p) => (
+                                        <SelectItem key={p.id} value={p.id}>
+                                            {p.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name="reportDate"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Date</FormLabel>
+                            <FormControl>
+                                <Input type="date" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name="notes"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Notes</FormLabel>
+                            <FormControl>
+                                <Textarea rows={4} {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                <Button
+                    type="submit"
+                    disabled={loading}
+                    variant="secondary"
+                    className="w-full font-bold"
                 >
-                    <SelectTrigger id="project">
-                        <SelectValue placeholder="Select a project..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {projects.map((p) => (
-                            <SelectItem key={p.id} value={p.id}>
-                                {p.name}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </div>
-
-            <div className="space-y-2">
-                <Label htmlFor="date">Date</Label>
-                <Input
-                    id="date"
-                    type="date"
-                    required
-                    value={formData.reportDate}
-                    onChange={(e) => setFormData({ ...formData, reportDate: e.target.value })}
-                />
-            </div>
-
-            <div className="space-y-2">
-                <Label htmlFor="notes">Notes</Label>
-                <Textarea
-                    id="notes"
-                    rows={4}
-                    value={formData.notes}
-                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                />
-            </div>
-
-            <Button
-                type="submit"
-                disabled={loading}
-                variant="secondary"
-                className="w-full font-bold"
-            >
-                {loading ? <Loader2 className="animate-spin h-5 w-5 mr-2" /> : null}
-                {loading ? "Creating..." : "Create Report"}
-            </Button>
-        </form>
+                    {loading ? <Loader2 className="animate-spin h-5 w-5 mr-2" /> : null}
+                    {loading ? "Creating..." : "Create Report"}
+                </Button>
+            </form>
+        </Form>
     );
 }
