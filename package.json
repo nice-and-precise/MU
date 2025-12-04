@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev --turbo",
     "dev:turbo": "next dev --turbo",
-    "build": "prisma generate && next build --webpack",
+    "build:wasm": "wasm-pack build subterra --target web --out-dir ../src/subterra-wasm",
+    "build": "npm run build:wasm && prisma generate && next build --webpack",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
