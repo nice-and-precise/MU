@@ -1,0 +1,15 @@
+{
+  "name": "subterra",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "subterra_bg.wasm",
+    "subterra.js",
+    "subterra.d.ts"
+  ],
+  "main": "subterra.js",
+  "types": "subterra.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
