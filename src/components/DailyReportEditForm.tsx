@@ -19,6 +19,8 @@ interface DailyReportEditFormProps {
     jsas?: any[];
     punchItems?: any[];
     inventoryTransactions?: any[];
+    employees?: any[];
+    assets?: any[];
 }
 
 export default function DailyReportEditForm({
@@ -26,7 +28,9 @@ export default function DailyReportEditForm({
     safetyMeetings = [],
     jsas = [],
     punchItems = [],
-    inventoryTransactions = []
+    inventoryTransactions = [],
+    employees = [],
+    assets = []
 }: DailyReportEditFormProps) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
@@ -36,6 +40,7 @@ export default function DailyReportEditForm({
     const [crew, setCrew] = useState<any[]>(JSON.parse(report.crew || '[]'));
     const [production, setProduction] = useState<any[]>(JSON.parse(report.production || '[]'));
     const [materials, setMaterials] = useState<any[]>(JSON.parse(report.materials || '[]'));
+    const [equipment, setEquipment] = useState<any[]>(JSON.parse(report.equipment || '[]'));
     const [notes, setNotes] = useState(report.notes || '');
     const [weather, setWeather] = useState(report.weather || '');
 
@@ -57,6 +62,7 @@ export default function DailyReportEditForm({
                 crew: JSON.stringify(crew),
                 production: JSON.stringify(production),
                 materials: JSON.stringify(materials),
+                equipment: JSON.stringify(equipment),
                 notes,
                 weather
             });
@@ -71,7 +77,7 @@ export default function DailyReportEditForm({
     };
 
     const handleApprove = async () => {
-        if (!confirm('Are you sure? This will deduct materials from inventory and lock the report.')) return;
+        if (!confirm('Are you sure? This will deduct materials, log hours, and lock the report.')) return;
 
         setLoading(true);
         try {
@@ -88,14 +94,16 @@ export default function DailyReportEditForm({
     };
 
     // Helper to add rows
-    const addCrew = () => setCrew([...crew, { name: '', hours: 0, role: 'Labor' }]);
+    const addCrew = () => setCrew([...crew, { employeeId: '', hours: 0, role: 'Labor' }]);
     const addProduction = () => setProduction([...production, { activity: 'Drill', lf: 0, pitch: 0, azimuth: 0 }]);
     const addMaterial = () => setMaterials([...materials, { inventoryItemId: '', quantity: 0 }]);
+    const addEquipment = () => setEquipment([...equipment, { assetId: '', hours: 0 }]);
 
     // Helper to remove rows
     const removeCrew = (idx: number) => setCrew(crew.filter((_, i) => i !== idx));
     const removeProduction = (idx: number) => setProduction(production.filter((_, i) => i !== idx));
     const removeMaterial = (idx: number) => setMaterials(materials.filter((_, i) => i !== idx));
+    const removeEquipment = (idx: number) => setEquipment(equipment.filter((_, i) => i !== idx));
 
     const isApproved = report.status === 'APPROVED';
 
@@ -152,15 +160,26 @@ export default function DailyReportEditForm({
                     {/* Crew */}
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between">
-                            <CardTitle>Crew</CardTitle>
+                            <CardTitle>Crew Labor</CardTitle>
                             {!isApproved && <Button size="sm" variant="ghost" onClick={addCrew}><Plus className="w-4 h-4" /></Button>}
                         </CardHeader>
                         <CardContent className="space-y-2">
                             {crew.map((member, idx) => (
                                 <div key={idx} className="flex gap-2 items-center">
-                                    <Input placeholder="Name" value={member.name} onChange={e => {
-                                        const newCrew = [...crew]; newCrew[idx].name = e.target.value; setCrew(newCrew);
-                                    }} disabled={isApproved} />
+                                    <Select value={member.employeeId} onValueChange={val => {
+                                        const newCrew = [...crew]; newCrew[idx].employeeId = val;
+                                        // Auto-set role if possible, or just keep default
+                                        const emp = employees.find(e => e.id === val);
+                                        if (emp) newCrew[idx].role = emp.role;
+                                        setCrew(newCrew);
+                                    }} disabled={isApproved}>
+                                        <SelectTrigger className="flex-1"><SelectValue placeholder="Select Employee" /></SelectTrigger>
+                                        <SelectContent>
+                                            {employees.map(e => (
+                                                <SelectItem key={e.id} value={e.id}>{e.firstName} {e.lastName}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                     <Input type="number" placeholder="Hours" className="w-24" value={member.hours} onChange={e => {
                                         const newCrew = [...crew]; newCrew[idx].hours = Number(e.target.value); setCrew(newCrew);
                                     }} disabled={isApproved} />
@@ -176,6 +195,34 @@ export default function DailyReportEditForm({
                                         </SelectContent>
                                     </Select>
                                     {!isApproved && <Button size="icon" variant="ghost" onClick={() => removeCrew(idx)}><Trash2 className="w-4 h-4 text-red-500" /></Button>}
+                                </div>
+                            ))}
+                        </CardContent>
+                    </Card>
+
+                    {/* Equipment */}
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between">
+                            <CardTitle>Equipment Usage</CardTitle>
+                            {!isApproved && <Button size="sm" variant="ghost" onClick={addEquipment}><Plus className="w-4 h-4" /></Button>}
+                        </CardHeader>
+                        <CardContent className="space-y-2">
+                            {equipment.map((eq, idx) => (
+                                <div key={idx} className="flex gap-2 items-center">
+                                    <Select value={eq.assetId} onValueChange={val => {
+                                        const newEq = [...equipment]; newEq[idx].assetId = val; setEquipment(newEq);
+                                    }} disabled={isApproved}>
+                                        <SelectTrigger className="flex-1"><SelectValue placeholder="Select Asset" /></SelectTrigger>
+                                        <SelectContent>
+                                            {assets.map(a => (
+                                                <SelectItem key={a.id} value={a.id}>{a.name} ({a.type})</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <Input type="number" placeholder="Hours" className="w-24" value={eq.hours} onChange={e => {
+                                        const newEq = [...equipment]; newEq[idx].hours = Number(e.target.value); setEquipment(newEq);
+                                    }} disabled={isApproved} />
+                                    {!isApproved && <Button size="icon" variant="ghost" onClick={() => removeEquipment(idx)}><Trash2 className="w-4 h-4 text-red-500" /></Button>}
                                 </div>
                             ))}
                         </CardContent>

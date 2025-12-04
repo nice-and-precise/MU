@@ -33,6 +33,12 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ i
     const inventoryRes = await getInventoryTransactions(report.projectId, date);
     const todaysInventory = inventoryRes.success ? inventoryRes.data : [];
 
+    // Employees & Assets for Dropdowns
+    const { getEmployees } = await import('@/actions/employees');
+    const { getAssets } = await import('@/actions/assets');
+    const employeesRes = await getEmployees();
+    const assetsRes = await getAssets();
+
     return (
         <div className="max-w-6xl mx-auto p-6">
             <DailyReportEditForm
@@ -41,6 +47,8 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ i
                 jsas={todaysJSAs}
                 punchItems={todaysPunchItems}
                 inventoryTransactions={todaysInventory}
+                employees={employeesRes.success ? employeesRes.data : []}
+                assets={assetsRes.success ? assetsRes.data : []}
             />
         </div>
     );

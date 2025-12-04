@@ -69,7 +69,7 @@ export function TicketManager({ projectId, initialTickets = [] }: TicketManagerP
 
     return (
         <Card className="h-full flex flex-col">
-            <CardHeader className="border-b bg-slate-50">
+            <CardHeader className="border-b bg-slate-100 dark:bg-slate-900">
                 <div className="flex justify-between items-center">
                     <CardTitle className="flex items-center gap-2">
                         <FileText className="h-5 w-5 text-orange-600" />

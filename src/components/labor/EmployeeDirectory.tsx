@@ -86,7 +86,11 @@ export default function EmployeeDirectory({ employees }: EmployeeDirectoryProps)
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {employees.map(emp => (
-                        <div key={emp.id} className="relative group p-4 border rounded-lg hover:bg-slate-50 transition-colors">
+                        <div
+                            key={emp.id}
+                            className="relative group p-4 border rounded-lg hover:bg-slate-50 transition-colors cursor-pointer bg-white shadow-sm"
+                            onClick={() => router.push(`/dashboard/labor/${emp.id}`)}
+                        >
                             <div className="flex items-center gap-3">
                                 <div className="h-12 w-12 rounded-full overflow-hidden bg-slate-100 flex items-center justify-center border border-slate-200">
                                     {emp.user?.avatar ? (
@@ -110,10 +114,13 @@ export default function EmployeeDirectory({ employees }: EmployeeDirectoryProps)
                                 </div>
                             </div>
                             <Button
-                                variant="outline"
+                                variant="secondary"
                                 size="sm"
-                                className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
-                                onClick={() => router.push(`/dashboard/labor/${emp.id}`)}
+                                className="absolute top-4 right-4 shadow-sm border border-slate-200"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    router.push(`/dashboard/labor/${emp.id}`);
+                                }}
                             >
                                 Edit
                             </Button>

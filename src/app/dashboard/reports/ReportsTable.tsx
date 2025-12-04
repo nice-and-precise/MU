@@ -58,21 +58,21 @@ export default function ReportsTable({ reports }: ReportsTableProps) {
                             return (
                                 <div
                                     key={report.id}
-                                    className="absolute top-0 left-0 w-full flex hover:bg-muted/50 transition-colors border-b border-border"
+                                    className="absolute top-0 left-0 w-full flex hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border-b border-border"
                                     style={{
                                         height: `${virtualRow.size}px`,
                                         transform: `translateY(${virtualRow.start}px)`,
                                     }}
                                 >
-                                    <div className="px-6 py-4 w-1/5 text-foreground font-medium flex items-center font-sans">
-                                        <Calendar className="h-4 w-4 mr-2 text-muted-foreground flex-shrink-0" />
+                                    <div className="px-6 py-4 w-1/5 text-gray-900 dark:text-white font-bold flex items-center font-sans">
+                                        <Calendar className="h-4 w-4 mr-2 text-gray-500 flex-shrink-0" />
                                         {new Date(report.reportDate).toLocaleDateString()}
                                     </div>
-                                    <div className="px-6 py-4 w-1/4 text-muted-foreground truncate font-sans">
+                                    <div className="px-6 py-4 w-1/4 text-gray-700 dark:text-gray-300 truncate font-sans">
                                         {report.project.name}
                                     </div>
-                                    <div className="px-6 py-4 w-1/4 text-muted-foreground flex items-center font-sans">
-                                        <User className="h-4 w-4 mr-2 text-muted-foreground flex-shrink-0" />
+                                    <div className="px-6 py-4 w-1/4 text-gray-700 dark:text-gray-300 flex items-center font-sans">
+                                        <User className="h-4 w-4 mr-2 text-gray-500 flex-shrink-0" />
                                         <span className="truncate">{report.createdBy.name}</span>
                                     </div>
                                     <div className="px-6 py-4 w-1/6">
@@ -98,8 +98,8 @@ export default function ReportsTable({ reports }: ReportsTableProps) {
                             );
                         })}
                     </div>
-                </div>
-            </div>
-        </div>
+                </div >
+            </div >
+        </div >
     );
 }

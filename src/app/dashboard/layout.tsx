@@ -25,9 +25,9 @@ export default async function DashboardLayout({
                 </div>
 
                 <nav className="flex-1 px-4 space-y-6 mt-6 overflow-y-auto">
-                    {/* Overview Group */}
+                    {/* Operations Group */}
                     <div className="space-y-1">
-                        <p className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Overview</p>
+                        <p className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Operations</p>
                         <Link href="/dashboard" className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition-colors">
                             <LayoutDashboard className="h-4 w-4" />
                             <span className="text-sm">Dashboard</span>
@@ -46,12 +46,16 @@ export default async function DashboardLayout({
                         </Link>
                     </div>
 
-                    {/* Field Data Group */}
+                    {/* Field Reporting Group */}
                     <div className="space-y-1">
-                        <p className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Field Data</p>
+                        <p className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Field Reporting</p>
                         <Link href="/dashboard/reports" className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition-colors">
                             <FileText className="h-4 w-4" />
                             <span className="text-sm">Daily Reports</span>
+                        </Link>
+                        <Link href="/dashboard/drilling" className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition-colors">
+                            <Activity className="h-4 w-4" />
+                            <span className="text-sm">Drilling Ops</span>
                         </Link>
                         <Link href="/dashboard/rod-pass" className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition-colors">
                             <Activity className="h-4 w-4" />
@@ -61,34 +65,35 @@ export default async function DashboardLayout({
                             <ClipboardCheck className="h-4 w-4" />
                             <span className="text-sm">Quality Control</span>
                         </Link>
-                        <Link href="/dashboard/drilling" className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition-colors">
-                            <Activity className="h-4 w-4" />
-                            <span className="text-sm">Drilling Ops</span>
-                        </Link>
                     </div>
 
-                    {/* Management Group */}
+                    {/* Resources Group */}
                     <div className="space-y-1">
-                        <p className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Management</p>
-                        <Link href="/dashboard/estimating" className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition-colors">
-                            <Calculator className="h-4 w-4" />
-                            <span className="text-sm">Estimating</span>
-                        </Link>
-                        <Link href="/dashboard/inventory" className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition-colors">
-                            <Package className="h-4 w-4" />
-                            <span className="text-sm">Inventory</span>
-                        </Link>
+                        <p className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Resources</p>
                         <Link href="/dashboard/crew" className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition-colors">
                             <Users className="h-4 w-4" />
                             <span className="text-sm">Dispatch</span>
                         </Link>
                         <Link href="/dashboard/labor" className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition-colors">
                             <Users className="h-4 w-4" />
-                            <span className="text-sm">Labor Management</span>
+                            <span className="text-sm">Labor</span>
+                        </Link>
+                        <Link href="/dashboard/inventory" className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition-colors">
+                            <Package className="h-4 w-4" />
+                            <span className="text-sm">Inventory</span>
                         </Link>
                         <Link href="/dashboard/assets" className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition-colors">
                             <Package className="h-4 w-4" />
                             <span className="text-sm">Assets</span>
+                        </Link>
+                    </div>
+
+                    {/* Administration Group */}
+                    <div className="space-y-1">
+                        <p className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Administration</p>
+                        <Link href="/dashboard/estimating" className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition-colors">
+                            <Calculator className="h-4 w-4" />
+                            <span className="text-sm">Estimating</span>
                         </Link>
                         {session.user.role === "OWNER" && (
                             <>

@@ -174,3 +174,15 @@ async function recalculateEstimateTotals(estimateId: string) {
         },
     });
 }
+
+export async function getCostItems() {
+    try {
+        const items = await prisma.costItem.findMany({
+            orderBy: { code: 'asc' }
+        });
+        return { success: true, data: items };
+    } catch (error) {
+        console.error('Failed to fetch cost items:', error);
+        return { success: false, error: 'Failed to fetch cost items' };
+    }
+}

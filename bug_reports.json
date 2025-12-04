@@ -1060,5 +1060,118 @@
       "email": "owner@midwestunderground.com"
     },
     "screenshot": "/bug_reports/bug-1764808638621.png"
+  },
+  {
+    "id": "1764811628219",
+    "timestamp": "2025-12-04T01:27:08.197Z",
+    "description": "I pointed this out before to tell you the colors made it hard to read the text and you told me it was addressed, double check your work it looks the same to me",
+    "element": "div.space-y-6 (Crew Members\n0 Assigned\nEMPLOYEE\nSelect Employee\nR...)",
+    "path": "/dashboard/crew",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "screenSize": "2400x1138",
+    "consoleLogs": [
+      "[LOG] [Fast Refresh] done in 231ms",
+      "[LOG] [Fast Refresh] rebuilding"
+    ],
+    "userInfo": {
+      "name": "John Owner",
+      "email": "owner@midwestunderground.com"
+    },
+    "screenshot": "/bug_reports/bug-1764811628215.png"
+  },
+  {
+    "id": "1764811694920",
+    "timestamp": "2025-12-04T01:28:14.896Z",
+    "description": "when you click a button this should pull up the detailed employee info",
+    "element": "div.relative.group.p-4.border.rounded-lg.hover:bg-slate-50.transition-colors (Cleve Champlin\nForeman\n•\n$52/hr\nACTIVE\nEdit)",
+    "path": "/dashboard/labor",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "screenSize": "2400x1138",
+    "consoleLogs": [
+      "[LOG] [Fast Refresh] done in 130ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 609ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 555ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 606ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 231ms",
+      "[LOG] [Fast Refresh] rebuilding"
+    ],
+    "userInfo": {
+      "name": "John Owner",
+      "email": "owner@midwestunderground.com"
+    },
+    "screenshot": "/bug_reports/bug-1764811694919.png"
+  },
+  {
+    "id": "1764811778501",
+    "timestamp": "2025-12-04T01:29:38.483Z",
+    "description": "text is unreadable especially on hover\n",
+    "element": "div.px-6.py-4.w-1/5.text-foreground.font-medium.flex.items-center.font-sans (11/30/2025)",
+    "path": "/dashboard/reports",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "screenSize": "2400x1138",
+    "consoleLogs": [
+      "[LOG] THREE.WebGLRenderer: Context Lost.",
+      "[LOG] [Fast Refresh] done in 130ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 373ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 995ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 579ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 938ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 239ms",
+      "[LOG] [Fast Refresh] rebuilding"
+    ],
+    "userInfo": {
+      "name": "John Owner",
+      "email": "owner@midwestunderground.com"
+    },
+    "screenshot": "/bug_reports/bug-1764811778500.png"
+  },
+  {
+    "id": "1764811802848",
+    "timestamp": "2025-12-04T01:30:02.831Z",
+    "description": "text is unreadable",
+    "element": "div.@container/card-header.grid.auto-rows-min.grid-rows-[auto_auto].items-start.gap-2.px-6.has-data-[slot=card-action]:grid-cols-[1fr_auto].[.border-b]:pb-6.border-b.bg-slate-50 (811 Ticket Management\nNEW TICKET)",
+    "path": "/dashboard/admin",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "screenSize": "2400x1138",
+    "consoleLogs": [
+      "[LOG] [Fast Refresh] done in 122ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 133ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 120ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[WARN] %c%s%c [next-auth][warn][DEBUG_ENABLED] background: #e6e6e6;background: light-dark(rgba(0,0,0,0.1), rgba(255,255,255,0.25));color: #000000;color: light-dark(#000000, #ffffff);border-radius: 2px  Server   \nhttps://next-auth.js.org/warnings#debug_enabled",
+      "[LOG] [Fast Refresh] done in 258ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 901ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] THREE.WebGLRenderer: Context Lost.",
+      "[LOG] [Fast Refresh] done in 130ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 373ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 995ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 579ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 938ms",
+      "[LOG] [Fast Refresh] rebuilding",
+      "[LOG] [Fast Refresh] done in 239ms",
+      "[LOG] [Fast Refresh] rebuilding"
+    ],
+    "userInfo": {
+      "name": "John Owner",
+      "email": "owner@midwestunderground.com"
+    },
+    "screenshot": "/bug_reports/bug-1764811802847.png"
   }
 ]

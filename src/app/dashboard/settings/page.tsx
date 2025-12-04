@@ -16,7 +16,7 @@ export default async function SettingsPage() {
                 {/* Profile Section */}
                 <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
                     <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                        <span className="w-1 h-6 bg-yellow-500 mr-3 rounded-sm"></span>
+                        <span className="w-1 h-6 bg-[#003366] mr-3 rounded-sm"></span>
                         Profile Settings
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -60,7 +60,7 @@ export default async function SettingsPage() {
                 {/* User Roles & Permissions */}
                 <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
                     <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                        <span className="w-1 h-6 bg-purple-600 mr-3 rounded-sm"></span>
+                        <span className="w-1 h-6 bg-[#003366] mr-3 rounded-sm"></span>
                         User Roles & Permissions
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -92,20 +92,39 @@ export default async function SettingsPage() {
                 {/* Integrations */}
                 <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
                     <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                        <span className="w-1 h-6 bg-green-500 mr-3 rounded-sm"></span>
+                        <span className="w-1 h-6 bg-[#003366] mr-3 rounded-sm"></span>
                         Integrations
                     </h2>
-                    <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                        <div className="flex items-center space-x-4">
-                            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center text-green-700 font-bold text-xl">QB</div>
-                            <div>
-                                <h3 className="font-bold text-gray-900">QuickBooks Online</h3>
-                                <p className="text-sm text-gray-500">Sync invoices, payroll, and expenses.</p>
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                            <div className="flex items-center space-x-4">
+                                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center text-green-700 font-bold text-xl">QB</div>
+                                <div>
+                                    <h3 className="font-bold text-gray-900">QuickBooks Online</h3>
+                                    <p className="text-sm text-gray-500">Sync invoices, payroll, and expenses.</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-bold rounded">CONNECTED</span>
+                                <button className="px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded hover:bg-gray-50">
+                                    Configure
+                                </button>
                             </div>
                         </div>
-                        <button className="px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded hover:bg-gray-50">
-                            Configure
-                        </button>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pl-16">
+                            <label className="flex items-center space-x-2 text-sm text-gray-700">
+                                <input type="checkbox" defaultChecked className="rounded text-[#003366] focus:ring-[#003366]" />
+                                <span>Sync Invoices</span>
+                            </label>
+                            <label className="flex items-center space-x-2 text-sm text-gray-700">
+                                <input type="checkbox" defaultChecked className="rounded text-[#003366] focus:ring-[#003366]" />
+                                <span>Sync Payroll</span>
+                            </label>
+                            <label className="flex items-center space-x-2 text-sm text-gray-700">
+                                <input type="checkbox" className="rounded text-[#003366] focus:ring-[#003366]" />
+                                <span>Sync Expenses</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
@@ -113,7 +132,7 @@ export default async function SettingsPage() {
                 <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-lg font-bold text-gray-900 flex items-center">
-                            <span className="w-1 h-6 bg-green-600 mr-3 rounded-sm"></span>
+                            <span className="w-1 h-6 bg-[#003366] mr-3 rounded-sm"></span>
                             Employee Management
                         </h2>
                         <a href="/dashboard/labor" className="text-blue-600 hover:text-blue-800 font-medium text-sm">

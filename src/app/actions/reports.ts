@@ -105,8 +105,10 @@ export async function approveDailyReport(id: string) {
         throw new Error("Report is already approved");
     }
 
-    // Parse materials to deduct inventory
+    // Parse data
     const materials = JSON.parse(report.materials || '[]');
+    const crew = JSON.parse(report.crew || '[]');
+    const equipment = JSON.parse(report.equipment || '[]');
 
     await prisma.$transaction(async (tx) => {
         // 1. Deduct Inventory
@@ -133,7 +135,44 @@ export async function approveDailyReport(id: string) {
             }
         }
 
-        // 2. Update Report Status
+        // 2. Create Time Entries
+        for (const member of crew) {
+            if (member.employeeId && member.hours > 0) {
+                // Create TimeEntry
+                await tx.timeEntry.create({
+                    data: {
+                        employeeId: member.employeeId,
+                        projectId: report.projectId,
+                        startTime: report.reportDate, // Simplified: using report date as start
+                        endTime: new Date(report.reportDate.getTime() + member.hours * 60 * 60 * 1000), // Add hours
+                        type: 'WORK',
+                        status: 'APPROVED',
+                        description: `Daily Report: ${member.role}`
+                    }
+                });
+
+                // Find or Create TimeCard for this period (Simplified: Assuming weekly or just logging to card)
+                // For now, we'll just ensure a TimeCard exists for this week/period if we were doing full payroll.
+                // But TimeEntry is the granular record we need for job costing.
+            }
+        }
+
+        // 3. Create Equipment Usage
+        for (const eq of equipment) {
+            if (eq.assetId && eq.hours > 0) {
+                await tx.equipmentUsage.create({
+                    data: {
+                        assetId: eq.assetId,
+                        projectId: report.projectId,
+                        date: report.reportDate,
+                        hours: eq.hours,
+                        notes: 'Logged via Daily Report'
+                    }
+                });
+            }
+        }
+
+        // 4. Update Report Status
         await tx.dailyReport.update({
             where: { id },
             data: {

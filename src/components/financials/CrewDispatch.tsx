@@ -219,11 +219,11 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
                                             {member.firstName[0]}{member.lastName[0]}
                                         </div>
                                         <div>
-                                            <div className="font-bold text-gray-900">{member.firstName} {member.lastName}</div>
-                                            <div className="text-xs text-gray-600 flex items-center gap-2">
-                                                <span className="bg-slate-200 px-1.5 py-0.5 rounded text-slate-800 font-bold">{member.role}</span>
-                                                <span>•</span>
-                                                <span className="font-medium">${member.hourlyRate}/hr</span>
+                                            <div className="font-bold text-black dark:text-white">{member.firstName} {member.lastName}</div>
+                                            <div className="text-xs text-gray-900 dark:text-gray-300 flex items-center gap-2">
+                                                <span className="bg-slate-200 px-1.5 py-0.5 rounded text-black font-bold border border-slate-300">{member.role}</span>
+                                                <span className="text-black font-bold">•</span>
+                                                <span className="font-bold text-black dark:text-white">${member.hourlyRate}/hr</span>
                                             </div>
                                         </div>
                                     </div>

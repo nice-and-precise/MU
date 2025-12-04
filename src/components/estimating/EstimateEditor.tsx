@@ -119,6 +119,35 @@ export default function EstimateEditor({ estimate }: EstimateEditorProps) {
         router.refresh();
     };
 
+    // Cost Database
+    const [isCostDbOpen, setIsCostDbOpen] = useState(false);
+    const [costItems, setCostItems] = useState<any[]>([]);
+    const [loadingCostDb, setLoadingCostDb] = useState(false);
+
+    const handleOpenCostDb = async () => {
+        setIsCostDbOpen(true);
+        if (costItems.length === 0) {
+            setLoadingCostDb(true);
+            const { getCostItems } = await import('@/actions/estimating');
+            const res = await getCostItems();
+            if (res.success && res.data) {
+                setCostItems(res.data);
+            }
+            setLoadingCostDb(false);
+        }
+    };
+
+    const handleAddFromCostDb = (item: any) => {
+        setNewLine({
+            description: item.name,
+            quantity: 1,
+            unit: 'EA', // Default, maybe add unit to CostItem model later
+            unitCost: item.unitCost || 0,
+            markup: 0.15
+        });
+        setIsCostDbOpen(false);
+    };
+
     return (
         <div className="space-y-6 max-w-6xl mx-auto">
             {/* Top Bar */}
@@ -174,6 +203,7 @@ export default function EstimateEditor({ estimate }: EstimateEditorProps) {
                 <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle>Line Items</CardTitle>
                     <div className="flex gap-2">
+                        {/* Inventory Dialog */}
                         <Dialog open={isInventoryOpen} onOpenChange={setIsInventoryOpen}>
                             <DialogTrigger asChild>
                                 <Button variant="outline" size="sm" onClick={handleOpenInventory}>
@@ -198,6 +228,42 @@ export default function EstimateEditor({ estimate }: EstimateEditorProps) {
                                                     </div>
                                                     <div className="font-bold text-green-700">
                                                         ${item.costPerUnit?.toFixed(2)}/{item.unit}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </DialogContent>
+                        </Dialog>
+
+                        {/* Cost DB Dialog */}
+                        <Dialog open={isCostDbOpen} onOpenChange={setIsCostDbOpen}>
+                            <DialogTrigger asChild>
+                                <Button variant="outline" size="sm" onClick={handleOpenCostDb}>
+                                    <ClipboardList className="w-4 h-4 mr-2" /> From Cost DB
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                                <DialogHeader>
+                                    <DialogTitle>Select Cost Item</DialogTitle>
+                                </DialogHeader>
+                                <div className="space-y-4">
+                                    <Input placeholder="Search cost items..." className="mb-4" />
+                                    {loadingCostDb ? (
+                                        <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>
+                                    ) : (
+                                        <div className="grid grid-cols-1 gap-2">
+                                            {costItems.map((item: any) => (
+                                                <div key={item.id} className="flex justify-between items-center p-3 border rounded hover:bg-slate-50 cursor-pointer" onClick={() => handleAddFromCostDb(item)}>
+                                                    <div>
+                                                        <div className="font-bold">{item.code} - {item.name}</div>
+                                                        <div className="text-xs text-muted-foreground">
+                                                            Labor: ${item.laborRate}/hr • Equip: ${item.equipmentRate}/hr
+                                                        </div>
+                                                    </div>
+                                                    <div className="font-bold text-green-700">
+                                                        ${item.unitCost?.toFixed(2)}/Unit
                                                     </div>
                                                 </div>
                                             ))}
