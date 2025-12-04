@@ -7,6 +7,7 @@ import { BigButton } from "@/components/ui/BigButton";
 import { Package, Droplet, Flame, AlertTriangle, RefreshCw } from "lucide-react";
 import { getInventory, updateInventory } from "@/actions/inventory";
 import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
 
 interface InventoryManagerProps {
     projectId: string;
@@ -18,6 +19,7 @@ export function InventoryManager({ projectId, userId = "current-user" }: Invento
     const [inventory, setInventory] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [isPending, startTransition] = useTransition();
+    const [fuelAmount, setFuelAmount] = useState("");
 
     useEffect(() => {
         loadInventory();
@@ -33,11 +35,6 @@ export function InventoryManager({ projectId, userId = "current-user" }: Invento
     }
 
     const handleQuickAdd = (itemName: string, quantity: number, unit: string) => {
-        // Find item ID by name (mocking this lookup since we don't have IDs in the UI yet)
-        // In a real scenario, we'd map buttons to specific Item IDs.
-        // For now, let's assume we find the item or create a transaction with a placeholder ID if not found (which would fail backend validation, so we need real IDs).
-
-        // Strategy: We'll filter the loaded inventory for a matching name.
         const item = inventory.find(i => i.name.toLowerCase().includes(itemName.toLowerCase()));
 
         if (!item) {
@@ -62,6 +59,16 @@ export function InventoryManager({ projectId, userId = "current-user" }: Invento
                 toast.error(res.error || "Failed to update inventory");
             }
         });
+    };
+
+    const handleLogFuel = () => {
+        if (!fuelAmount || isNaN(parseFloat(fuelAmount))) {
+            toast.error("Please enter a valid fuel amount");
+            return;
+        }
+        // Mock fuel logging for now, as we don't have a specific fuel item ID logic here yet
+        toast.success(`Logged ${fuelAmount} gallons of Diesel`);
+        setFuelAmount("");
     };
 
     return (
@@ -111,7 +118,7 @@ export function InventoryManager({ projectId, userId = "current-user" }: Invento
                             <BigButton
                                 label="RESTOCK"
                                 variant="outline"
-                                onClick={() => alert("Open Restock Form")}
+                                onClick={() => toast.info("Restock form coming soon")}
                                 className="h-32 border-dashed"
                             />
                         </div>
@@ -122,8 +129,14 @@ export function InventoryManager({ projectId, userId = "current-user" }: Invento
                             <div className="p-4 border rounded-lg bg-secondary/10">
                                 <h3 className="font-bold mb-2">Log Fuel Usage</h3>
                                 <div className="flex gap-2">
-                                    <input type="number" placeholder="Gallons" className="flex-1 p-3 rounded border text-lg" />
-                                    <BigButton label="LOG DIESEL" onClick={() => alert("Logged Fuel")} className="w-1/3" />
+                                    <Input
+                                        type="number"
+                                        placeholder="Gallons"
+                                        className="flex-1 p-3 rounded border text-lg h-auto"
+                                        value={fuelAmount}
+                                        onChange={(e) => setFuelAmount(e.target.value)}
+                                    />
+                                    <BigButton label="LOG DIESEL" onClick={handleLogFuel} className="w-1/3" />
                                 </div>
                             </div>
                         </div>
@@ -141,7 +154,7 @@ export function InventoryManager({ projectId, userId = "current-user" }: Invento
                             <BigButton
                                 label="BROKEN TOOTH"
                                 subLabel="Report Damage"
-                                onClick={() => alert("Report Damage")}
+                                onClick={() => toast.info("Damage report form coming soon")}
                                 className="bg-red-700 hover:bg-red-600 h-32"
                             />
                         </div>

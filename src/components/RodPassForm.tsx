@@ -2,21 +2,68 @@
 
 import { useState, useEffect } from "react";
 import { logRodPass, getLastRodPass } from "@/app/actions/rod-pass";
-import { Loader2, ArrowRight, History, CheckCircle2 } from "lucide-react";
+import { Loader2, ArrowRight, History } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { toast } from "sonner";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+
+const rodPassSchema = z.object({
+    boreId: z.string().min(1, "Bore is required"),
+    sequence: z.coerce.number().min(1, "Sequence must be positive"),
+    linearFeet: z.coerce.number().min(1, "Length must be positive"),
+    pitch: z.coerce.number().optional(),
+    azimuth: z.coerce.number().optional(),
+    depth: z.coerce.number().optional(),
+    viscosity: z.coerce.number().optional(),
+    mudWeight: z.coerce.number().optional(),
+    steeringToolFace: z.coerce.number().optional(),
+    reamerDiameter: z.coerce.number().optional(),
+    notes: z.string().optional(),
+});
+
+type RodPassValues = z.infer<typeof rodPassSchema>;
 
 export default function RodPassForm({ bores }: { bores: any[] }) {
     const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
-    const [selectedBoreId, setSelectedBoreId] = useState("");
     const [lastPass, setLastPass] = useState<any>(null);
-    const [sequence, setSequence] = useState(1);
+
+    const form = useForm<RodPassValues>({
+        resolver: zodResolver(rodPassSchema),
+        defaultValues: {
+            boreId: "",
+            sequence: 1,
+            linearFeet: 10,
+            notes: "",
+        },
+    });
+
+    const selectedBoreId = form.watch("boreId");
 
     useEffect(() => {
         if (selectedBoreId) {
             fetchLastPass(selectedBoreId);
         } else {
             setLastPass(null);
-            setSequence(1);
+            form.setValue("sequence", 1);
         }
     }, [selectedBoreId]);
 
@@ -24,201 +71,252 @@ export default function RodPassForm({ bores }: { bores: any[] }) {
         const pass = await getLastRodPass(boreId);
         setLastPass(pass);
         if (pass) {
-            setSequence(pass.sequence + 1);
+            form.setValue("sequence", pass.sequence + 1);
         } else {
-            setSequence(1);
+            form.setValue("sequence", 1);
         }
     }
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const onSubmit = async (data: RodPassValues) => {
         setLoading(true);
-        setSuccess(false);
-
-        const formData = new FormData(e.currentTarget);
         try {
+            // Convert data to FormData to match existing action signature if needed,
+            // or update action to accept JSON. Assuming action takes FormData for now based on previous code.
+            const formData = new FormData();
+            Object.entries(data).forEach(([key, value]) => {
+                if (value !== undefined && value !== null && value !== "") {
+                    formData.append(key, value.toString());
+                }
+            });
+
             const res = await logRodPass(formData);
             if (res.success) {
-                setSuccess(true);
-                (e.target as HTMLFormElement).reset();
-                // Refresh last pass data immediately
+                toast.success("Rod pass logged successfully!");
+
+                // Reset non-sticky fields
+                form.reset({
+                    boreId: data.boreId,
+                    sequence: (res.data?.sequence || data.sequence) + 1,
+                    linearFeet: 10,
+                    notes: "",
+                    // Keep telemetry empty for new reading
+                    pitch: undefined,
+                    azimuth: undefined,
+                    depth: undefined,
+                    viscosity: undefined,
+                    mudWeight: undefined,
+                    steeringToolFace: undefined,
+                    reamerDiameter: undefined,
+                });
+
                 if (res.data) {
                     setLastPass(res.data);
-                    setSequence(res.data.sequence + 1);
                 }
-                // Reset select value manually if needed, but we want to keep the bore selected
-                // Just clear the inputs that aren't sticky
+            } else {
+                toast.error("Failed to log rod pass");
             }
         } catch (error) {
             console.error(error);
+            toast.error("An error occurred");
         } finally {
             setLoading(false);
-            // Hide success message after 3 seconds
-            setTimeout(() => setSuccess(false), 3000);
         }
     };
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-                <form onSubmit={handleSubmit} className="space-y-6 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    {success && (
-                        <div className="flex items-center bg-green-50 text-green-700 p-4 rounded-lg text-sm mb-4 border border-green-200 animate-in fade-in slide-in-from-top-2">
-                            <CheckCircle2 className="h-5 w-5 mr-2" />
-                            Rod pass logged successfully!
-                        </div>
-                    )}
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Bore</label>
-                        <select
+                        <FormField
+                            control={form.control}
                             name="boreId"
-                            required
-                            value={selectedBoreId}
-                            onChange={(e) => setSelectedBoreId(e.target.value)}
-                            className="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm p-2.5"
-                        >
-                            <option value="">-- Choose Active Bore --</option>
-                            {bores.map((b) => (
-                                <option key={b.id} value={b.id}>
-                                    {b.name} ({b.project?.name || 'Unknown Project'})
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-6">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rod Sequence #</label>
-                            <input
-                                type="number"
-                                name="sequence"
-                                required
-                                value={sequence}
-                                onChange={(e) => setSequence(parseInt(e.target.value))}
-                                className="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm p-2.5 font-mono"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Length (LF)</label>
-                            <input
-                                type="number"
-                                name="linearFeet"
-                                defaultValue={10} // Standard rod length
-                                required
-                                className="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm p-2.5"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg border border-gray-100 dark:border-gray-700">
-                        <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
-                            Telemetry Data
-                        </h3>
-                        <div className="grid grid-cols-3 gap-4">
-                            <div>
-                                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Pitch (%)</label>
-                                <input
-                                    type="number"
-                                    step="0.1"
-                                    name="pitch"
-                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm p-2"
-                                    placeholder="0.0"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Azimuth (°)</label>
-                                <input
-                                    type="number"
-                                    step="0.1"
-                                    name="azimuth"
-                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm p-2"
-                                    placeholder="0.0"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Depth (ft)</label>
-                                <input
-                                    type="number"
-                                    step="0.1"
-                                    name="depth"
-                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm p-2"
-                                    placeholder="0.0"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg border border-gray-100 dark:border-gray-700">
-                        <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
-                            Detailed Reporting
-                        </h3>
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                            <div>
-                                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Viscosity (sec)</label>
-                                <input
-                                    type="number"
-                                    step="1"
-                                    name="viscosity"
-                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm p-2"
-                                    placeholder="45"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Mud Wt (lb/gal)</label>
-                                <input
-                                    type="number"
-                                    step="0.1"
-                                    name="mudWeight"
-                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm p-2"
-                                    placeholder="8.4"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Tool Face (°)</label>
-                                <input
-                                    type="number"
-                                    step="1"
-                                    name="steeringToolFace"
-                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm p-2"
-                                    placeholder="0-360"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Reamer (in)</label>
-                                <input
-                                    type="number"
-                                    step="0.1"
-                                    name="reamerDiameter"
-                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm p-2"
-                                    placeholder="Optional"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
-                        <textarea
-                            name="notes"
-                            rows={3}
-                            className="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm p-2.5"
-                            placeholder="Soil conditions, steering adjustments..."
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Select Bore</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="-- Choose Active Bore --" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {bores.map((b) => (
+                                                <SelectItem key={b.id} value={b.id}>
+                                                    {b.name} ({b.project?.name || 'Unknown Project'})
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
-                    </div>
 
-                    <button
-                        type="submit"
-                        disabled={loading || !selectedBoreId}
-                        className="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                        {loading ? <Loader2 className="animate-spin h-5 w-5" /> : (
-                            <>
-                                Log Rod Pass <ArrowRight className="ml-2 h-4 w-4" />
-                            </>
-                        )}
-                    </button>
-                </form>
+                        <div className="grid grid-cols-2 gap-6">
+                            <FormField
+                                control={form.control}
+                                name="sequence"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Rod Sequence #</FormLabel>
+                                        <FormControl>
+                                            <Input type="number" {...field} className="font-mono" />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="linearFeet"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Length (LF)</FormLabel>
+                                        <FormControl>
+                                            <Input type="number" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        <div className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg border border-gray-100 dark:border-gray-700">
+                            <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
+                                Telemetry Data
+                            </h3>
+                            <div className="grid grid-cols-3 gap-4">
+                                <FormField
+                                    control={form.control}
+                                    name="pitch"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-xs text-gray-500">Pitch (%)</FormLabel>
+                                            <FormControl>
+                                                <Input type="number" step="0.1" placeholder="0.0" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="azimuth"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-xs text-gray-500">Azimuth (°)</FormLabel>
+                                            <FormControl>
+                                                <Input type="number" step="0.1" placeholder="0.0" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="depth"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-xs text-gray-500">Depth (ft)</FormLabel>
+                                            <FormControl>
+                                                <Input type="number" step="0.1" placeholder="0.0" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg border border-gray-100 dark:border-gray-700">
+                            <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
+                                Detailed Reporting
+                            </h3>
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                <FormField
+                                    control={form.control}
+                                    name="viscosity"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-xs text-gray-500">Viscosity (sec)</FormLabel>
+                                            <FormControl>
+                                                <Input type="number" step="1" placeholder="45" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="mudWeight"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-xs text-gray-500">Mud Wt (lb/gal)</FormLabel>
+                                            <FormControl>
+                                                <Input type="number" step="0.1" placeholder="8.4" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="steeringToolFace"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-xs text-gray-500">Tool Face (°)</FormLabel>
+                                            <FormControl>
+                                                <Input type="number" step="1" placeholder="0-360" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="reamerDiameter"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-xs text-gray-500">Reamer (in)</FormLabel>
+                                            <FormControl>
+                                                <Input type="number" step="0.1" placeholder="Optional" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                        </div>
+
+                        <FormField
+                            control={form.control}
+                            name="notes"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Notes</FormLabel>
+                                    <FormControl>
+                                        <Textarea rows={3} placeholder="Soil conditions, steering adjustments..." {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <Button
+                            type="submit"
+                            disabled={loading || !selectedBoreId}
+                            className="w-full bg-blue-600 hover:bg-blue-700"
+                        >
+                            {loading ? <Loader2 className="animate-spin h-5 w-5" /> : (
+                                <>
+                                    Log Rod Pass <ArrowRight className="ml-2 h-4 w-4" />
+                                </>
+                            )}
+                        </Button>
+                    </form>
+                </Form>
             </div>
 
             {/* Context Sidebar */}
