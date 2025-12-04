@@ -1,7 +1,7 @@
 # Cognitive Subsurface Interface (Subterra)
 
-**Current Status**: Alpha / Demo Ready
-**Version**: 0.2.0-alpha
+**Current Status**: Beta / Pilot Ready
+**Version**: 0.3.0-beta
 
 ## Overview
 The **Cognitive Subsurface Interface** is a next-generation visualization tool for Horizontal Directional Drilling (HDD). It leverages a Voxel-based engine to render the subsurface environment in real-time, providing operators with intuitive, gamified feedback to improve safety and efficiency.
