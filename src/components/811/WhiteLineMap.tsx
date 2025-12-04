@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, WMSTileLayer, Polygon, Marker, Popup, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, WMSTileLayer, Polygon, Marker, Popup, useMapEvents, LayersControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { Button } from '@/components/ui/button';
@@ -288,14 +288,24 @@ export default function WhiteLineMap({ onPolygonComplete }: WhiteLineMapProps) {
                     zoom={18}
                     style={{ height: '100%', width: '100%' }}
                 >
-                    <WMSTileLayer
-                        url="https://imageserver.gisdata.mn.gov/cgi-bin/wms?"
-                        layers="FSA2021"
-                        format="image/png"
-                        transparent={true}
-                        attribution='&copy; MnGeo'
-                        maxZoom={20}
-                    />
+                    <LayersControl position="topright">
+                        <LayersControl.BaseLayer checked name="Map (Streets)">
+                            <TileLayer
+                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                            />
+                        </LayersControl.BaseLayer>
+                        <LayersControl.BaseLayer name="Satellite (MnGeo)">
+                            <WMSTileLayer
+                                url="https://imageserver.gisdata.mn.gov/cgi-bin/wms?"
+                                layers="FSA2021"
+                                format="image/png"
+                                transparent={true}
+                                attribution='&copy; MnGeo'
+                                maxZoom={20}
+                            />
+                        </LayersControl.BaseLayer>
+                    </LayersControl>
                     <MapController
                         mode={mode}
                         setPoints={setPoints}

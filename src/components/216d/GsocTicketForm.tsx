@@ -86,7 +86,7 @@ export function GsocTicketForm({ projectId, onComplete }: GsocTicketFormProps) {
                     {legalReady && (
                         <div className="p-4 bg-blue-50 rounded-md border border-blue-100">
                             <p className="text-sm text-blue-800 font-medium">Legal Locate Ready:</p>
-                            <p className="text-lg font-bold text-blue-900">
+                            <p className="text-lg font-bold text-blue-900 dark:text-blue-100">
                                 {format(legalReady, "PPpp")}
                             </p>
                             <p className="text-xs text-blue-600 mt-1">

@@ -88,7 +88,7 @@ const data = {
 
 export function ProductionChart() {
     return (
-        <div className="h-[300px] w-full p-4 bg-white rounded-xl shadow-sm border border-gray-100">
+        <div className="h-[300px] w-full p-4 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800">
             <Bar options={options} data={data} />
         </div>
     );

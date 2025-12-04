@@ -53,7 +53,7 @@ export default function SurveyEditor({ stations, onUpdate }: SurveyEditorProps) 
     };
 
     return (
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden flex flex-col h-full">
+        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm overflow-hidden flex flex-col h-full dark:border dark:border-slate-800">
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <h3 className="font-bold text-slate-800">Survey Editor</h3>
                 <button

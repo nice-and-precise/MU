@@ -75,7 +75,7 @@ export default function InvoiceEditor({ invoice }: InvoiceEditorProps) {
     return (
         <div className="space-y-6">
             {/* Header Actions */}
-            <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow-sm border">
+            <div className="flex justify-between items-center bg-white dark:bg-slate-900 p-4 rounded-lg shadow-sm border dark:border-slate-800">
                 <div>
                     <h2 className="text-xl font-bold">Application #{invoice.applicationNo}</h2>
                     <div className="flex gap-4 mt-2">
@@ -135,7 +135,7 @@ export default function InvoiceEditor({ invoice }: InvoiceEditorProps) {
                                     <TableCell className="text-right bg-blue-50 p-1">
                                         <Input
                                             type="number"
-                                            className="text-right h-8 bg-white"
+                                            className="text-right h-8 bg-white dark:bg-slate-950"
                                             value={item.thisPeriod}
                                             onChange={e => handleItemChange(idx, 'thisPeriod', Number(e.target.value))}
                                             disabled={isReadOnly}
@@ -144,7 +144,7 @@ export default function InvoiceEditor({ invoice }: InvoiceEditorProps) {
                                     <TableCell className="text-right bg-blue-50 p-1">
                                         <Input
                                             type="number"
-                                            className="text-right h-8 bg-white"
+                                            className="text-right h-8 bg-white dark:bg-slate-950"
                                             value={item.stored}
                                             onChange={e => handleItemChange(idx, 'stored', Number(e.target.value))}
                                             disabled={isReadOnly}

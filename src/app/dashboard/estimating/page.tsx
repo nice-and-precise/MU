@@ -38,7 +38,7 @@ export default async function EstimatingPage() {
                                     <span className={`px-2 py-1 rounded-full text-xs font-bold ${estimate.status === 'WON' ? 'bg-green-100 text-green-800' :
                                         estimate.status === 'LOST' ? 'bg-red-100 text-red-800' :
                                             estimate.status === 'SENT' ? 'bg-blue-100 text-blue-800' :
-                                                'bg-gray-100 text-gray-800'
+                                                'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100'
                                         }`}>
                                         {estimate.status}
                                     </span>

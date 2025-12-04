@@ -129,9 +129,9 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
                 {variant === "owner" && (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 bg-blue-50/50 rounded-xl border border-blue-100">
                         <div className="space-y-2">
-                            <Label className="font-semibold text-blue-900">Target Project</Label>
+                            <Label className="font-semibold text-blue-900 dark:text-blue-100">Target Project</Label>
                             <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
-                                <SelectTrigger className="bg-white border-blue-200">
+                                <SelectTrigger className="bg-white dark:bg-slate-950 border-blue-200 dark:border-blue-800">
                                     <SelectValue placeholder="Select Project" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -142,9 +142,9 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
                             </Select>
                         </div>
                         <div className="space-y-2">
-                            <Label className="font-semibold text-blue-900">Job Type</Label>
+                            <Label className="font-semibold text-blue-900 dark:text-blue-100">Job Type</Label>
                             <Select value={jobType} onValueChange={setJobType}>
-                                <SelectTrigger className="bg-white border-blue-200">
+                                <SelectTrigger className="bg-white dark:bg-slate-950 border-blue-200 dark:border-blue-800">
                                     <SelectValue placeholder="Select Type" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -164,7 +164,7 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
                                 onChange={(e) => setIsHighPriority(e.target.checked)}
                                 className="h-5 w-5 rounded border-gray-300 text-red-600 focus:ring-red-500"
                             />
-                            <Label htmlFor="priority" className="font-bold text-red-600 cursor-pointer">High Priority Dispatch</Label>
+                            <Label htmlFor="priority" className="font-bold text-red-600 dark:text-red-400 cursor-pointer">High Priority Dispatch</Label>
                         </div>
                     </div>
                 )}
@@ -173,15 +173,15 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
                     {/* Crew Selection */}
                     <div className="space-y-6">
                         <div className="flex justify-between items-center border-b pb-2">
-                            <h3 className="font-bold text-lg text-gray-800">Crew Members</h3>
+                            <h3 className="font-bold text-lg text-gray-800 dark:text-gray-100">Crew Members</h3>
                             <span className="text-xs font-medium text-muted-foreground bg-slate-100 px-2 py-1 rounded-full">{crewMembers.length} Assigned</span>
                         </div>
 
-                        <div className="flex gap-2 items-end bg-slate-50 p-3 rounded-lg border">
+                        <div className="flex gap-2 items-end bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border dark:border-slate-700">
                             <div className="flex-1 space-y-2">
                                 <Label className="text-xs uppercase text-muted-foreground font-bold">Employee</Label>
                                 <Select value={selectedEmployeeId} onValueChange={setSelectedEmployeeId}>
-                                    <SelectTrigger className="bg-white">
+                                    <SelectTrigger className="bg-white dark:bg-slate-950">
                                         <SelectValue placeholder="Select Employee" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -194,7 +194,7 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
                             <div className="w-1/3 space-y-2">
                                 <Label className="text-xs uppercase text-muted-foreground font-bold">Role</Label>
                                 <Select value={selectedRole} onValueChange={setSelectedRole}>
-                                    <SelectTrigger className="bg-white">
+                                    <SelectTrigger className="bg-white dark:bg-slate-950">
                                         <SelectValue placeholder="Default" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -233,7 +233,7 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
                                 </div>
                             ))}
                             {crewMembers.length === 0 && (
-                                <div className="text-center py-8 border-2 border-dashed rounded-xl bg-slate-50/50">
+                                <div className="text-center py-8 border-2 border-dashed rounded-xl bg-slate-50/50 dark:bg-slate-800/50 dark:border-slate-700">
                                     <Users className="h-8 w-8 mx-auto text-muted-foreground mb-2 opacity-50" />
                                     <p className="text-sm text-muted-foreground">No crew members assigned yet.</p>
                                 </div>
@@ -245,15 +245,15 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
                     {variant === "owner" && (
                         <div className="space-y-6">
                             <div className="flex justify-between items-center border-b pb-2">
-                                <h3 className="font-bold text-lg text-gray-800">Assets & Equipment</h3>
+                                <h3 className="font-bold text-lg text-gray-800 dark:text-gray-100">Assets & Equipment</h3>
                                 <span className="text-xs font-medium text-muted-foreground bg-slate-100 px-2 py-1 rounded-full">{selectedAssets.length} Assigned</span>
                             </div>
 
-                            <div className="flex gap-2 items-end bg-slate-50 p-3 rounded-lg border">
+                            <div className="flex gap-2 items-end bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border dark:border-slate-700">
                                 <div className="flex-1 space-y-2">
                                     <Label className="text-xs uppercase text-muted-foreground font-bold">Asset</Label>
                                     <Select value={selectedAssetId} onValueChange={setSelectedAssetId}>
-                                        <SelectTrigger className="bg-white">
+                                        <SelectTrigger className="bg-white dark:bg-slate-950">
                                             <SelectValue placeholder="Select Asset" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -290,7 +290,7 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
                                     </div>
                                 ))}
                                 {selectedAssets.length === 0 && (
-                                    <div className="text-center py-8 border-2 border-dashed rounded-xl bg-slate-50/50">
+                                    <div className="text-center py-8 border-2 border-dashed rounded-xl bg-slate-50/50 dark:bg-slate-800/50 dark:border-slate-700">
                                         <p className="text-sm text-muted-foreground">No assets assigned yet.</p>
                                     </div>
                                 )}

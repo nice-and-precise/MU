@@ -3,6 +3,7 @@ import TicketList from '@/components/811/TicketList';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
+import SeedDataButton from '@/components/811/SeedDataButton';
 
 export default async function TicketDashboard() {
     const { data: tickets, error } = await getTickets();
@@ -18,12 +19,15 @@ export default async function TicketDashboard() {
                     <h1 className="text-3xl font-bold tracking-tight">811 Ticket Management</h1>
                     <p className="text-muted-foreground">Track and manage GSOC locate requests</p>
                 </div>
-                <Link href="/811/new">
-                    <Button>
-                        <Plus className="mr-2 h-4 w-4" />
-                        New Ticket
-                    </Button>
-                </Link>
+                <div className="flex gap-2">
+                    <SeedDataButton />
+                    <Link href="/811/new">
+                        <Button>
+                            <Plus className="mr-2 h-4 w-4" />
+                            New Ticket
+                        </Button>
+                    </Link>
+                </div>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

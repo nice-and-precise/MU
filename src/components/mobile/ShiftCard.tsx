@@ -41,8 +41,8 @@ export function ShiftCard({ shift }: ShiftCardProps) {
                         </div>
                     </div>
                     <span className={`text-xs font-bold px-2 py-1 rounded-full ${status === 'COMPLETED' ? 'bg-green-100 text-green-800' :
-                            status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-800' :
-                                'bg-gray-100 text-gray-800'
+                        status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-800' :
+                            'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100'
                         }`}>
                         {status.replace('_', ' ')}
                     </span>

@@ -37,7 +37,7 @@ export default async function ProjectsPage() {
                                         ? "bg-green-100 text-green-800"
                                         : project.status === "PLANNING"
                                             ? "bg-blue-100 text-blue-800"
-                                            : "bg-gray-100 text-gray-800"
+                                            : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100"
                                         }`}
                                 >
                                     {project.status.replace("_", " ")}

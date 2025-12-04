@@ -47,7 +47,7 @@ export function ScheduleBoard({ shifts, crews, employees, projects }: ScheduleBo
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                         {format(startDate, 'MMMM yyyy')}
                     </h2>
-                    <div className="flex items-center bg-white rounded-md border shadow-sm">
+                    <div className="flex items-center bg-white dark:bg-slate-900 rounded-md border shadow-sm dark:border-slate-800">
                         <Button variant="ghost" size="icon" onClick={handlePrev}><ChevronLeft className="w-4 h-4" /></Button>
                         <Button variant="ghost" size="icon" onClick={() => setCurrentDate(new Date())}><CalendarIcon className="w-4 h-4" /></Button>
                         <Button variant="ghost" size="icon" onClick={handleNext}><ChevronRight className="w-4 h-4" /></Button>
@@ -58,7 +58,7 @@ export function ScheduleBoard({ shifts, crews, employees, projects }: ScheduleBo
                 </Button>
             </div>
 
-            <div className="border rounded-lg bg-white overflow-x-auto">
+            <div className="border rounded-lg bg-white dark:bg-slate-900 overflow-x-auto dark:border-slate-800">
                 <table className="w-full min-w-[1000px] border-collapse">
                     <thead>
                         <tr>

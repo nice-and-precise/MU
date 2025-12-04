@@ -112,7 +112,7 @@ export default function RodPlanner({ onPlanGenerated }: RodPlannerProps) {
     };
 
     return (
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 h-full flex flex-col">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 h-full flex flex-col">
             <div className="flex items-center gap-2 mb-4 text-slate-700">
                 <Calculator size={20} />
                 <h2 className="font-bold text-lg">Rod Planner</h2>

@@ -88,13 +88,13 @@ export function ComplianceTab({ projectId }: ComplianceTabProps) {
                         </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="p-4 bg-white rounded-md border border-emerald-100">
+                                <div className="p-4 bg-white dark:bg-emerald-950/30 rounded-md border border-emerald-100 dark:border-emerald-900">
                                     <p className="text-sm text-gray-500">Legal Locate Ready</p>
                                     <p className="font-bold text-gray-900">
                                         {complianceData.gsocTicket?.legalReady?.toLocaleString() || "N/A"}
                                     </p>
                                 </div>
-                                <div className="p-4 bg-white rounded-md border border-emerald-100">
+                                <div className="p-4 bg-white dark:bg-emerald-950/30 rounded-md border border-emerald-100 dark:border-emerald-900">
                                     <p className="text-sm text-gray-500">Ticket Number</p>
                                     <p className="font-bold text-gray-900">
                                         {complianceData.gsocTicket?.ticketNumber || "N/A"}
@@ -120,14 +120,36 @@ export function ComplianceTab({ projectId }: ComplianceTabProps) {
                                 {!complianceData.submitted ? (
                                     <Button
                                         className="w-full bg-emerald-600 hover:bg-emerald-700"
-                                        onClick={() => {
+                                        onClick={async () => {
                                             if (confirm("Confirm final submission to ITICnxt? This will lock the ticket.")) {
-                                                setComplianceData((prev: any) => ({ ...prev, submitted: true }));
-                                                toast.success("Ticket Submitted to ITICnxt!");
+                                                const toastId = toast.loading("Submitting to ITICnxt...");
+                                                try {
+                                                    const { submitTicketToItic } = await import("@/actions/iticnxt");
+                                                    const result = await submitTicketToItic(
+                                                        complianceData.gsocTicket?.id,
+                                                        projectId
+                                                    );
+
+                                                    if (result.success) {
+                                                        setComplianceData((prev: any) => ({
+                                                            ...prev,
+                                                            submitted: true,
+                                                            gsocTicket: {
+                                                                ...prev.gsocTicket,
+                                                                ticketNumber: result.ticketNumber
+                                                            }
+                                                        }));
+                                                        toast.success(`Ticket Submitted! Official #: ${result.ticketNumber}`, { id: toastId });
+                                                    } else {
+                                                        toast.error(`Submission Failed: ${result.message}`, { id: toastId });
+                                                    }
+                                                } catch (error) {
+                                                    toast.error("An unexpected error occurred", { id: toastId });
+                                                }
                                             }
                                         }}
                                     >
-                                        Submit to ITICnxt (Simulate)
+                                        Submit to ITICnxt (Live API)
                                     </Button>
                                 ) : (
                                     <div className="p-2 bg-emerald-100 text-emerald-800 text-center rounded font-bold border border-emerald-200">

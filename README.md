@@ -77,6 +77,8 @@ graph TD
 - [x] **Crew Management**: Payroll, Scheduling, Certifications.
 - [ ] **Fleet Management**: DOT Inspections, Maintenance Logs.
 - [x] **Job Management**: Bidding, Invoicing, GIS Mapping.
+- [x] **Command Center**: Real-time operational dashboard with live tracking.
+- [x] **Demo Mode**: One-click system population for sales demos.
 
 ### Phase 4: The "OS" Pivot
 - [ ] License engine to OEMs (Vermeer, Ditch Witch).
@@ -98,7 +100,10 @@ graph TD
 3. **Seed Database (Realistic Data)**:
    ```bash
    npx prisma db push --force-reset
+   # Option A: Seed via CLI (Basic)
    npx prisma db seed
+   # Option B: Seed via UI (Full Demo)
+   # Start the app, go to /dashboard/admin, and click "Seed Demo System"
    ```
 
 4. **Run Development Server**:
@@ -107,4 +112,9 @@ graph TD
    ```
 
 5. **Access Interface**:
-   Navigate to `http://localhost:3000/dashboard/subterra`.
+6. **Configuration**:
+   Create a `.env.local` file with the following keys for ITICnxt integration:
+   ```env
+   ITICNXT_API_KEY=your_api_key_here
+   ITICNXT_API_URL=https://sandbox.itic.occinc.com/api/v1
+   ```
