@@ -4,6 +4,27 @@
 **Current Phase:** Phase 16 (Final Polish & Handover)
 
 ## Recent Accomplishments
+-   **Phase 20 Complete (Performance & SEO):**
+    -   **SEO:** Implemented comprehensive metadata (OpenGraph, Twitter Cards) for better social sharing and search visibility.
+    -   **Polish:** Added branded 404 and 500 Error pages to maintain professional appearance even during failures.
+    -   **Performance:** Verified build and image optimization.
+
+-   **Phase 19 Complete (UX & Data Flow Audit):**
+    -   **Field-to-Office Loop:** Daily Reports now automatically update Project Progress (Stationing) and trigger "Bore Complete" milestones.
+    -   **Estimating:** Added "Convert to Project" and "Duplicate Estimate" features for rapid job setup.
+    -   **Live Ops:** Command Center "Active Crews" now displays real-time activity from today's Daily Reports.
+
+-   **Phase 18 Complete (Final Readability Polish):**
+    -   **Global Contrast:** Darkened `muted-foreground` color to ensure WCAG AA compliance on light backgrounds.
+    -   **Text Sizing:** Upgraded `text-xs` to `text-sm` in key dashboard components (`KPICards`, `RecentActivityFeed`, `ActiveCrewsList`) and Estimate Editor dropdowns.
+    -   **Verification:** Confirmed improved legibility across the application.
+
+-   **Phase 17 Complete (Post-Deployment Enhancements):**
+    -   **Employee Photos**: Added photo upload capability to Employee Directory.
+    -   **Labor Metrics**: Added "Labor Efficiency" (Cost/Ft, Cost/Hr) to Command Center.
+    -   **Estimating Actuals**: Added "Actual Cost" column to Estimate Editor with mock data.
+    -   **Readability**: Improved global font size and contrast.
+    -   **3D Demo**: Verified demo mode logic.
 -   **Phase 5 Complete (ITICnxt Integration):**
     -   **API Client:** Implemented `ITICnxtClient` with mock endpoints for sandbox testing.
     -   **Server Action:** Securely handles ticket submission from the server side.

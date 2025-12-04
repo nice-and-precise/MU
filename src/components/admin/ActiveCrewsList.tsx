@@ -34,16 +34,17 @@ export function ActiveCrewsList({ crews }: ActiveCrewsListProps) {
                             <div key={crew.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border dark:border-slate-700">
                                 <div className="space-y-1">
                                     <div className="font-bold text-sm text-slate-900 dark:text-white">{crew.name}</div>
-                                    <div className="text-xs text-muted-foreground flex items-center gap-1">
+                                    <div className="text-sm text-muted-foreground flex items-center gap-1">
                                         <MapPin className="h-3 w-3" />
                                         {crew.location}
                                     </div>
                                 </div>
                                 <div className="text-right space-y-1">
-                                    <Badge variant={crew.status === 'On Site' ? 'default' : 'secondary'} className={crew.status === 'On Site' ? 'bg-green-500 hover:bg-green-600' : ''}>
+                                    <Badge variant={crew.status.includes('Drill') || crew.status.includes('On Site') ? 'default' : 'secondary'}
+                                        className={crew.status.includes('Drill') ? 'bg-blue-600 hover:bg-blue-700' : (crew.status === 'On Site' ? 'bg-green-500 hover:bg-green-600' : '')}>
                                         {crew.status}
                                     </Badge>
-                                    <div className="text-xs text-muted-foreground">{crew.foreman}</div>
+                                    <div className="text-sm text-muted-foreground">{crew.foreman}</div>
                                 </div>
                             </div>
                         ))

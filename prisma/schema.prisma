@@ -653,6 +653,7 @@ model EstimateLine {
   subtotal      Float
   markup        Float     @default(0)
   total         Float
+  actualCost    Float?    @default(0) // For tracking actuals against estimate
   notes         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -966,6 +967,7 @@ model Employee {
   ssn         String?    // Encrypted or masked in app logic
   dob         DateTime?
   emergencyContact String? // JSON or simple string
+  photoUrl    String?    // URL to profile photo
 
   // Employment Info
   role        String     // Foreman, Operator, Laborer, Office

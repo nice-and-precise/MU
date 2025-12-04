@@ -224,7 +224,7 @@ export default function EstimateEditor({ estimate }: EstimateEditorProps) {
                                                 <div key={item.id} className="flex justify-between items-center p-3 border rounded hover:bg-slate-50 cursor-pointer" onClick={() => handleAddFromInventory(item)}>
                                                     <div>
                                                         <div className="font-bold">{item.name}</div>
-                                                        <div className="text-xs text-muted-foreground">SKU: {item.sku} • On Hand: {item.quantityOnHand} {item.unit}</div>
+                                                        <div className="text-sm text-muted-foreground">SKU: {item.sku} • On Hand: {item.quantityOnHand} {item.unit}</div>
                                                     </div>
                                                     <div className="font-bold text-green-700">
                                                         ${item.costPerUnit?.toFixed(2)}/{item.unit}
@@ -258,7 +258,7 @@ export default function EstimateEditor({ estimate }: EstimateEditorProps) {
                                                 <div key={item.id} className="flex justify-between items-center p-3 border rounded hover:bg-slate-50 cursor-pointer" onClick={() => handleAddFromCostDb(item)}>
                                                     <div>
                                                         <div className="font-bold">{item.code} - {item.name}</div>
-                                                        <div className="text-xs text-muted-foreground">
+                                                        <div className="text-sm text-muted-foreground">
                                                             Labor: ${item.laborRate}/hr • Equip: ${item.equipmentRate}/hr
                                                         </div>
                                                     </div>
@@ -291,6 +291,7 @@ export default function EstimateEditor({ estimate }: EstimateEditorProps) {
                                 <TableHead className="w-[15%]">Unit Cost</TableHead>
                                 <TableHead className="w-[10%]">Markup %</TableHead>
                                 <TableHead className="w-[15%] text-right">Total</TableHead>
+                                <TableHead className="w-[10%] text-right">Actuals</TableHead>
                                 <TableHead className="w-[5%]"></TableHead>
                             </TableRow>
                         </TableHeader>
@@ -343,6 +344,10 @@ export default function EstimateEditor({ estimate }: EstimateEditorProps) {
                                     <TableCell className="text-right font-medium">
                                         ${line.total.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                                     </TableCell>
+                                    <TableCell className="text-right text-muted-foreground">
+                                        {/* Mock Actuals for Demo */}
+                                        ${(line.total * (0.9 + Math.random() * 0.2)).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                    </TableCell>
                                     <TableCell>
                                         <Button variant="ghost" size="icon" onClick={() => handleDeleteLine(line.id)} aria-label="Delete Line Item">
                                             <Trash2 className="w-4 h-4 text-red-500" />
@@ -373,6 +378,7 @@ export default function EstimateEditor({ estimate }: EstimateEditorProps) {
                                         <Plus className="w-4 h-4 mr-2" /> Add
                                     </Button>
                                 </TableCell>
+                                <TableCell></TableCell>
                                 <TableCell></TableCell>
                             </TableRow>
                         </TableBody>

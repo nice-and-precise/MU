@@ -16,9 +16,34 @@ import { Providers } from "./providers";
 import { FeedbackWidget } from "@/components/FeedbackWidget";
 
 export const metadata: Metadata = {
-  title: "HDD Nexus",
-  description: "Horizontal Directional Drilling Operations Platform",
+  title: {
+    default: "HDD Nexus | Midwest Underground",
+    template: "%s | HDD Nexus"
+  },
+  description: "The premier operations platform for Horizontal Directional Drilling. Manage projects, crews, and assets with precision.",
+  keywords: ["HDD", "Drilling", "Construction", "Project Management", "Midwest Underground"],
+  authors: [{ name: "Midwest Underground" }],
+  creator: "Midwest Underground",
   manifest: "/manifest.json",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://hddnexus.com",
+    title: "HDD Nexus | Midwest Underground",
+    description: "The premier operations platform for Horizontal Directional Drilling.",
+    siteName: "HDD Nexus",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "HDD Nexus | Midwest Underground",
+    description: "The premier operations platform for Horizontal Directional Drilling.",
+    creator: "@midwestunderground",
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon-16x16.png",
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export const viewport = {

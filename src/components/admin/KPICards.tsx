@@ -11,6 +11,8 @@ interface KPICardsProps {
         deployedAssets: number;
         activeCrews: number;
         totalEmployees: number;
+        laborCostPerHour?: number;
+        laborCostPerFoot?: number;
     };
 }
 
@@ -70,6 +72,29 @@ export function KPICards({ stats }: KPICardsProps) {
                     <p className="text-xs text-muted-foreground">
                         Based on run rate
                     </p>
+                </CardContent>
+            </Card>
+
+            <Card className="bg-white dark:bg-slate-900 border-l-4 border-l-pink-500 shadow-sm">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-muted-foreground">Labor Efficiency</CardTitle>
+                    <Activity className="h-4 w-4 text-pink-500" />
+                </CardHeader>
+                <CardContent>
+                    <div className="flex justify-between items-end">
+                        <div>
+                            <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                                ${stats.laborCostPerFoot?.toFixed(2) || '0.00'}<span className="text-sm font-normal text-muted-foreground ml-1">/ft</span>
+                            </div>
+                            <p className="text-sm text-muted-foreground">Est. Labor Cost</p>
+                        </div>
+                        <div className="text-right">
+                            <div className="text-lg font-bold text-slate-700 dark:text-slate-300">
+                                ${stats.laborCostPerHour?.toLocaleString() || '0'}/hr
+                            </div>
+                            <p className="text-sm text-muted-foreground">Total Burn Rate</p>
+                        </div>
+                    </div>
                 </CardContent>
             </Card>
         </div>

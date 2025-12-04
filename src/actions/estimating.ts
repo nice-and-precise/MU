@@ -151,6 +151,119 @@ export async function deleteLineItem(id: string) {
     }
 }
 
+export async function duplicateEstimate(id: string) {
+    const session = await getServerSession(authOptions);
+    if (!session) return { success: false, error: 'Unauthorized' };
+
+    try {
+        const original = await prisma.estimate.findUnique({
+            where: { id },
+            include: { lines: true }
+        });
+
+        if (!original) return { success: false, error: 'Estimate not found' };
+
+        const newEstimate = await prisma.estimate.create({
+            data: {
+                name: `${original.name} (Copy)`,
+                description: original.description,
+                customerName: original.customerName,
+                customerEmail: original.customerEmail,
+                customerPhone: original.customerPhone,
+                status: 'DRAFT',
+                createdById: session.user.id,
+                subtotal: original.subtotal,
+                markupPercent: original.markupPercent,
+                markupAmount: original.markupAmount,
+                taxPercent: original.taxPercent,
+                taxAmount: original.taxAmount,
+                total: original.total,
+                notes: original.notes,
+                terms: original.terms,
+                lines: {
+                    create: original.lines.map(line => ({
+                        lineNumber: line.lineNumber,
+                        description: line.description,
+                        quantity: line.quantity,
+                        unit: line.unit,
+                        unitCost: line.unitCost,
+                        laborCost: line.laborCost,
+                        equipmentCost: line.equipmentCost,
+                        materialCost: line.materialCost,
+                        subtotal: line.subtotal,
+                        markup: line.markup,
+                        total: line.total,
+                        costItemId: line.costItemId
+                    }))
+                }
+            }
+        });
+
+        revalidatePath('/dashboard/estimating');
+        return { success: true, data: newEstimate };
+    } catch (error) {
+        console.error('Failed to duplicate estimate:', error);
+        return { success: false, error: 'Failed to duplicate estimate' };
+    }
+}
+
+export async function convertEstimateToProject(id: string) {
+    const session = await getServerSession(authOptions);
+    if (!session) return { success: false, error: 'Unauthorized' };
+
+    try {
+        const estimate = await prisma.estimate.findUnique({
+            where: { id },
+            include: { lines: true }
+        });
+
+        if (!estimate) return { success: false, error: 'Estimate not found' };
+
+        // Create Project
+        const project = await prisma.project.create({
+            data: {
+                name: estimate.name,
+                description: estimate.description,
+                customerName: estimate.customerName,
+                budget: estimate.total,
+                status: 'PLANNING',
+                createdById: session.user.id,
+            }
+        });
+
+        // Link Estimate to Project
+        await prisma.estimate.update({
+            where: { id },
+            data: { projectId: project.id, status: 'APPROVED' }
+        });
+
+        // Create Bores from Line Items (Simple Heuristic)
+        // If line item description contains "Drill" or "Bore", create a Bore
+        const drillLines = estimate.lines.filter(l =>
+            l.description.toLowerCase().includes('drill') ||
+            l.description.toLowerCase().includes('bore')
+        );
+
+        for (const line of drillLines) {
+            await prisma.bore.create({
+                data: {
+                    projectId: project.id,
+                    name: `Bore from Line ${line.lineNumber}`,
+                    productMaterial: line.description, // e.g. "Drill 4-inch HDPE"
+                    totalLength: line.quantity, // Assuming quantity is LF
+                    status: 'PLANNED'
+                }
+            });
+        }
+
+        revalidatePath('/dashboard/projects');
+        return { success: true, data: project };
+    } catch (error) {
+        console.error('Failed to convert estimate:', error);
+        return { success: false, error: 'Failed to convert estimate' };
+    }
+}
+
 // --- Helper ---
 
 async function recalculateEstimateTotals(estimateId: string) {

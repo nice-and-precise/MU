@@ -20,7 +20,8 @@ export default function EmployeeDirectory({ employees }: EmployeeDirectoryProps)
         firstName: '',
         lastName: '',
         role: 'Laborer',
-        hourlyRate: ''
+        hourlyRate: '',
+        photoUrl: ''
     });
 
     const handleSubmit = async () => {
@@ -32,7 +33,7 @@ export default function EmployeeDirectory({ employees }: EmployeeDirectoryProps)
         });
 
         if (res.success) {
-            setFormData({ firstName: '', lastName: '', role: 'Laborer', hourlyRate: '' });
+            setFormData({ firstName: '', lastName: '', role: 'Laborer', hourlyRate: '', photoUrl: '' });
             setShowForm(false);
             router.refresh();
         } else {
@@ -73,10 +74,14 @@ export default function EmployeeDirectory({ employees }: EmployeeDirectoryProps)
                             <option value="Truck Driver">Truck Driver</option>
                         </select>
                         <Input
-                            type="number"
                             placeholder="Rate ($/hr)"
                             value={formData.hourlyRate}
                             onChange={e => setFormData({ ...formData, hourlyRate: e.target.value })}
+                        />
+                        <Input
+                            placeholder="Photo URL"
+                            value={formData.photoUrl || ''}
+                            onChange={e => setFormData({ ...formData, photoUrl: e.target.value })}
                         />
                         <Button onClick={handleSubmit} disabled={loading}>
                             {loading ? <Loader2 className="animate-spin w-4 h-4" /> : 'Save'}
@@ -93,7 +98,9 @@ export default function EmployeeDirectory({ employees }: EmployeeDirectoryProps)
                         >
                             <div className="flex items-center gap-3">
                                 <div className="h-12 w-12 rounded-full overflow-hidden bg-slate-100 flex items-center justify-center border border-slate-200">
-                                    {emp.user?.avatar ? (
+                                    {emp.photoUrl ? (
+                                        <img src={emp.photoUrl} alt={`${emp.firstName} ${emp.lastName}`} className="h-full w-full object-cover" />
+                                    ) : emp.user?.avatar ? (
                                         <img src={emp.user.avatar} alt={`${emp.firstName} ${emp.lastName}`} className="h-full w-full object-cover" />
                                     ) : (
                                         <div className="text-slate-400">

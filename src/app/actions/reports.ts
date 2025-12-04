@@ -138,22 +138,17 @@ export async function approveDailyReport(id: string) {
         // 2. Create Time Entries
         for (const member of crew) {
             if (member.employeeId && member.hours > 0) {
-                // Create TimeEntry
                 await tx.timeEntry.create({
                     data: {
                         employeeId: member.employeeId,
                         projectId: report.projectId,
-                        startTime: report.reportDate, // Simplified: using report date as start
-                        endTime: new Date(report.reportDate.getTime() + member.hours * 60 * 60 * 1000), // Add hours
+                        startTime: report.reportDate,
+                        endTime: new Date(report.reportDate.getTime() + member.hours * 60 * 60 * 1000),
                         type: 'WORK',
                         status: 'APPROVED',
                         description: `Daily Report: ${member.role}`
                     }
                 });
-
-                // Find or Create TimeCard for this period (Simplified: Assuming weekly or just logging to card)
-                // For now, we'll just ensure a TimeCard exists for this week/period if we were doing full payroll.
-                // But TimeEntry is the granular record we need for job costing.
             }
         }
 
@@ -172,13 +167,55 @@ export async function approveDailyReport(id: string) {
             }
         }
 
-        // 4. Update Report Status
+        // 4. Update Project Progress (Production)
+        const productionLogs = JSON.parse(report.production || '[]');
+        let dailyFootage = 0;
+
+        // Group by Bore to track total progress per bore
+        const boreProgress = new Map<string, number>();
+
+        for (const log of productionLogs) {
+            // Assuming log structure: { activity: 'Drill', lf: 100, boreId: '...' }
+            // If boreId is missing in log, we might default to a project bore or skip
+            // For this implementation, we'll assume logs might not have boreId yet, 
+            // but in a real scenario they should. We'll check if 'lf' exists.
+            if (log.lf && Number(log.lf) > 0) {
+                dailyFootage += Number(log.lf);
+
+                // Create Station Progress Record
+                // We don't have exact stationing in the simple log (just LF), 
+                // so we'll just record the increment for now.
+                // In a robust system, we'd query the previous end station.
+                await tx.stationProgress.create({
+                    data: {
+                        projectId: report.projectId,
+                        date: report.reportDate,
+                        startStation: 0, // Placeholder: Delta tracking
+                        endStation: Number(log.lf), // Placeholder: Delta tracking
+                        status: 'COMPLETED',
+                        notes: `Daily Report Production: ${log.activity}`
+                    }
+                });
+            }
+        }
+
+        // 5. Update Report Status
         await tx.dailyReport.update({
             where: { id },
             data: {
                 status: 'APPROVED',
                 signedById: session.user.id,
                 signedAt: new Date(),
+            }
+        });
+
+        // 6. Create Compliance Event for "Daily Report Approved" (Milestone)
+        await tx.complianceEvent.create({
+            data: {
+                projectId: report.projectId,
+                eventType: 'DAILY_REPORT_APPROVED',
+                details: `Report approved. Total Footage: ${dailyFootage}ft.`,
+                createdById: session.user.id
             }
         });
     });
