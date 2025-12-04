@@ -57,11 +57,11 @@ export function OwnerCommandCenter() {
                                 </TabsList>
 
                                 <TabsContent value="crew" className="space-y-4 mt-4">
-                                    <div className="p-3 border rounded bg-muted/30">
+                                    <div className="p-3 border rounded bg-card">
                                         <h3 className="font-bold mb-2 font-heading">Project Alpha Crew</h3>
                                         <div className="space-y-2 text-sm font-sans">
-                                            <div className="flex justify-between"><span>John Doe (Foreman)</span> <span className="text-green-600">● On Site</span></div>
-                                            <div className="flex justify-between"><span>Jane Smith (Op)</span> <span className="text-green-600">● On Site</span></div>
+                                            <div className="flex justify-between"><span>John Doe (Foreman)</span> <span className="text-emerald-500 font-bold">● On Site</span></div>
+                                            <div className="flex justify-between"><span>Jane Smith (Op)</span> <span className="text-emerald-500 font-bold">● On Site</span></div>
                                             <div className="flex justify-between"><span>Bob Johnson (Lab)</span> <span className="text-muted-foreground">○ Off</span></div>
                                         </div>
                                     </div>

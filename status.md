@@ -1,9 +1,18 @@
 # Project Status: Midwest Underground Field Ops Platform
 
 **Last Updated:** December 3, 2025
-**Current Phase:** Demo Ready (Completed)
+**Current Phase:** Phase 8 Complete (Bug Fixes & Polish)
 
 ## Recent Accomplishments
+- **Bug Fixes:**
+    - Resolved critical runtime error in `ProductionChart.tsx`.
+    - Fixed decimal formatting issues in Rod Pass logs.
+    - Improved text readability in Crew and Admin dashboards.
+    - Fixed hover contrast in Estimating dashboard.
+- **UX Improvements:**
+    - Added depth/azimuth labels to 3D Drilling view.
+    - Added helper text to Auto-Log Uploader.
+    - Enhanced contrast for "On Site" status indicators.
 - **Phase 7 Complete (Realistic Data & UX Polish):**
     - **Seeding:** Consolidated seeding logic into `prisma/seed.ts`.
     - **Employees:** Generated realistic profiles with photos, payroll, and history.

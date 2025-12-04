@@ -108,6 +108,11 @@ export default function DrillPath3D() {
                     {wasmLoaded ? "Powered by Rust/WASM Core (Simulated)" : "Loading Core..."}
                 </p>
             </div>
+            <div className="absolute bottom-4 left-4 z-10 bg-black/50 p-2 rounded text-xs text-white">
+                <div>Depth: {bitPosition[1].toFixed(1)} ft</div>
+                <div>Inc: 12.5°</div>
+                <div>Azi: 245°</div>
+            </div>
             <Canvas camera={{ position: [100, 50, 100], fov: 45 }}>
                 <ambientLight intensity={0.5} />
                 <pointLight position={[10, 10, 10]} intensity={1} />

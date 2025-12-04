@@ -32,7 +32,8 @@ export default function AutoLogUploader() {
 
     return (
         <div className="p-4 bg-gray-900 rounded-lg border border-gray-700">
-            <h3 className="text-lg font-bold text-neon-blue mb-4">Auto-Log (OCR)</h3>
+            <h3 className="text-lg font-bold text-neon-blue mb-1">Auto-Log (OCR)</h3>
+            <p className="text-xs text-gray-400 mb-4">Upload a photo of your drill log to automatically digitize it.</p>
             <div className="flex gap-4 mb-4">
                 <input
                     type="file"

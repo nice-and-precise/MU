@@ -29,7 +29,7 @@ export default async function EstimatingPage() {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {estimates.map((estimate) => (
                     <Link key={estimate.id} href={`/dashboard/estimating/${estimate.id}`}>
-                        <Card className="hover:bg-slate-50 transition-colors cursor-pointer">
+                        <Card className="hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
                             <CardHeader className="pb-2">
                                 <div className="flex justify-between items-start">
                                     <CardTitle className="text-lg font-semibold truncate">

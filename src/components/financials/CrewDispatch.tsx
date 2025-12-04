@@ -220,10 +220,10 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
                                         </div>
                                         <div>
                                             <div className="font-bold text-gray-900">{member.firstName} {member.lastName}</div>
-                                            <div className="text-xs text-muted-foreground flex items-center gap-2">
-                                                <span className="bg-slate-100 px-1.5 py-0.5 rounded text-slate-600 font-medium">{member.role}</span>
+                                            <div className="text-xs text-gray-600 flex items-center gap-2">
+                                                <span className="bg-slate-200 px-1.5 py-0.5 rounded text-slate-800 font-bold">{member.role}</span>
                                                 <span>•</span>
-                                                <span>${member.hourlyRate}/hr</span>
+                                                <span className="font-medium">${member.hourlyRate}/hr</span>
                                             </div>
                                         </div>
                                     </div>

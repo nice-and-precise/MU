@@ -246,7 +246,7 @@ export default function RodPassForm({ bores }: { bores: any[] }) {
                                 </div>
                                 <div>
                                     <p className="text-xs text-gray-500 uppercase tracking-wider">Depth</p>
-                                    <p className="font-medium text-gray-900 dark:text-white">{lastPass.depth ?? '-'} ft</p>
+                                    <p className="font-medium text-gray-900 dark:text-white">{typeof lastPass.depth === 'number' ? lastPass.depth.toFixed(1) : (lastPass.depth ?? '-')} ft</p>
                                 </div>
                                 <div>
                                     <p className="text-xs text-gray-500 uppercase tracking-wider">Length</p>

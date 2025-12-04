@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+// Force rebuild for HMR fix
 import {
     Chart as ChartJS,
     CategoryScale,
