@@ -17,7 +17,37 @@ async function main() {
         console.log('✅ Users check passed');
     }
 
-    // 2. Verify Projects
+    // 2. Verify Employees (New)
+    const employeeCount = await prisma.employee.count();
+    console.log(`Employees found: ${employeeCount}`);
+    if (employeeCount < 10) {
+        console.error('❌ Error: Expected at least 10 employees from image generation');
+        errors++;
+    } else {
+        console.log('✅ Employees check passed');
+    }
+
+    // 3. Verify Crews (New)
+    const crewCount = await prisma.crew.count();
+    console.log(`Crews found: ${crewCount}`);
+    if (crewCount < 2) {
+        console.error('❌ Error: Expected at least 2 crews');
+        errors++;
+    } else {
+        console.log('✅ Crews check passed');
+    }
+
+    // 4. Verify TimeCards (New)
+    const timeCardCount = await prisma.timeCard.count();
+    console.log(`TimeCards found: ${timeCardCount}`);
+    if (timeCardCount < 20) {
+        console.error('❌ Error: Expected at least 20 TimeCards');
+        errors++;
+    } else {
+        console.log('✅ TimeCards check passed');
+    }
+
+    // 5. Verify Projects
     const projects = await prisma.project.findMany({ include: { dailyReports: true, bores: true } });
     console.log(`Projects found: ${projects.length}`);
 
@@ -45,7 +75,7 @@ async function main() {
         }
     }
 
-    // 3. Verify Inventory
+    // 6. Verify Inventory
     const inventoryCount = await prisma.inventoryItem.count();
     console.log(`Inventory Items found: ${inventoryCount}`);
     if (inventoryCount === 0) {
@@ -55,7 +85,7 @@ async function main() {
         console.log('✅ Inventory check passed');
     }
 
-    // 4. Verify Fleet
+    // 7. Verify Fleet
     const assetCount = await prisma.asset.count();
     console.log(`Assets found: ${assetCount}`);
     if (assetCount === 0) {
@@ -65,7 +95,7 @@ async function main() {
         console.log('✅ Fleet check passed');
     }
 
-    // 5. Verify Safety
+    // 8. Verify Safety
     const jsaCount = await prisma.jSA.count();
     console.log(`JSAs found: ${jsaCount}`);
     if (jsaCount === 0) {
@@ -73,6 +103,26 @@ async function main() {
         errors++;
     } else {
         console.log('✅ Safety check passed');
+    }
+
+    // 9. Verify Estimates (New)
+    const estimateCount = await prisma.estimate.count();
+    console.log(`Estimates found: ${estimateCount}`);
+    if (estimateCount === 0) {
+        console.error('❌ Error: No Estimates found');
+        errors++;
+    } else {
+        console.log('✅ Estimates check passed');
+    }
+
+    // 10. Verify Expenses (New)
+    const expenseCount = await prisma.expense.count();
+    console.log(`Expenses found: ${expenseCount}`);
+    if (expenseCount === 0) {
+        console.error('❌ Error: No Expenses found');
+        errors++;
+    } else {
+        console.log('✅ Expenses check passed');
     }
 
     if (errors > 0) {

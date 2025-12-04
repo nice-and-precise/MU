@@ -124,6 +124,7 @@ export function EmployeeManager({ initialEmployees }: EmployeeManagerProps) {
 
                     {(selectedEmployeeId || isCreating) && (
                         <div className="grid md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-4">
+
                             {/* Personal Info */}
                             <div className="space-y-4 p-4 border rounded-lg bg-secondary/10">
                                 <div className="flex items-center gap-2 font-bold text-lg">
@@ -158,6 +159,21 @@ export function EmployeeManager({ initialEmployees }: EmployeeManagerProps) {
                                             value={formData.dob ? new Date(formData.dob).toISOString().split('T')[0] : ""}
                                             onChange={e => handleChange("dob", e.target.value ? new Date(e.target.value) : null)}
                                         />
+                                    </div>
+                                </div>
+
+                                <div className="pt-4 mt-4 border-t border-gray-200">
+                                    <div className="flex items-center gap-2 font-bold text-sm text-gray-600 mb-3">
+                                        Emergency Contact
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Contact Details (JSON)</Label>
+                                        <Input
+                                            value={formData.emergencyContact || ""}
+                                            placeholder='{"name": "Jane Doe", "phone": "555-0199", "relation": "Spouse"}'
+                                            onChange={e => handleChange("emergencyContact", e.target.value)}
+                                        />
+                                        <p className="text-xs text-muted-foreground">Enter Name, Phone, and Relation.</p>
                                     </div>
                                 </div>
                             </div>

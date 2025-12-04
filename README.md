@@ -1,7 +1,7 @@
 # Cognitive Subsurface Interface (Subterra)
 
-**Current Status**: Pre-Alpha / Mock-Up Phase  
-**Version**: 0.1.0-alpha
+**Current Status**: Alpha / Demo Ready
+**Version**: 0.2.0-alpha
 
 ## Overview
 The **Cognitive Subsurface Interface** is a next-generation visualization tool for Horizontal Directional Drilling (HDD). It leverages a Voxel-based engine to render the subsurface environment in real-time, providing operators with intuitive, gamified feedback to improve safety and efficiency.
@@ -56,9 +56,15 @@ graph TD
 - **Simulation Injection**: Trigger scenarios like "Hard Rock Strike" or "Fluid Loss" to test operator response.
 - **Guided Tour**: Interactive overlay explaining the interface.
 
+### 4. Realistic Business Operations
+- **Full Employee Profiles**: Real photos, payroll data, and history.
+- **Time & Attendance**: 12-week history of time cards and crew assignments.
+- **Financials**: Detailed estimates, expenses, and job costing.
+- **Operational Data**: Realistic rod-by-rod logs and telemetry.
+
 ## Future Roadmap
 
-### Phase 1: The "Minecraft" Interface (Current)
+### Phase 1: The "Minecraft" Interface (Completed)
 - [x] Basic Voxel Rendering
 - [x] Synthetic Telemetry
 - [x] Web Integration
@@ -67,10 +73,10 @@ graph TD
 - [ ] Connect to real Drill Rig via CAN Bus (J1939).
 - [ ] Deploy Edge Device (Raspberry Pi CM4).
 
-### Phase 3: SaaS Expansion
-- [ ] **Crew Management**: Payroll, Scheduling, Certifications.
+### Phase 3: SaaS Expansion (In Progress)
+- [x] **Crew Management**: Payroll, Scheduling, Certifications.
 - [ ] **Fleet Management**: DOT Inspections, Maintenance Logs.
-- [ ] **Job Management**: Bidding, Invoicing, GIS Mapping.
+- [x] **Job Management**: Bidding, Invoicing, GIS Mapping.
 
 ### Phase 4: The "OS" Pivot
 - [ ] License engine to OEMs (Vermeer, Ditch Witch).
@@ -89,10 +95,16 @@ graph TD
    wasm-pack build subterra --target web --out-dir ../src/subterra-wasm
    ```
 
-3. **Run Development Server**:
+3. **Seed Database (Realistic Data)**:
+   ```bash
+   npx prisma db push --force-reset
+   npx prisma db seed
+   ```
+
+4. **Run Development Server**:
    ```bash
    npm run dev
    ```
 
-4. **Access Interface**:
+5. **Access Interface**:
    Navigate to `http://localhost:3000/dashboard/subterra`.

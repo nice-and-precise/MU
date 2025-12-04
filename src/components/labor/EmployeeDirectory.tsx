@@ -99,7 +99,14 @@ export default function EmployeeDirectory({ employees }: EmployeeDirectoryProps)
                                 </div>
                                 <div>
                                     <h3 className="font-bold">{emp.firstName} {emp.lastName}</h3>
-                                    <p className="text-sm text-muted-foreground">{emp.role} • ${emp.hourlyRate}/hr</p>
+                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                        <span>{emp.role}</span>
+                                        <span>•</span>
+                                        <span>${emp.hourlyRate}/hr</span>
+                                        <span className={`px-2 py-0.5 rounded text-xs font-medium ${emp.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                            {emp.status || 'ACTIVE'}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                             <Button

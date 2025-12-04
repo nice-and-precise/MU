@@ -429,6 +429,9 @@ async function main() {
     });
   }
 
+
+  // ... existing code ...
+
   // --- 9. ROD PLANS (Phase 6) ---
   console.log('Creating Rod Plans...');
   // Generate a simple straight bore plan for Bore 1
@@ -457,7 +460,35 @@ async function main() {
     }
   });
 
-  console.log('✅ Robust Seed complete!');
+  console.log('✅ Base Seed complete!');
+
+  // --- 10. EXECUTE HELPER SCRIPTS ---
+  console.log('🚀 Running Helper Scripts...');
+
+  const { execSync } = require('child_process');
+
+  try {
+    // 1. Generate Employees
+    console.log('Running generate_dummy_employees.ts...');
+    execSync('npx ts-node scripts/generate_dummy_employees.ts', { stdio: 'inherit' });
+
+    // 2. Seed Time & Crews
+    console.log('Running seed-time-data.ts...');
+    execSync('npx ts-node scripts/seed-time-data.ts', { stdio: 'inherit' });
+
+    // 3. Seed Operational Data
+    console.log('Running seed-operational-data.ts...');
+    execSync('npx ts-node scripts/seed-operational-data.ts', { stdio: 'inherit' });
+
+    // 4. Seed Financial Data
+    console.log('Running seed-financials.ts...');
+    execSync('npx ts-node scripts/seed-financials.ts', { stdio: 'inherit' });
+
+  } catch (error) {
+    console.error('Error running helper scripts:', error);
+  }
+
+  console.log('🎉 All Seeding Operations Complete!');
 }
 
 main()
@@ -468,3 +499,4 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
