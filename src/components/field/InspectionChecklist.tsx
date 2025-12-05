@@ -54,7 +54,7 @@ export function InspectionChecklist({ assetId, assetName, onComplete, inspectorI
         startTransition(async () => {
             const res = await submitInspection({
                 assetId,
-                inspectorId: inspectorId,
+                // inspectorId derived from session
                 projectId: projectId,
                 type: 'Pre-Trip',
                 passed: !hasFailures,
@@ -62,11 +62,11 @@ export function InspectionChecklist({ assetId, assetName, onComplete, inspectorI
                 notes
             });
 
-            if (res.success) {
+            if (res?.data) {
                 toast.success("Inspection Submitted!");
                 onComplete();
             } else {
-                toast.error(res.error || "Failed to submit inspection");
+                toast.error(res?.error || "Failed to submit inspection");
             }
         });
     };

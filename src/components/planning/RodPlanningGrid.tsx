@@ -61,15 +61,15 @@ export default function RodPlanningGrid() {
     useEffect(() => {
         if (projectId) {
             getRodPlan(projectId).then(res => {
-                if (res.success && res.data) {
+                if (res?.data) {
                     if (res.data.rods.length > 0) setRods(res.data.rods);
                     if (res.data.settings) {
                         setSettings(prev => ({
                             ...prev,
-                            diameter: res.data.settings.diameter || prev.diameter,
-                            material: (res.data.settings.material as 'HDPE' | 'Steel') || prev.material,
-                            soil: (res.data.settings.soil as 'Clay' | 'Sand' | 'Rock') || prev.soil,
-                            declination: res.data.settings.declination || prev.declination
+                            diameter: res.data?.settings.diameter || prev.diameter,
+                            material: (res.data?.settings.material as 'HDPE' | 'Steel') || prev.material,
+                            soil: (res.data?.settings.soil as 'Clay' | 'Sand' | 'Rock') || prev.soil,
+                            declination: res.data?.settings.declination || prev.declination
                         }));
                     }
                 }
@@ -78,11 +78,11 @@ export default function RodPlanningGrid() {
     }, [projectId]);
 
     const handleSave = async () => {
-        const res = await saveRodPlan(projectId, rods, settings);
-        if (res.success) {
+        const res = await saveRodPlan({ projectId, rods, settings });
+        if (res?.success) {
             toast.success('Plan saved successfully');
         } else {
-            toast.error('Failed to save plan');
+            toast.error('Failed to save plan: ' + (res?.error || 'Unknown error'));
         }
     };
 
@@ -90,7 +90,7 @@ export default function RodPlanningGrid() {
     useEffect(() => {
         if (projectId) {
             getProjectObstacles(projectId).then(res => {
-                if (res.success && res.data) {
+                if (res?.data) {
                     setObstacles(res.data as unknown as Obstacle[]);
                 }
             });

@@ -10,10 +10,11 @@ import { TicketManager } from "@/components/safety/TicketManager";
 
 export default async function ProjectDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const [project, summary] = await Promise.all([
+    const [project, summaryRes] = await Promise.all([
         getProject(id),
         getProjectSummary(id)
     ]);
+    const summary = summaryRes?.data;
 
     if (!project || !summary) {
         notFound();

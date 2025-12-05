@@ -21,8 +21,10 @@ export default function InvoiceList({ projectId }: InvoiceListProps) {
 
     useEffect(() => {
         async function load() {
-            const data = await getInvoices(projectId);
-            setInvoices(data);
+            const res = await getInvoices(projectId);
+            if (res?.data) {
+                setInvoices(res.data);
+            }
             setLoading(false);
         }
         load();
@@ -30,11 +32,11 @@ export default function InvoiceList({ projectId }: InvoiceListProps) {
 
     const handleCreate = async () => {
         setCreating(true);
-        const res = await createInvoice(projectId);
-        if (res.success && res.data) {
+        const res = await createInvoice({ projectId });
+        if (res?.data) {
             router.push(`/dashboard/invoices/${res.data.id}`);
         } else {
-            alert(res.error || 'Failed to create invoice');
+            alert(res?.error || 'Failed to create invoice');
             setCreating(false);
         }
     };

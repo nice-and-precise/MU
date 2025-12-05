@@ -48,11 +48,11 @@ export default function CloseoutModal({ projectId, summary }: CloseoutModalProps
     const handleArchive = async () => {
         setLoading(true);
         const res = await archiveProject(projectId);
-        if (res.success) {
+        if (res?.data?.success) {
             setOpen(false);
             router.refresh();
         } else {
-            alert(res.error);
+            alert(res?.error || 'Failed to archive project');
         }
         setLoading(false);
     };

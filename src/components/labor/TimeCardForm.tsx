@@ -37,11 +37,11 @@ export default function TimeCardForm({ employees, projectId }: TimeCardFormProps
             notes: formData.notes
         });
 
-        if (res.success) {
+        if (res?.data) {
             setFormData(prev => ({ ...prev, hours: '', notes: '' })); // Keep employee/date selected
             router.refresh();
         } else {
-            alert('Failed to create time card');
+            alert(res?.error || 'Failed to create time card');
         }
         setLoading(false);
     };

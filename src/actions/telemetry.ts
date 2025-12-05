@@ -1,32 +1,22 @@
 'use server';
 
-import { prisma } from '@/lib/prisma';
+import { authenticatedAction } from '@/lib/safe-action';
+import { z } from 'zod';
+import { TelemetryService } from '@/services/telemetry';
 
-export async function getLatestTelemetry(boreId: string) {
-    try {
-        const log = await prisma.telemetryLog.findFirst({
-            where: { boreId },
-            orderBy: { timestamp: 'desc' }
-        });
-
-        return { success: true, data: log };
-    } catch (error) {
-        console.error('Error fetching telemetry:', error);
-        return { success: false, error: 'Failed to fetch telemetry' };
+export const getLatestTelemetry = authenticatedAction(
+    z.string(), // boreId
+    async (boreId) => {
+        return await TelemetryService.getLatestTelemetry(boreId);
     }
-}
+);
 
-export async function getTelemetryHistory(boreId: string, limit: number = 100) {
-    try {
-        const logs = await prisma.telemetryLog.findMany({
-            where: { boreId },
-            orderBy: { timestamp: 'desc' },
-            take: limit
-        });
-
-        return { success: true, data: logs.reverse() }; // Return oldest first for charting
-    } catch (error) {
-        console.error('Error fetching telemetry history:', error);
-        return { success: false, error: 'Failed to fetch telemetry history' };
+export const getTelemetryHistory = authenticatedAction(
+    z.object({
+        boreId: z.string(),
+        limit: z.number().optional().default(100)
+    }),
+    async ({ boreId, limit }) => {
+        return await TelemetryService.getTelemetryHistory(boreId, limit);
     }
-}
+);

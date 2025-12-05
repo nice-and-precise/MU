@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { checkConflicts } from '@/actions/conflicts'; // Keeping logic here for now, or move to services/conflicts later
+import { ConflictService } from '@/services/conflicts';
 import { CreateShiftSchema, UpdateShiftSchema } from '@/schemas/schedule';
 import { z } from 'zod';
 
@@ -33,7 +33,7 @@ export const ScheduleService = {
     createShift: async (data: z.infer<typeof CreateShiftSchema>) => {
         // Check conflicts first unless forced
         if (!data.force) {
-            const conflicts = await checkConflicts({
+            const conflicts = await ConflictService.checkConflicts({
                 startTime: data.startTime,
                 endTime: data.endTime,
                 crewId: data.crewId,

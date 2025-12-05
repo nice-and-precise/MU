@@ -31,17 +31,17 @@ export function PotholeLog({ projectId, userId }: PotholeLogProps) {
             depth: parseFloat(depth),
             visualVerificationPhoto: photoUrl,
             notes,
-            createdById: userId,
+            // createdById injected by server action
         });
 
-        if (res.success) {
+        if (res?.data) {
             alert("Pothole logged successfully!");
             setUtilityType("");
             setDepth("");
             setPhotoUrl("");
             setNotes("");
         } else {
-            alert("Failed to log pothole.");
+            alert("Failed to log pothole: " + (res?.error || "Unknown error"));
         }
     }
 

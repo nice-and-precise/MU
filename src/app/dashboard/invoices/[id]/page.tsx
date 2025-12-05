@@ -6,7 +6,8 @@ import { ArrowLeft } from "lucide-react";
 
 export default async function InvoiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const invoice = await getInvoice(id);
+    const res = await getInvoice(id);
+    const invoice = res?.data;
 
     if (!invoice) {
         notFound();

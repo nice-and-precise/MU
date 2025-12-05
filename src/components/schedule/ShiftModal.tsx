@@ -66,15 +66,16 @@ export function ShiftModal({ isOpen, onClose, shift, crews, employees, projects 
         const endDateTime = new Date(`${formData.date}T${formData.endTime}`);
 
         try {
+            let res;
             if (shift) {
-                await updateShift({
+                res = await updateShift({
                     id: shift.id,
                     startTime: startDateTime,
                     endTime: endDateTime,
                     notes: formData.notes
                 });
             } else {
-                await createShift({
+                res = await createShift({
                     projectId: formData.projectId,
                     crewId: formData.resourceType === 'CREW' ? formData.resourceId : undefined,
                     employeeId: formData.resourceType === 'EMPLOYEE' ? formData.resourceId : undefined,
@@ -84,13 +85,32 @@ export function ShiftModal({ isOpen, onClose, shift, crews, employees, projects 
                     force
                 });
             }
+
+            const data = res?.data as any;
+            if (data?.conflicts && data.conflicts.length > 0) {
+                // Determine conflict messages
+                const messages = data.conflicts.map((c: any) => c.reason || c.message || 'Conflict detected').join('\n');
+                if (confirm(`Conflicts detected:\n${messages}\n\nDo you want to force schedule anyway?`)) {
+                    await handleSubmit(true); // Retry with force
+                    return;
+                }
+                // If cancelled, just stop
+                setIsLoading(false);
+                return;
+            }
+
+            if (!res?.success) {
+                alert(res?.error || 'Failed to save shift');
+                return;
+            }
+
             router.refresh();
             onClose();
         } catch (error) {
             console.error(error);
-            alert('Failed to save shift');
+            alert('An unexpected error occurred');
         } finally {
-            setIsLoading(false);
+            if (!force) setIsLoading(false);
         }
     };
 
@@ -98,12 +118,16 @@ export function ShiftModal({ isOpen, onClose, shift, crews, employees, projects 
         if (!shift || !confirm('Are you sure you want to delete this shift?')) return;
         setIsLoading(true);
         try {
-            await deleteShift({ id: shift.id });
-            router.refresh();
-            onClose();
+            const res = await deleteShift({ id: shift.id });
+            if (res?.success) {
+                router.refresh();
+                onClose();
+            } else {
+                alert(res?.error || 'Failed to delete shift');
+            }
         } catch (error) {
             console.error(error);
-            alert('Failed to delete shift');
+            alert('An unexpected error occurred');
         } finally {
             setIsLoading(false);
         }

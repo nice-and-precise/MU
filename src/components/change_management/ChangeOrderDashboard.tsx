@@ -21,9 +21,9 @@ export default function ChangeOrderDashboard({ projectId }: ChangeOrderDashboard
 
     async function loadData() {
         setLoading(true);
-        const [t, c] = await Promise.all([getTMTickets(projectId), getChangeOrders(projectId)]);
-        setTickets(t);
-        setCos(c);
+        const [tRes, cRes] = await Promise.all([getTMTickets(projectId), getChangeOrders(projectId)]);
+        if (tRes?.data) setTickets(tRes.data);
+        if (cRes?.data) setCos(cRes.data);
         setLoading(false);
     }
 
@@ -40,7 +40,7 @@ export default function ChangeOrderDashboard({ projectId }: ChangeOrderDashboard
             pricing: 'T&M',
             budgetImpact: 0, // In a real app, we'd calculate this or prompt for it
         });
-        if (res.success) {
+        if (res?.data) {
             loadData();
             router.refresh();
         }
@@ -48,8 +48,8 @@ export default function ChangeOrderDashboard({ projectId }: ChangeOrderDashboard
 
     const handleApproveCO = async (id: string) => {
         if (!confirm('Approve this Change Order? This will increase the project budget.')) return;
-        const res = await approveChangeOrder(id);
-        if (res.success) {
+        const res = await approveChangeOrder({ id });
+        if (res?.success) {
             loadData();
             router.refresh();
         }

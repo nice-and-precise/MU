@@ -1,9 +1,10 @@
 'use server';
 
-import { prisma } from '@/lib/prisma';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
+import { authenticatedAction } from '@/lib/safe-action';
+import { z } from 'zod';
+import { LaborService } from '@/services/labor';
+import { CreateTimeCardSchema } from '@/schemas/labor';
 
 // --- Employees & Crews ---
 // Moved to src/actions/employees.ts and src/actions/crews.ts
@@ -12,51 +13,18 @@ import { revalidatePath } from 'next/cache';
 
 // --- Time Cards ---
 
-export async function createTimeCard(data: {
-    employeeId: string;
-    projectId: string;
-    date: Date;
-    hours: number;
-    code: string;
-    notes?: string
-}) {
-    const session = await getServerSession(authOptions);
-    if (!session) return { success: false, error: 'Unauthorized' };
-
-    try {
-        // Calculate period start (Monday) and end (Sunday)
-        const d = new Date(data.date);
-        const day = d.getDay();
-        const diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
-        const periodStart = new Date(d.setDate(diff));
-        const periodEnd = new Date(d.setDate(diff + 6));
-
-        const timeCard = await prisma.timeCard.create({
-            data: {
-                employeeId: data.employeeId,
-                projectId: data.projectId,
-                date: data.date,
-                hours: data.hours,
-                code: data.code,
-                notes: data.notes,
-                periodStart,
-                periodEnd,
-            }
-        });
+export const createTimeCard = authenticatedAction(
+    CreateTimeCardSchema,
+    async (data) => {
+        const timeCard = await LaborService.createTimeCard(data);
         revalidatePath(`/dashboard/projects/${data.projectId}`);
-        return { success: true, data: timeCard };
-    } catch (error) {
-        console.error('Failed to create time card:', error);
-        return { success: false, error: 'Failed to create time card' };
+        return timeCard;
     }
-}
+);
 
-export async function getTimeCards(projectId: string) {
-    const session = await getServerSession(authOptions);
-    if (!session) return [];
-    return await prisma.timeCard.findMany({
-        where: { projectId },
-        include: { employee: true },
-        orderBy: { date: 'desc' }
-    });
-}
+export const getTimeCards = authenticatedAction(
+    z.string(), // projectId
+    async (projectId) => {
+        return await LaborService.getTimeCards(projectId);
+    }
+);

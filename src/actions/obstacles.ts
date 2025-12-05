@@ -1,55 +1,35 @@
 'use server';
 
-import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
+import { authenticatedAction } from '@/lib/safe-action';
+import { z } from 'zod';
+import { ObstacleService } from '@/services/obstacles';
+import { CreateObstacleSchema } from '@/schemas/obstacles';
 
-export async function getProjectObstacles(projectId: string) {
-    try {
-        const obstacles = await prisma.obstacle.findMany({
-            where: { projectId },
-            orderBy: { createdAt: 'desc' },
-        });
-        return { success: true, data: obstacles };
-    } catch (error) {
-        console.error('Error fetching obstacles:', error);
-        return { success: false, error: 'Failed to fetch obstacles' };
+export const getProjectObstacles = authenticatedAction(
+    z.string(), // projectId
+    async (projectId) => {
+        return await ObstacleService.getProjectObstacles(projectId);
     }
-}
+);
 
-export async function createObstacle(data: any) {
-    try {
-        const obstacle = await prisma.obstacle.create({
-            data: {
-                projectId: data.projectId,
-                name: data.name,
-                type: data.type,
-                startX: parseFloat(data.startX),
-                startY: parseFloat(data.startY),
-                startZ: parseFloat(data.startZ),
-                endX: data.endX ? parseFloat(data.endX) : null,
-                endY: data.endY ? parseFloat(data.endY) : null,
-                endZ: data.endZ ? parseFloat(data.endZ) : null,
-                diameter: data.diameter ? parseFloat(data.diameter) : null,
-                safetyBuffer: data.safetyBuffer ? parseFloat(data.safetyBuffer) : 2.0,
-                notes: data.notes,
-            },
-        });
+export const createObstacle = authenticatedAction(
+    CreateObstacleSchema,
+    async (data) => {
+        const obstacle = await ObstacleService.createObstacle(data);
         revalidatePath(`/dashboard/projects/${data.projectId}`);
-        return { success: true, data: obstacle };
-    } catch (error) {
-        console.error('Error creating obstacle:', error);
-        return { success: false, error: 'Failed to create obstacle' };
+        return obstacle;
     }
-}
+);
 
-export async function deleteObstacle(id: string) {
-    try {
-        await prisma.obstacle.delete({
-            where: { id },
-        });
+export const deleteObstacle = authenticatedAction(
+    z.string(), // obstacleId
+    async (id) => {
+        await ObstacleService.deleteObstacle(id);
+        // Note: Revalidating purely based on ID is hard without knowing project ID.
+        // Ideally we'd pass projectId, but for now we'll just rely on client update or generic revalidate if needed.
+        // Or we could fetch the obstacle first to get the projectId.
+        // authenticatedAction doesn't easily allow "get before delete" unless in service.
         return { success: true };
-    } catch (error) {
-        console.error('Error deleting obstacle:', error);
-        return { success: false, error: 'Failed to delete obstacle' };
     }
-}
+);

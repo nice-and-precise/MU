@@ -40,12 +40,15 @@ export default function InvoiceEditor({ invoice }: InvoiceEditorProps) {
 
     const handleSave = async () => {
         setLoading(true);
-        const res = await updateInvoice(invoice.id, {
-            items,
-            periodStart: new Date(periodStart),
-            periodEnd: new Date(periodEnd),
+        const res = await updateInvoice({
+            id: invoice.id,
+            data: {
+                items,
+                periodStart: new Date(periodStart),
+                periodEnd: new Date(periodEnd),
+            }
         });
-        if (res.success) {
+        if (res?.data) {
             router.refresh();
         } else {
             alert('Failed to save');
@@ -57,7 +60,7 @@ export default function InvoiceEditor({ invoice }: InvoiceEditorProps) {
         if (!confirm('Are you sure? This will lock the invoice.')) return;
         setLoading(true);
         const res = await finalizeInvoice(invoice.id);
-        if (res.success) {
+        if (res?.success) {
             router.refresh();
         } else {
             alert('Failed to finalize');

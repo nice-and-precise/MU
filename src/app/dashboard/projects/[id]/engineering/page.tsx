@@ -62,7 +62,7 @@ export default function EngineeringPage() {
 
     async function loadEngineeringData(boreId: string) {
         const res = await getBoreEngineering(boreId);
-        if (res.success && res.data) {
+        if (res?.data) {
             setEngineeringData(res.data);
             setBorePlan({
                 designMethod: res.data.designMethod || 'ASTM F1962',

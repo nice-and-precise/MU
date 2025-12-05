@@ -58,7 +58,7 @@ export function BoreLog({ boreId, userId }: BoreLogProps) {
 
     async function loadLogs() {
         const res = await getBoreLogs(boreId);
-        if (res.success) {
+        if (res?.data) {
             setLogs(res.data || []);
             setLoading(false);
         }
@@ -86,11 +86,11 @@ export function BoreLog({ boreId, userId }: BoreLogProps) {
             pullbackForce: pullback ? parseFloat(pullback) : undefined,
             fluidMix: fluids,
             returnsVisual: returns,
-            loggedById: userId,
+            // loggedById injected by server action
         };
 
         const res = await createRodPass(data);
-        if (res.success) {
+        if (res?.data) {
             setLogs([...logs, res.data]);
             // Reset form (keep rod length and fluids)
             setDepth("");
@@ -98,7 +98,7 @@ export function BoreLog({ boreId, userId }: BoreLogProps) {
             setSteer("");
             setPullback("");
         } else {
-            alert("Failed to save rod pass.");
+            alert("Failed to save rod pass: " + res?.error);
         }
     }
 
