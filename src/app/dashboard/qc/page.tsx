@@ -26,10 +26,12 @@ export default async function QCDashboard() {
     // "const punchItems = await getPunchList(currentProjectId);"
 
     // I will assume the page logic defines currentProjectId and just wrap the result.
-    const punchItemsRes = await getPunchList(currentProjectId);
-    const punchItems = punchItemsRes.data || [];
+    const [punchItemsRes, photosRes] = await Promise.all([
+        getPunchList(currentProjectId),
+        getProjectPhotos(currentProjectId)
+    ]);
 
-    const photosRes = await getProjectPhotos(currentProjectId);
+    const punchItems = punchItemsRes.data || [];
     const photos = photosRes.data || [];
 
     return (

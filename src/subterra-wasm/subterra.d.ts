@@ -82,14 +82,14 @@ export interface InitOutput {
   readonly wgpu_render_bundle_pop_debug_group: (a: number) => void;
   readonly wgpu_render_bundle_set_index_buffer: (a: number, b: bigint, c: number, d: bigint, e: bigint) => void;
   readonly wgpu_render_bundle_push_debug_group: (a: number, b: number) => void;
-  readonly wasm_bindgen__convert__closures_____invoke__h921fb30f99d11690: (a: number, b: number) => void;
-  readonly wasm_bindgen__closure__destroy__h259e1ee9a7647cc2: (a: number, b: number) => void;
-  readonly wasm_bindgen__convert__closures_____invoke__h93aff3f20cf6806d: (a: number, b: number, c: any, d: any) => void;
   readonly wasm_bindgen__convert__closures_____invoke__h0a897c1a406c35fe: (a: number, b: number, c: any) => void;
+  readonly wasm_bindgen__closure__destroy__h259e1ee9a7647cc2: (a: number, b: number) => void;
+  readonly wasm_bindgen__convert__closures_____invoke__h921fb30f99d11690: (a: number, b: number) => void;
   readonly wasm_bindgen__convert__closures_____invoke__h27404d25b2dc82c3: (a: number, b: number) => void;
   readonly wasm_bindgen__closure__destroy__hc531a8ee68b84408: (a: number, b: number) => void;
   readonly wasm_bindgen__convert__closures_____invoke__h9608f08d0b16335b: (a: number, b: number, c: any) => void;
   readonly wasm_bindgen__closure__destroy__h330dcea91c1e6c4b: (a: number, b: number) => void;
+  readonly wasm_bindgen__convert__closures_____invoke__h93aff3f20cf6806d: (a: number, b: number, c: any, d: any) => void;
   readonly wasm_bindgen__convert__closures_____invoke__h5564194b6c912d7e: (a: number, b: number, c: any, d: any) => void;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;

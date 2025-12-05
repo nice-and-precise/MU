@@ -10,11 +10,13 @@ import { getActiveProjects } from "@/actions/projects";
 import { ExpiringTicketsWidget } from "@/components/dashboard/ExpiringTicketsWidget";
 
 export default async function OwnerDashboard() {
-    const stats = await getOwnerStats();
-    const { data: employees } = await getAvailableCrewMembers();
-    const res = await getAssets();
+    const [stats, { data: employees }, res, { data: projects }] = await Promise.all([
+        getOwnerStats(),
+        getAvailableCrewMembers(),
+        getAssets(),
+        getActiveProjects()
+    ]);
     const assets = res.success && res.data ? res.data : [];
-    const { data: projects } = await getActiveProjects();
 
     return (
         <div className="p-8 space-y-8">
