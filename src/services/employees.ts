@@ -84,14 +84,9 @@ export class EmployeeService {
         return await prisma.timeEntry.findMany({
             where: { employeeId: id },
             include: {
-                phase: true,
-                timeCard: {
-                    include: {
-                        crew: true
-                    }
-                }
+                project: true
             },
-            orderBy: { date: 'desc' }
+            orderBy: { startTime: 'desc' }
         });
     }
 }
