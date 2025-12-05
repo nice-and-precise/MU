@@ -1,57 +1,113 @@
+import { z } from 'zod';
 
-export interface ITICnxtTicketPayload {
+// --- Types & Schemas ---
+
+export const IticTicketStatusSchema = z.enum(['PENDING', 'PROCESSING', 'CLEARED', 'MARKED', 'CONFLICT', 'CANCELLED', 'EXPIRED']);
+export type IticTicketStatus = z.infer<typeof IticTicketStatusSchema>;
+
+export interface IticTicketRequest {
     excavatorId: string;
-    workDate: Date;
-    coordinates: string; // GeoJSON string
-    ticketType: string;
+    workStartDate: Date;
+    workEndDate?: Date;
+    ticketType: 'NORMAL' | 'MEET' | 'EMERGENCY' | 'UPDATE';
     description: string;
+    // Geometry can be passed as GeoJSON string or specific object
+    geometry: string;
+    streetAddress: string;
+    city: string;
+    county: string;
 }
 
-export interface ITICnxtResponse {
+export interface IticTicketResult {
     success: boolean;
     ticketNumber?: string;
-    message?: string;
     errors?: string[];
+    rawResponse?: any;
 }
 
-/**
- * Simulates the ITICnxt API Client
- */
-export class ITICnxtClient {
-    private apiKey: string;
-    private baseUrl: string;
+export interface MeetReportRequest {
+    ticketNumber: string;
+    meetDate: Date;
+    attendees: string[];
+    summary: string;
+}
 
-    constructor() {
-        this.apiKey = process.env.ITICNXT_API_KEY || 'mock-key';
-        this.baseUrl = process.env.ITICNXT_API_URL || 'https://sandbox.itic.occinc.com/api/v1';
-    }
+// --- Interface Definition ---
 
-    async submitTicket(payload: ITICnxtTicketPayload): Promise<ITICnxtResponse> {
-        console.log('Submitting ticket to ITICnxt:', payload);
+export interface IticClient {
+    submitTicket(request: IticTicketRequest): Promise<IticTicketResult>;
+    getTicketStatus(ticketNumber: string): Promise<IticTicketStatus>;
+    submitMeetReport(report: MeetReportRequest): Promise<void>;
+}
+
+// --- Mock Implementation (Current Default) ---
+
+export class MockIticClient implements IticClient {
+    async submitTicket(request: IticTicketRequest): Promise<IticTicketResult> {
+        console.log('[MockIticClient] Submitting ticket:', request);
 
         // Simulate network delay
         await new Promise(resolve => setTimeout(resolve, 1500));
 
-        // Simulate validation
-        if (!payload.coordinates) {
-            return {
-                success: false,
-                errors: ['Missing coordinates']
-            };
+        // Basic validation simulation
+        if (!request.geometry) {
+            return { success: false, errors: ['Missing geometry'] };
         }
 
-        // Simulate success
-        const mockTicketNumber = `2026${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`;
-
+        const mockId = `2026${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`;
         return {
             success: true,
-            ticketNumber: mockTicketNumber,
-            message: 'Ticket submitted successfully to ITICnxt Sandbox.'
+            ticketNumber: mockId
         };
     }
 
-    async checkStatus(ticketNumber: string): Promise<string> {
-        // Simulate status check
+    async getTicketStatus(ticketNumber: string): Promise<IticTicketStatus> {
+        console.log('[MockIticClient] Checking status for:', ticketNumber);
         return 'PROCESSING';
     }
+
+    async submitMeetReport(report: MeetReportRequest): Promise<void> {
+        console.log('[MockIticClient] Submitting meet report:', report);
+        await new Promise(resolve => setTimeout(resolve, 500));
+    }
+}
+
+// --- Stubbed Real Implementation ---
+
+export class StandardIticClient implements IticClient {
+    private baseUrl: string;
+    private apiKey: string;
+
+    constructor(baseUrl: string, apiKey: string) {
+        this.baseUrl = baseUrl;
+        this.apiKey = apiKey;
+    }
+
+    async submitTicket(request: IticTicketRequest): Promise<IticTicketResult> {
+        // TODO: Replace with real fetch call when API is documented
+        throw new Error('Real ITIC integration not yet implemented. Use MockIticClient.');
+    }
+
+    async getTicketStatus(ticketNumber: string): Promise<IticTicketStatus> {
+        // TODO: Implement polling
+        throw new Error('Real ITIC integration not yet implemented.');
+    }
+
+    async submitMeetReport(report: MeetReportRequest): Promise<void> {
+        // TODO: Implement meet report submission
+        throw new Error('Real ITIC integration not yet implemented.');
+    }
+}
+
+// --- Factory ---
+
+export function getIticClient(): IticClient {
+    const useReal = process.env.USE_REAL_ITIC_CLIENT === 'true';
+    if (useReal) {
+        return new StandardIticClient(
+            process.env.ITIC_API_URL || '',
+            process.env.ITIC_API_KEY || ''
+        );
+    }
+    return new MockIticClient();
 }

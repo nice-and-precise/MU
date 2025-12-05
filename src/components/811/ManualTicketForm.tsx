@@ -49,6 +49,7 @@ const ticketSchema = z.object({
     tunneling: z.boolean(),
     rightOfWay: z.boolean(),
     mapLink: z.string().url().optional().or(z.literal("")),
+    electronicOnly: z.boolean().optional(),
 });
 
 type TicketValues = z.infer<typeof ticketSchema>;
@@ -83,6 +84,7 @@ export default function ManualTicketForm() {
             tunneling: false,
             rightOfWay: false,
             mapLink: "",
+            electronicOnly: false,
         },
     });
 
@@ -180,6 +182,10 @@ export default function ManualTicketForm() {
             notes: "",
             projectId: data.projectId || null,
         };
+
+        if (data.electronicOnly) {
+            ticketData.markingInstructions = (ticketData.markingInstructions || "") + "\n\n[ELECTRONIC WHITE LINING ONLY - NO PHYSICAL MARKS]";
+        }
 
         const result = await createTicket(ticketData as any);
 
@@ -519,6 +525,34 @@ export default function ManualTicketForm() {
                             />
                         </div>
 
+                        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-200 dark:border-blue-800">
+                            <FormField
+                                control={form.control}
+                                name="electronicOnly"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                        <FormControl>
+                                            <Checkbox
+                                                checked={field.value}
+                                                onCheckedChange={field.onChange}
+                                            />
+                                        </FormControl>
+                                        <div className="space-y-1">
+                                            <FormLabel>Utilize Electronic White Lining Only (No Physical Marks)</FormLabel>
+                                            <FormDescription>
+                                                Select this for winter conditions or when painting is not possible.
+                                            </FormDescription>
+                                            {field.value && (
+                                                <div className="mt-2 text-xs text-amber-600 dark:text-amber-400 font-medium">
+                                                    ⚠️ Important: If a utility operator specifically requests physical marks, you must return to the site and paint per MN 216D.05(c).
+                                                </div>
+                                            )}
+                                        </div>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
                         <FormField
                             control={form.control}
                             name="mapLink"
@@ -543,6 +577,6 @@ export default function ManualTicketForm() {
                     </form>
                 </Form>
             </CardContent>
-        </Card>
+        </Card >
     );
 }

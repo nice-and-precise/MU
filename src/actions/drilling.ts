@@ -10,7 +10,7 @@ export const createBore = authenticatedAction(
     async (data) => {
         const bore = await DrillingService.createBore(data);
         revalidatePath(`/dashboard/projects/${data.projectId}`);
-        return { success: true, data: bore };
+        return bore;
     }
 );
 
@@ -78,7 +78,7 @@ export const addRodPass = authenticatedAction(
             revalidatePath(`/dashboard/projects/${bore.projectId}`);
         }
 
-        return { success: true, data: rodPass };
+        return rodPass;
     }
 );
 

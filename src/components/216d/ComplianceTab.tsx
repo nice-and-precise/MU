@@ -72,7 +72,11 @@ export function ComplianceTab({ projectId }: ComplianceTabProps) {
                 )}
 
                 {currentStep === "meet-ticket" && (
-                    <MeetTicketForm projectId={projectId} onComplete={handleMeetTicketComplete} />
+                    <MeetTicketForm
+                        projectId={projectId}
+                        ticketId={complianceData.gsocTicket?.id}
+                        onComplete={handleMeetTicketComplete}
+                    />
                 )}
 
                 {currentStep === "complete" && (
@@ -105,13 +109,39 @@ export function ComplianceTab({ projectId }: ComplianceTabProps) {
                                 <Button
                                     variant="outline"
                                     className="w-full border-emerald-600 text-emerald-700 hover:bg-emerald-50"
-                                    onClick={() => {
-                                        import('@/lib/FieldGuideGenerator').then(mod => {
-                                            mod.generateFieldGuide(
-                                                complianceData.gsocTicket || {},
-                                                complianceData.whiteLining?.description || "No AMI generated."
-                                            );
-                                        });
+                                    onClick={async () => {
+                                        const toastId = toast.loading("Generating 216D Packet...");
+                                        try {
+                                            // 1. Fetch Data
+                                            const { downloadCompliancePacket } = await import("@/actions/216d/packet");
+                                            const res = await downloadCompliancePacket(complianceData.gsocTicket?.id);
+
+                                            if (!res.success || !res.data) {
+                                                toast.error(res.error || "Failed to fetch packet data", { id: toastId });
+                                                return;
+                                            }
+
+                                            const packetData = JSON.parse(res.data);
+
+                                            // 2. Generate PDF Client-Side
+                                            const { generateCompliancePacketPDF } = await import("@/lib/compliance/PacketGenerator");
+                                            const blob = await generateCompliancePacketPDF(packetData);
+
+                                            // 3. Download
+                                            const url = URL.createObjectURL(blob);
+                                            const a = document.createElement("a");
+                                            a.href = url;
+                                            a.download = `216D_Compliance_${packetData.ticket.ticketNumber}.pdf`;
+                                            document.body.appendChild(a);
+                                            a.click();
+                                            document.body.removeChild(a);
+                                            URL.revokeObjectURL(url);
+
+                                            toast.success("Packet Downloaded", { id: toastId });
+                                        } catch (e) {
+                                            console.error(e);
+                                            toast.error("Failed to generate packet", { id: toastId });
+                                        }
                                     }}
                                 >
                                     Download Compliance Packet (PDF)
@@ -125,23 +155,24 @@ export function ComplianceTab({ projectId }: ComplianceTabProps) {
                                                 const toastId = toast.loading("Submitting to ITICnxt...");
                                                 try {
                                                     const { submitTicketToItic } = await import("@/actions/iticnxt");
-                                                    const result = await submitTicketToItic(
-                                                        complianceData.gsocTicket?.id,
+                                                    const result = await submitTicketToItic({
+                                                        ticketId: complianceData.gsocTicket?.id,
                                                         projectId
-                                                    );
+                                                    });
 
-                                                    if (result.success) {
+                                                    if (result?.data?.ticketNumber) {
                                                         setComplianceData((prev: any) => ({
                                                             ...prev,
                                                             submitted: true,
                                                             gsocTicket: {
                                                                 ...prev.gsocTicket,
-                                                                ticketNumber: result.ticketNumber
+                                                                ticketNumber: result.data?.ticketNumber
                                                             }
                                                         }));
-                                                        toast.success(`Ticket Submitted! Official #: ${result.ticketNumber}`, { id: toastId });
+                                                        toast.success(`Ticket Submitted! Official #: ${result.data.ticketNumber}`, { id: toastId });
                                                     } else {
-                                                        toast.error(`Submission Failed: ${result.message}`, { id: toastId });
+                                                        const errorMsg = result?.error || "Submission failed";
+                                                        toast.error(`Submission Failed: ${errorMsg}`, { id: toastId });
                                                     }
                                                 } catch (error) {
                                                     toast.error("An unexpected error occurred", { id: toastId });
@@ -161,6 +192,6 @@ export function ComplianceTab({ projectId }: ComplianceTabProps) {
                     </Card>
                 )}
             </div>
-        </div>
+        </div >
     );
 }

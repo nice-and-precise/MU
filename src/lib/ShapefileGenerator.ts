@@ -1,5 +1,6 @@
-import { download } from 'shp-write';
+import { zip } from 'shp-write';
 import proj4 from 'proj4';
+import JSZip from 'jszip';
 
 // Define projections
 const WGS84 = 'EPSG:4326';
@@ -9,7 +10,7 @@ const UTM15N_WKT = `PROJCS["NAD83 / UTM zone 15N",GEOGCS["NAD83",DATUM["North_Am
 // Register UTM15N
 proj4.defs(UTM15N, "+proj=utm +zone=15 +ellps=GRS80 +datum=NAD83 +units=m +no_defs");
 
-export function generateShapefile(geoJson: any, filename: string = 'excavation') {
+export async function generateShapefile(geoJson: any, filename: string = 'excavation') {
     // 1. Reproject GeoJSON from WGS84 to UTM Zone 15N
     const reprojectedGeoJson = JSON.parse(JSON.stringify(geoJson)); // Deep copy
 
@@ -31,36 +32,54 @@ export function generateShapefile(geoJson: any, filename: string = 'excavation')
         });
     }
 
-    // 2. Generate Shapefile using shp-write
-    // shp-write expects a GeoJSON object or array of features
-    // We pass options to include the .prj file
-
-    // Note: shp-write's download function triggers a browser download.
-    // If we need a Blob, we might need 'zip' function from shp-write (if available) or use jszip manually.
-    // For now, we assume client-side usage.
-
     const options = {
         folder: filename,
         types: {
             polygon: filename,
-        },
-        // shp-write doesn't natively support passing custom PRJ content easily in the 'download' helper 
-        // without some hacks or using the lower-level zip function.
-        // However, we can try to inject it if we use the lower level API.
+            point: filename + '_points'
+        }
     };
 
-    // Since shp-write is a bit basic, let's use it to generate the binary data and then zip it ourselves if needed,
-    // OR just use it as is and hope ITIC accepts WGS84 if we can't force the PRJ.
-    // BUT the requirement is strict UTM15N.
+    try {
+        // Generate the standard zip from shp-write
+        // @ts-ignore
+        const standardZipData = zip(reprojectedGeoJson, options);
 
-    // Let's try to use the 'zip' function if exported, or just use 'download' and accept we might need to patch the PRJ.
-    // Actually, shp-write puts a standard WGS84 prj if not specified.
+        // Load into JSZip to manipulate
+        const zipContainer = new JSZip();
+        // shp-write returns a base64 string or binary string usually.
+        await zipContainer.loadAsync(standardZipData, { base64: true });
 
-    // Alternative: Use 'jszip' to build the zip manually, using 'shp-write' to get the SHP/SHX/DBF buffers.
-    // shp-write exports `zip`? Let's check imports.
-    // import { zip } from 'shp-write'; 
+        // 3. Inject the PRJ file
+        // We need to add it to the folder created inside the zip
+        // Check if folder exists
+        const folder = zipContainer.folder(filename);
+        if (folder) {
+            folder.file(`${filename}.prj`, UTM15N_WKT);
+            // Also add for points if they exist
+            if (zipContainer.file(`${filename}/${filename}_points.shp`)) {
+                folder.file(`${filename}_points.prj`, UTM15N_WKT);
+            }
+        } else {
+            // If structure is flat
+            zipContainer.file(`${filename}.prj`, UTM15N_WKT);
+        }
 
-    // If shp-write doesn't support custom PRJ, we might need to overwrite it in the zip.
+        // 4. Generate Blob and Download
+        const content = await zipContainer.generateAsync({ type: 'blob' });
 
-    download(reprojectedGeoJson, options);
+        // Trigger download
+        const url = URL.createObjectURL(content);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${filename}.zip`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+    } catch (error) {
+        console.error("Failed to generate shapefile:", error);
+        alert("Error generating shapefile. Please check console.");
+    }
 }

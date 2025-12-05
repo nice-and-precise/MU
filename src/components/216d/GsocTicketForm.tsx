@@ -30,9 +30,28 @@ export function GsocTicketForm({ projectId, onComplete }: GsocTicketFormProps) {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        onComplete({ ticketNumber, ticketType, filedAt, legalReady });
+        try {
+            const { createGsocTicket } = await import("@/actions/216d/compliance");
+            const res = await createGsocTicket({
+                projectId,
+                ticketNumber,
+                ticketType,
+                filedAt,
+                legalReady: legalReady?.toISOString(),
+                legalExcavationStart: null // Or calculated/passed
+            });
+
+            if (res?.data) {
+                onComplete(res.data);
+            } else {
+                console.error(res?.error);
+                // Optionally show toast
+            }
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     return (
