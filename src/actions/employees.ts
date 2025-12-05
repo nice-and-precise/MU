@@ -55,3 +55,17 @@ export const getAvailableCrewMembers = authenticatedActionNoInput(
         return await EmployeeService.getAvailableCrewMembers();
     }
 );
+
+export const getEmployeeUsage = authenticatedAction(
+    z.string(),
+    async (id) => {
+        return await EmployeeService.getEmployeeUsage(id);
+    }
+);
+
+export const getEmployeeTimeEntries = authenticatedAction(
+    z.string(),
+    async (id) => {
+        return await EmployeeService.getEmployeeTimeEntries(id);
+    }
+);

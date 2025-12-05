@@ -16,6 +16,7 @@ model User {
   role                  String                 @default("CREW")
   phone                 String?
   avatar                String?
+  preferences           String?                // JSON string for user preferences (theme, notifications, etc.)
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
   changeOrders          ChangeOrder[]
@@ -841,6 +842,8 @@ model EquipmentUsage {
   date      DateTime
   hours     Float
   notes     String?
+  employeeId String?
+  employee   Employee? @relation(fields: [employeeId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -995,6 +998,7 @@ model Employee {
   reviews     PerformanceReview[]
   statusHistory EmploymentStatusHistory[]
   shifts        Shift[]
+  equipmentUsage EquipmentUsage[]
   
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt

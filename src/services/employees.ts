@@ -68,4 +68,30 @@ export class EmployeeService {
             orderBy: { lastName: 'asc' }
         });
     }
+
+    static async getEmployeeUsage(id: string) {
+        return await prisma.equipmentUsage.findMany({
+            where: { employeeId: id },
+            include: {
+                asset: true,
+                project: true
+            },
+            orderBy: { date: 'desc' }
+        });
+    }
+
+    static async getEmployeeTimeEntries(id: string) {
+        return await prisma.timeEntry.findMany({
+            where: { employeeId: id },
+            include: {
+                phase: true,
+                timeCard: {
+                    include: {
+                        crew: true
+                    }
+                }
+            },
+            orderBy: { date: 'desc' }
+        });
+    }
 }

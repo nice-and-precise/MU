@@ -12,6 +12,8 @@ const oswald = Oswald({
   subsets: ["latin"],
 });
 
+import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "@/components/ui/sonner"
 import { Providers } from "./providers";
 import { FeedbackWidget } from "@/components/FeedbackWidget";
 
@@ -66,8 +68,16 @@ export default function RootLayout({
         className={`${inter.variable} ${oswald.variable} antialiased relative`}
       >
         <Providers>
-          {children}
-          {(process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_SHOW_FEEDBACK === 'true') && <FeedbackWidget />}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+            {(process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_SHOW_FEEDBACK === 'true') && <FeedbackWidget />}
+            <Toaster />
+          </ThemeProvider>
         </Providers>
       </body>
     </html>

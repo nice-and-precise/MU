@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { KPICards } from "./KPICards";
 import { ActiveCrewsList } from "./ActiveCrewsList";
 import { RecentActivityFeed } from "./RecentActivityFeed";
-import { DemoSeedButton } from "./DemoSeedButton";
 import { ProductionChart } from "@/components/dashboard/ProductionChart";
 import { LiveFleetMap } from "@/components/tracking/LiveFleetMap";
 import { getDashboardStats, getRecentActivity, getActiveCrews } from "@/actions/dashboard";
@@ -57,7 +56,6 @@ export function OwnerCommandCenter() {
                     <p className="text-muted-foreground">Real-time overview of field operations</p>
                 </div>
                 <div className="flex gap-2">
-                    <DemoSeedButton />
                     <Button onClick={fetchData} variant="outline" size="sm">
                         <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                         Refresh
