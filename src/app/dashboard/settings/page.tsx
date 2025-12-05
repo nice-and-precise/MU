@@ -2,7 +2,8 @@ import { EmployeeManager } from "@/components/financials/EmployeeManager";
 import { getEmployees } from "@/actions/employees";
 
 export default async function SettingsPage() {
-    const { data } = await getEmployees();
+    const res = await getEmployees();
+    const data = res.success ? res.data : [];
     const employees = data || [];
 
     return (

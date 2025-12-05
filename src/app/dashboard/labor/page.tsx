@@ -2,7 +2,8 @@ import { getEmployees } from "@/actions/employees";
 import EmployeeDirectory from "@/components/labor/EmployeeDirectory";
 
 export default async function LaborPage() {
-    const { data } = await getEmployees();
+    const res = await getEmployees();
+    const data = res.success ? res.data : [];
     const employees = data || [];
 
     return (

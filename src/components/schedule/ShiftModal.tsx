@@ -67,7 +67,8 @@ export function ShiftModal({ isOpen, onClose, shift, crews, employees, projects 
 
         try {
             if (shift) {
-                await updateShift(shift.id, {
+                await updateShift({
+                    id: shift.id,
                     startTime: startDateTime,
                     endTime: endDateTime,
                     notes: formData.notes
@@ -97,7 +98,7 @@ export function ShiftModal({ isOpen, onClose, shift, crews, employees, projects 
         if (!shift || !confirm('Are you sure you want to delete this shift?')) return;
         setIsLoading(true);
         try {
-            await deleteShift(shift.id);
+            await deleteShift({ id: shift.id });
             router.refresh();
             onClose();
         } catch (error) {

@@ -6,11 +6,12 @@ import { Plus } from 'lucide-react';
 import SeedDataButton from '@/components/811/SeedDataButton';
 
 export default async function TicketDashboard() {
-    const { data: tickets, error } = await getTickets();
+    const result = await getTickets(undefined);
 
-    if (error) {
-        return <div className="p-8 text-red-500">Error loading tickets: {error}</div>;
+    if (!result.success) {
+        return <div className="p-8 text-red-500">Error loading tickets: {result.error}</div>;
     }
+    const tickets = result.data;
 
     return (
         <div className="container mx-auto p-6 space-y-6">

@@ -35,7 +35,20 @@ export async function GET() {
             const daysUntil = differenceInDays(new Date(ticket.expirationDate), now);
 
             // Determine recipient: Project creator or fallback
-            const recipientEmail = ticket.project?.createdBy?.email || 'admin@example.com'; // TODO: Configure fallback
+            // Determine recipient: Project creator or fallback
+            const recipientEmail = ticket.project?.createdBy?.email || process.env.ADMIN_EMAIL || 'admin@example.com';
+
+            if (!recipientEmail) {
+                console.warn(`No recipient found for expiring ticket ${ticket.ticketNumber}. Skipping email.`);
+                results.push({
+                    ticket: ticket.ticketNumber,
+                    recipient: 'NONE',
+                    sent: false,
+                    daysUntil,
+                    error: 'No recipient email found'
+                });
+                continue;
+            }
 
             const emailHtml = generateExpirationEmailHtml({
                 ticketNumber: ticket.ticketNumber,

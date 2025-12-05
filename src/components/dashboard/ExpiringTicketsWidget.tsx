@@ -27,7 +27,7 @@ export function ExpiringTicketsWidget() {
             try {
                 // Fetch all active tickets and filter client-side for now 
                 // (or update getTickets to support date filtering later)
-                const result = await getTickets();
+                const result = await getTickets(undefined);
                 if (result.success && result.data) {
                     const now = new Date();
                     const threeDaysFromNow = new Date();

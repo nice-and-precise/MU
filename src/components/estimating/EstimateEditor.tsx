@@ -42,7 +42,15 @@ export default function EstimateEditor({ estimate }: EstimateEditorProps) {
     const handleAddLine = async () => {
         if (!newLine.description) return;
         setLoading(true);
-        await addLineItem(estimate.id, newLine);
+        await addLineItem({
+            estimateId: estimate.id,
+            data: {
+                ...newLine,
+                laborCost: 0,
+                equipmentCost: 0,
+                materialCost: 0
+            }
+        });
         setNewLine({ description: '', quantity: 1, unit: 'LS', unitCost: 0, markup: 0.15 }); // Reset
         setLoading(false);
         router.refresh();
@@ -113,7 +121,15 @@ export default function EstimateEditor({ estimate }: EstimateEditorProps) {
 
         const items = assemblies[type];
         for (const item of items) {
-            await addLineItem(estimate.id, item);
+            await addLineItem({
+                estimateId: estimate.id,
+                data: {
+                    ...item,
+                    laborCost: 0,
+                    equipmentCost: 0,
+                    materialCost: 0
+                }
+            });
         }
         setLoading(false);
         router.refresh();

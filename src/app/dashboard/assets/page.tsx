@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 
 export default async function AssetsPage() {
-    const { data: assets } = await getAssets();
+    const res = await getAssets();
+    const assets = res.success && res.data ? res.data : [];
 
     return (
         <div className="space-y-6">

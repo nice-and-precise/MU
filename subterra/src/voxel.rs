@@ -1,5 +1,5 @@
 use crate::telemetry::DrillTelemetry;
-use bevy::color::{Color, LinearRgba};
+use bevy::color::Color;
 use bevy::prelude::*;
 use noise::{NoiseFn, Perlin};
 use rand::Rng;

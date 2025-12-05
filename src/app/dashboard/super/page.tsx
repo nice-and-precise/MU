@@ -7,7 +7,8 @@ import { getActiveProjects } from "@/actions/projects";
 export default async function SuperDashboard() {
     const stats = await getSuperStats();
     const { data: employees } = await getAvailableCrewMembers();
-    const { data: assets } = await getAssets();
+    const res = await getAssets();
+    const assets = res.success && res.data ? res.data : [];
     const { data: projects } = await getActiveProjects();
 
     return (

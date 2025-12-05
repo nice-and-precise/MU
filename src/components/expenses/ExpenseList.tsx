@@ -19,8 +19,10 @@ export default function ExpenseList({ projectId, refreshTrigger }: ExpenseListPr
     useEffect(() => {
         async function load() {
             setLoading(true);
-            const data = await getExpenses(projectId);
-            setExpenses(data);
+            const res = await getExpenses(projectId);
+            if (res.success) {
+                setExpenses(res.data || []);
+            }
             setLoading(false);
         }
         load();
@@ -28,7 +30,7 @@ export default function ExpenseList({ projectId, refreshTrigger }: ExpenseListPr
 
     const handleDelete = async (id: string) => {
         if (!confirm('Are you sure you want to delete this expense?')) return;
-        const res = await deleteExpense(id, projectId);
+        const res = await deleteExpense({ id, projectId });
         if (res.success) {
             setExpenses(expenses.filter(e => e.id !== id));
         } else {

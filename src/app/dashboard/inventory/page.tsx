@@ -91,7 +91,7 @@ export default function InventoryPage() {
 
     const handleUpdate = async () => {
         if (!selectedItem) return;
-        const res = await updateInventoryItem(selectedItem.id, formData);
+        const res = await updateInventoryItem({ id: selectedItem.id, data: formData });
         if (res.success) {
             setIsEditOpen(false);
             loadInventory();
@@ -115,7 +115,6 @@ export default function InventoryPage() {
             itemId: selectedItem.id,
             type: adjustData.type as 'IN' | 'OUT' | 'ADJUST',
             quantity: Number(adjustData.quantity),
-            performedById: 'user_id_placeholder', // TODO: Get real user ID
             notes: adjustData.notes
         });
         if (res.success) {

@@ -27,8 +27,12 @@ export function OwnerCommandCenter() {
                 getActiveCrews()
             ]);
             setStats(statsData);
-            setActivity(activityData);
-            setCrews(crewsData);
+            if (activityData.success && activityData.data) {
+                setActivity(activityData.data);
+            }
+            if (crewsData.success && crewsData.data) {
+                setCrews(crewsData.data);
+            }
         } catch (error) {
             console.error("Failed to fetch dashboard data", error);
             toast.error("Failed to load dashboard data");

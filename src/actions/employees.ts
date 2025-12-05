@@ -1,118 +1,57 @@
-'use server'
+'use server';
 
-import { prisma } from "@/lib/prisma"
-import { revalidatePath } from "next/cache"
-import { Prisma } from "@prisma/client"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { authenticatedAction, authenticatedActionNoInput } from '@/lib/safe-action';
+import { EmployeeService } from '@/services/employees';
+import { CreateEmployeeSchema, UpdateEmployeeSchema } from '@/schemas/employees';
+import { z } from 'zod';
+import { revalidatePath } from 'next/cache';
 
-export async function getEmployees() {
-    try {
-        const employees = await prisma.employee.findMany({
-            include: {
-                user: true,
-                crews: {
-                    include: {
-                        crew: true
-                    }
-                },
-                foremanCrews: true,
-                certs: true,
-            },
-            orderBy: { lastName: 'asc' }
-        })
-        return { success: true, data: employees }
-    } catch (error) {
-        console.error("Failed to fetch employees:", error)
-        return { success: false, error: "Failed to fetch employees" }
+export const getEmployees = authenticatedActionNoInput(
+    async () => {
+        return await EmployeeService.getEmployees();
     }
-}
+);
 
-export async function getEmployee(id: string) {
-    try {
-        const employee = await prisma.employee.findUnique({
-            where: { id },
-            include: {
-                user: true,
-                crews: {
-                    include: {
-                        crew: true
-                    }
-                },
-                certs: true,
-                incidents: true,
-                documents: true,
-                statusHistory: {
-                    orderBy: { effectiveDate: 'desc' }
-                }
-            }
-        })
-        return { success: true, data: employee }
-    } catch (error) {
-        console.error("Failed to fetch employee:", error)
-        return { success: false, error: "Failed to fetch employee" }
+export const getEmployee = authenticatedAction(
+    z.string(),
+    async (id) => {
+        return await EmployeeService.getEmployee(id);
     }
-}
+);
 
-export async function createEmployee(data: Prisma.EmployeeCreateInput) {
-    const session = await getServerSession(authOptions);
-    if (!session) return { success: false, error: 'Unauthorized' };
-
-    try {
-        const employee = await prisma.employee.create({
-            data,
-        })
-        revalidatePath('/dashboard/labor')
-        return { success: true, data: employee }
-    } catch (error) {
-        console.error("Failed to create employee:", error)
-        return { success: false, error: "Failed to create employee" }
+export const createEmployee = authenticatedAction(
+    CreateEmployeeSchema,
+    async (data) => {
+        const employee = await EmployeeService.createEmployee(data);
+        revalidatePath('/dashboard/labor');
+        return employee;
     }
-}
+);
 
-export async function updateEmployee(id: string, data: Prisma.EmployeeUpdateInput) {
-    const session = await getServerSession(authOptions);
-    if (!session) return { success: false, error: 'Unauthorized' };
-
-    try {
-        const employee = await prisma.employee.update({
-            where: { id },
-            data,
-        })
-        revalidatePath('/dashboard/labor')
-        revalidatePath(`/dashboard/labor/${id}`)
-        return { success: true, data: employee }
-    } catch (error) {
-        console.error("Failed to update employee:", error)
-        return { success: false, error: "Failed to update employee" }
+export const updateEmployee = authenticatedAction(
+    z.object({
+        id: z.string(),
+        data: UpdateEmployeeSchema
+    }),
+    async ({ id, data }) => {
+        const employee = await EmployeeService.updateEmployee(id, data);
+        revalidatePath('/dashboard/labor');
+        revalidatePath(`/dashboard/labor/${id}`);
+        return employee;
     }
-}
+);
 
-export async function deleteEmployee(id: string) {
-    const session = await getServerSession(authOptions);
-    if (!session) return { success: false, error: 'Unauthorized' };
-
-    try {
-        await prisma.employee.delete({
-            where: { id }
-        })
-        revalidatePath('/dashboard/labor')
-        return { success: true }
-    } catch (error) {
-        console.error("Failed to delete employee:", error)
-        return { success: false, error: "Failed to delete employee" }
+export const deleteEmployee = authenticatedAction(
+    z.string(),
+    async (id) => {
+        await EmployeeService.deleteEmployee(id);
+        revalidatePath('/dashboard/labor');
+        return { success: true };
     }
-}
+);
 
-export async function getAvailableCrewMembers() {
-    try {
-        const employees = await prisma.employee.findMany({
-            where: { status: "ACTIVE" },
-            orderBy: { lastName: 'asc' }
-        })
-        return { success: true, data: employees }
-    } catch (error) {
-        console.error("Failed to fetch available crew members:", error)
-        return { success: false, error: "Failed to fetch crew members" }
+export const getAvailableCrewMembers = authenticatedActionNoInput(
+    async () => {
+        return await EmployeeService.getAvailableCrewMembers();
     }
-}
+);

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import * as THREE from 'three';
 import { calculateDistanceToObstacle, checkCollision } from './collision';
-import { SurveyStation, Obstacle } from '../../types';
+import { SurveyStation, Obstacle } from '../types';
 
 describe('Collision Logic', () => {
     describe('calculateDistanceToObstacle', () => {

@@ -5,7 +5,8 @@ import { FileText, User, Calendar } from "lucide-react";
 import ReportsTable from "./ReportsTable";
 
 export default async function ReportsPage() {
-    const reports = await getReports();
+    const reportsRes = await getReports();
+    const reports = (reportsRes.success && reportsRes.data) ? reportsRes.data : [];
 
     return (
         <div className="p-8">

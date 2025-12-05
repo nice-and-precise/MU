@@ -1,113 +1,60 @@
 'use server';
 
-import { prisma } from '@/lib/prisma';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
+import { authenticatedAction } from '@/lib/safe-action';
+import { QCService } from '@/services/qc';
+import {
+    CreatePunchItemSchema,
+    UpdatePunchItemSchema,
+    GetProjectPhotosSchema,
+    CreatePhotoSchema
+} from '@/schemas/qc';
 
 // --- Punch List ---
 
-export async function createPunchItem(data: {
-    projectId: string;
-    title: string;
-    description?: string;
-    priority: string;
-    assigneeId?: string;
-    dueDate?: Date
-}) {
-    const session = await getServerSession(authOptions);
-    if (!session) return { success: false, error: 'Unauthorized' };
-
-    try {
-        const item = await prisma.punchItem.create({
-            data: {
-                projectId: data.projectId,
-                title: data.title,
-                description: data.description,
-                priority: data.priority,
-                assigneeId: data.assigneeId,
-                dueDate: data.dueDate,
-            }
-        });
+export const createPunchItem = authenticatedAction(
+    CreatePunchItemSchema,
+    async (data) => {
+        const item = await QCService.createPunchItem(data);
         revalidatePath(`/dashboard/projects/${data.projectId}/qc`);
-        return { success: true, data: item };
-    } catch (error) {
-        console.error('Failed to create punch item:', error);
-        return { success: false, error: 'Failed to create punch item' };
+        return item;
     }
-}
+);
 
-export async function updatePunchItem(id: string, data: {
-    status?: string;
-    assigneeId?: string;
-    completedAt?: Date
-}) {
-    const session = await getServerSession(authOptions);
-    if (!session) return { success: false, error: 'Unauthorized' };
-
-    try {
-        const item = await prisma.punchItem.update({
-            where: { id },
-            data: {
-                status: data.status,
-                assigneeId: data.assigneeId,
-                completedAt: data.completedAt,
-            }
-        });
+export const updatePunchItem = authenticatedAction(
+    UpdatePunchItemSchema,
+    async ({ id, ...data }) => {
+        const item = await QCService.updatePunchItem(id, data);
+        // We need projectId for revalidation. 
+        // Ideally the service returns the full item including projectId.
+        // Prisma update returns the object.
         revalidatePath(`/dashboard/projects/${item.projectId}/qc`);
-        return { success: true, data: item };
-    } catch (error) {
-        console.error('Failed to update punch item:', error);
-        return { success: false, error: 'Failed to update punch item' };
+        return item;
     }
-}
+);
 
-export async function getPunchList(projectId: string) {
-    const session = await getServerSession(authOptions);
-    if (!session) return [];
-    return await prisma.punchItem.findMany({
-        where: { projectId },
-        include: { assignee: true },
-        orderBy: { createdAt: 'desc' }
-    });
-}
+export const getPunchList = authenticatedAction(
+    GetProjectPhotosSchema, // Reusing schema as it is just projectId string
+    async (projectId) => {
+        return await QCService.getPunchList(projectId);
+    }
+);
 
 // --- Photos ---
 
-export async function getProjectPhotos(projectId: string) {
-    const session = await getServerSession(authOptions);
-    if (!session) return [];
-    return await prisma.photo.findMany({
-        where: { projectId },
-        include: { uploadedBy: true },
-        orderBy: { createdAt: 'desc' }
-    });
-}
-
-export async function createPhoto(data: {
-    projectId: string;
-    url: string;
-    thumbnailUrl?: string;
-}) {
-    const session = await getServerSession(authOptions);
-    if (!session) return { success: false, error: 'Unauthorized' };
-
-    try {
-        const photo = await prisma.photo.create({
-            data: {
-                projectId: data.projectId,
-                url: data.url,
-                thumbnailUrl: data.thumbnailUrl,
-                filename: data.url.split('/').pop() || 'image.jpg',
-                size: 0, // Placeholder
-                mimeType: 'image/jpeg', // Placeholder
-                uploadedById: session.user.id
-            }
-        });
-        revalidatePath(`/dashboard/projects/${data.projectId}/qc`);
-        return { success: true, data: photo };
-    } catch (error) {
-        console.error('Failed to create photo:', error);
-        return { success: false, error: 'Failed to create photo' };
+export const getProjectPhotos = authenticatedAction(
+    GetProjectPhotosSchema,
+    async (projectId) => {
+        return await QCService.getProjectPhotos(projectId);
     }
-}
+);
+
+export const createPhoto = authenticatedAction(
+    CreatePhotoSchema,
+    async (data, userId) => {
+        const photo = await QCService.createPhoto(data, userId);
+        revalidatePath(`/dashboard/projects/${data.projectId}/qc`);
+        return photo;
+    }
+);
+

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useTransition } from "react";
 import { BigButton } from "@/components/ui/BigButton";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Clock, AlertTriangle, Loader2 } from "lucide-react";
 import { InspectionChecklist } from "@/components/field/InspectionChecklist";
@@ -28,9 +29,10 @@ interface GeoClockInProps {
     projectLong: number;
     geofenceRadius: number; // in feet
     employeeId: string;
+    minimal?: boolean;
 }
 
-export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius, employeeId }: GeoClockInProps) {
+export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius, employeeId, minimal = false }: GeoClockInProps) {
     const [status, setStatus] = useState<"OUT" | "IN">("OUT");
     const [location, setLocation] = useState<{ lat: number; long: number } | null>(null);
     const [distance, setDistance] = useState<number | null>(null);
@@ -135,6 +137,44 @@ export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius,
                 alert("Error clocking out");
             }
         });
+    }
+
+    if (minimal) {
+        return (
+            <>
+                <Button
+                    size="sm"
+                    variant={status === "OUT" ? "default" : "destructive"}
+                    onClick={handleClockAction}
+                    disabled={isPending}
+                    className={status === "OUT" ? "bg-green-600 hover:bg-green-700" : ""}
+                >
+                    {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : (status === "OUT" ? "Clock In" : "Clock Out")}
+                </Button>
+
+                {/* Inspection Modal for Minimal Mode */}
+                {showInspection && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                        <div className="bg-background rounded-xl max-h-[90vh] overflow-y-auto w-full max-w-2xl relative">
+                            <InspectionChecklist
+                                assetId="truck-1" // TODO: Select asset dynamically
+                                assetName="Ford F-550 (Truck #12)"
+                                onComplete={() => {
+                                    setShowInspection(false);
+                                    performClockIn();
+                                }}
+                            />
+                            <button
+                                onClick={() => setShowInspection(false)}
+                                className="absolute top-4 right-4 text-muted-foreground hover:text-foreground p-2 bg-white/80 rounded-full"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </>
+        );
     }
 
     return (

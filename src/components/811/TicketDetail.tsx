@@ -67,10 +67,13 @@ export default function TicketDetail({ ticket: rawTicket }: TicketDetailProps) {
         setLoading(true);
         const formData = new FormData(e.currentTarget);
 
-        await addTicketResponse(ticket.id, {
-            utilityName: formData.get('utilityName') as string,
-            status: formData.get('status') as string,
-            notes: formData.get('notes') as string,
+        await addTicketResponse({
+            ticketId: ticket.id,
+            data: {
+                utilityName: formData.get('utilityName') as string,
+                status: formData.get('status') as string,
+                notes: formData.get('notes') as string,
+            }
         });
 
         setLoading(false);

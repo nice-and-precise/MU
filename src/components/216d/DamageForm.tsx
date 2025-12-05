@@ -23,7 +23,7 @@ import { Loader2 } from "lucide-react";
 const damageSchema = z.object({
     facilityType: z.string().min(1, "Facility type is required"),
     description: z.string().min(1, "Description is required"),
-    contactMade: z.boolean().default(true),
+    contactMade: z.boolean(),
 });
 
 type DamageValues = z.infer<typeof damageSchema>;
@@ -38,7 +38,7 @@ export function DamageForm({ projectId, ticketId, onClose }: DamageFormProps) {
     const [loading, setLoading] = useState(false);
 
     const form = useForm<DamageValues>({
-        resolver: zodResolver(damageSchema),
+        resolver: zodResolver(damageSchema) as any,
         defaultValues: {
             facilityType: "UNKNOWN",
             description: "",

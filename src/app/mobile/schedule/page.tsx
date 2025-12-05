@@ -24,7 +24,7 @@ export default async function MobileSchedulePage() {
     const start = startOfDay(new Date());
     const end = endOfDay(new Date());
 
-    const { data: allShifts } = await getShifts(start, end);
+    const { data: allShifts } = await getShifts({ start, end });
 
     // Filter for this employee (either directly assigned or via crew)
     // Note: getShifts returns all shifts in range. We need to filter here or update getShifts to support filtering.

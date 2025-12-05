@@ -1,129 +1,51 @@
 'use server'
 
-import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
-import { checkConflicts } from "./conflicts"
+import { authenticatedAction, authenticatedActionNoInput } from "@/lib/safe-action"
+import { ScheduleService } from "@/services/schedule"
+import {
+    GetShiftsSchema,
+    CreateShiftSchema,
+    UpdateShiftSchema,
+    DeleteShiftSchema
+} from "@/schemas/schedule"
 
-export async function getShifts(start: Date, end: Date) {
-    try {
-        const shifts = await prisma.shift.findMany({
-            where: {
-                startTime: {
-                    gte: start,
-                    lte: end
-                }
-            },
-            include: {
-                project: true,
-                crew: {
-                    include: {
-                        members: true
-                    }
-                },
-                employee: true,
-                assets: {
-                    include: {
-                        asset: true
-                    }
-                }
-            },
-            orderBy: { startTime: 'asc' }
-        })
-        return { success: true, data: shifts }
-    } catch (error) {
-        console.error("Failed to fetch shifts:", error)
-        return { success: false, error: "Failed to fetch shifts" }
+// getShifts doesn't take input in the original, but here we likely want Date inputs?
+// Original: export async function getShifts(start: Date, end: Date)
+// So we need a schema for it.
+export const getShifts = authenticatedAction(
+    GetShiftsSchema,
+    async ({ start, end }) => {
+        return await ScheduleService.getShifts(start, end)
     }
-}
+);
 
-export async function createShift(data: {
-    projectId: string;
-    crewId?: string;
-    employeeId?: string;
-    startTime: Date;
-    endTime: Date;
-    assetIds?: string[];
-    notes?: string;
-    force?: boolean;
-}) {
-    const session = await getServerSession(authOptions);
-    if (!session) return { success: false, error: 'Unauthorized' };
-
-    try {
-        // Check conflicts first unless forced
-        if (!data.force) {
-            const conflicts = await checkConflicts({
-                startTime: data.startTime,
-                endTime: data.endTime,
-                crewId: data.crewId,
-                employeeId: data.employeeId,
-                assetIds: data.assetIds
-            });
-
-            if (conflicts.length > 0) {
-                return { success: false, error: "Conflicts detected", conflicts };
-            }
+export const createShift = authenticatedAction(
+    CreateShiftSchema,
+    async (data) => {
+        const result = await ScheduleService.createShift(data)
+        if (result.shift) {
+            revalidatePath('/dashboard/dispatch')
         }
-
-        const shift = await prisma.shift.create({
-            data: {
-                projectId: data.projectId,
-                crewId: data.crewId,
-                employeeId: data.employeeId,
-                startTime: data.startTime,
-                endTime: data.endTime,
-                notes: data.notes,
-                assets: {
-                    create: data.assetIds?.map(id => ({
-                        assetId: id
-                    })) || []
-                }
-            }
-        })
-        revalidatePath('/dashboard/dispatch')
-        return { success: true, data: shift }
-    } catch (error) {
-        console.error("Failed to create shift:", error)
-        return { success: false, error: "Failed to create shift" }
+        return result
     }
-}
+);
 
-export async function updateShift(id: string, data: {
-    startTime?: Date;
-    endTime?: Date;
-    notes?: string;
-    status?: string;
-}) {
-    const session = await getServerSession(authOptions);
-    if (!session) return { success: false, error: 'Unauthorized' };
-
-    try {
-        const shift = await prisma.shift.update({
-            where: { id },
-            data
-        })
+export const updateShift = authenticatedAction(
+    UpdateShiftSchema,
+    async ({ id, ...data }) => {
+        const shift = await ScheduleService.updateShift(id, data)
         revalidatePath('/dashboard/dispatch')
-        return { success: true, data: shift }
-    } catch (error) {
-        console.error("Failed to update shift:", error)
-        return { success: false, error: "Failed to update shift" }
+        return shift
     }
-}
+);
 
-export async function deleteShift(id: string) {
-    const session = await getServerSession(authOptions);
-    if (!session) return { success: false, error: 'Unauthorized' };
-
-    try {
-        await prisma.shift.delete({
-            where: { id }
-        })
+export const deleteShift = authenticatedAction(
+    DeleteShiftSchema,
+    async ({ id }) => {
+        await ScheduleService.deleteShift(id)
         revalidatePath('/dashboard/dispatch')
         return { success: true }
-    } catch (error) {
-        console.error("Failed to delete shift:", error)
-        return { success: false, error: "Failed to delete shift" }
     }
-}
+);
+

@@ -30,7 +30,7 @@ export default async function EmployeeEditPage({ params }: { params: Promise<{ i
             ssn: formData.get("ssn") as string,
         };
 
-        await updateEmployee(id, data);
+        await updateEmployee({ id, data });
         redirect("/dashboard/labor");
     }
 

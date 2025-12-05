@@ -13,6 +13,7 @@ import { DamageForm } from "@/components/216d/DamageForm";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 interface FieldDashboardProps {
     userRole: "Foreman" | "Operator" | "Laborer";
@@ -25,6 +26,7 @@ interface FieldDashboardProps {
     employees?: any[];
     assets?: any[];
     projects?: any[];
+    activeTicketId?: string;
 }
 
 export function FieldDashboard({
@@ -37,7 +39,8 @@ export function FieldDashboard({
     currentUserId,
     employees = [],
     assets = [],
-    projects = []
+    projects = [],
+    activeTicketId
 }: FieldDashboardProps) {
     const [activeTab, setActiveTab] = useState("today");
     const [selectedAssetForInspection, setSelectedAssetForInspection] = useState<any>(null);
@@ -302,7 +305,7 @@ export function FieldDashboard({
                                     <CardContent>
                                         <RemarkForm
                                             projectId={projectId}
-                                            ticketId="CURRENT_TICKET_ID" // TODO: Fetch active ticket
+                                            ticketId={activeTicketId || ""}
                                             onClose={() => setShowRemarkForm(false)}
                                         />
                                     </CardContent>
@@ -314,7 +317,7 @@ export function FieldDashboard({
                                     <CardContent>
                                         <DamageForm
                                             projectId={projectId}
-                                            ticketId="CURRENT_TICKET_ID"
+                                            ticketId={activeTicketId || ""}
                                             onClose={() => setShowDamageForm(false)}
                                         />
                                     </CardContent>

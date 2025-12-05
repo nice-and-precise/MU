@@ -11,7 +11,7 @@ export default async function DispatchPage() {
     const end = endOfWeek(addWeeks(new Date(), 2), { weekStartsOn: 1 }); // Fetch 2 weeks buffer
 
     const [shiftsRes, crewsRes, employeesRes, projects] = await Promise.all([
-        getShifts(start, end),
+        getShifts({ start, end }),
         getCrews(),
         getEmployees(),
         prisma.project.findMany({ where: { status: { not: 'COMPLETED' } }, orderBy: { name: 'asc' } })

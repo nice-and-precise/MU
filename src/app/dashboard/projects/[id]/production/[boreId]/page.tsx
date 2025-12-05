@@ -7,11 +7,13 @@ import { ArrowLeft } from "lucide-react";
 
 export default async function RodLoggerPage({ params }: { params: Promise<{ id: string; boreId: string }> }) {
     const { id, boreId } = await params;
-    const bore = await getBoreDetails(boreId);
+    const result = await getBoreDetails({ id: boreId });
 
-    if (!bore) {
+    if (!result.data) {
         notFound();
     }
+
+    const bore = result.data;
 
     return (
         <div className="p-4 md:p-8 bg-slate-50 min-h-screen space-y-6">

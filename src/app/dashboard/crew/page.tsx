@@ -3,6 +3,7 @@ import { FieldDashboard } from "@/components/field/FieldDashboard";
 import { getAvailableCrewMembers } from "@/actions/employees";
 import { getAssets } from "@/actions/assets";
 import { getActiveProjects } from "@/actions/projects";
+import { getTickets } from "@/actions/tickets";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
@@ -12,7 +13,8 @@ export default async function CrewDashboard() {
 
     // Fetch data
     const { data: employees } = await getAvailableCrewMembers();
-    const { data: assets } = await getAssets();
+    const res = await getAssets();
+    const assets = res.success && res.data ? res.data : [];
     const { data: projects } = await getActiveProjects();
 
     // Assuming the crew is assigned to a specific project, or we pick the first active one for now
@@ -24,6 +26,10 @@ export default async function CrewDashboard() {
         latitude: 45.118,
         longitude: -95.042
     };
+
+    // Fetch active ticket for the project
+    const { data: tickets } = await getTickets({ projectId: currentProject.id, status: 'ACTIVE' });
+    const activeTicketId = tickets?.[0]?.id;
 
     return (
         <FieldDashboard
@@ -37,6 +43,7 @@ export default async function CrewDashboard() {
             employees={employees || []}
             assets={assets || []}
             projects={projects || []}
+            activeTicketId={activeTicketId}
         />
     );
 }

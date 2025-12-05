@@ -47,7 +47,7 @@ export default function RodPassForm({ bores }: { bores: any[] }) {
     const [lastPass, setLastPass] = useState<any>(null);
 
     const form = useForm<RodPassValues>({
-        resolver: zodResolver(rodPassSchema),
+        resolver: zodResolver(rodPassSchema) as any,
         defaultValues: {
             boreId: "",
             sequence: 1,

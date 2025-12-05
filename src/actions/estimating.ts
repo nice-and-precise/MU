@@ -1,301 +1,141 @@
 'use server';
 
-import { prisma } from '@/lib/prisma';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { EstimatingService } from '@/services/estimating';
+import {
+    CreateEstimateSchema,
+    CreateEstimateFromItemsSchema,
+    UpdateEstimateSchema,
+    CreateEstimateItemSchema,
+    UpdateLineItemSchema
+} from '@/schemas/estimating';
+import { authenticatedAction, authenticatedActionNoInput } from '@/lib/safe-action';
 import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
+
+// 🎓 ACADEMY LESSON: The Fortress Pattern
+// We are replacing the manual "check session -> check validation -> try/catch" pattern
+// with a declarative `authenticatedAction` wrapper.
+// This ensures every action is:
+// 1. Authenticated (Gatekeeper)
+// 2. Validated (Inspector)
+// 3. Safe from crashes (Scribe)
 
 // --- Estimate Actions ---
 
-export async function createEstimate(data: { name: string; customerName?: string; projectId?: string }) {
-    const session = await getServerSession(authOptions);
-    if (!session) return { success: false, error: 'Unauthorized' };
-
-    try {
-        console.log("Creating estimate with data:", data);
-        const estimate = await prisma.estimate.create({
-            data: {
-                name: data.name,
-                customerName: data.customerName,
-                projectId: data.projectId,
-                createdById: session.user.id,
-                status: 'DRAFT',
-            },
-        });
+export const createEstimate = authenticatedAction(
+    CreateEstimateSchema,
+    async (data, userId) => {
+        const estimate = await EstimatingService.createEstimate(userId, data);
         revalidatePath('/dashboard/estimating');
-        return { success: true, data: estimate };
-    } catch (error) {
-        console.error('Failed to create estimate:', error);
-        return { success: false, error: 'Failed to create estimate' };
+        return estimate;
     }
-}
+);
 
-export async function getEstimate(id: string) {
-    const session = await getServerSession(authOptions);
-    if (!session) return null;
+export const createEstimateFromItems = authenticatedAction(
+    CreateEstimateFromItemsSchema,
+    async (data, userId) => {
+        const estimate = await EstimatingService.createEstimateFromItems(userId, data);
+        revalidatePath('/dashboard/estimating');
+        return estimate;
+    }
+);
 
-    return await prisma.estimate.findUnique({
-        where: { id },
-        include: {
-            lines: {
-                orderBy: { lineNumber: 'asc' },
-            },
-            project: {
-                select: { name: true },
-            },
-            createdBy: {
-                select: { name: true },
-            },
-        },
-    });
-}
+// For getEstimate, we use a simple schema to validate the ID.
+// Note: In Server Components, you often fetch directly, but if this is used as an Action, this is safe.
+export const getEstimate = authenticatedAction(
+    z.string(),
+    async (id) => {
+        return await EstimatingService.getEstimate(id);
+    }
+);
 
-export async function updateEstimate(id: string, data: any) {
-    const session = await getServerSession(authOptions);
-    if (!session) return { success: false, error: 'Unauthorized' };
-
-    try {
-        const estimate = await prisma.estimate.update({
-            where: { id },
-            data,
-        });
+// 🎓 BRIDGE PATTERN:
+// The original `updateEstimate` took (id, data). 
+// Our `authenticatedAction` expects a single input object.
+// To keep the API clean but backward compatible if needed, we define the action with a combined schema.
+const updateEstimateAction = authenticatedAction(
+    z.object({
+        id: z.string(),
+        data: UpdateEstimateSchema
+    }),
+    async ({ id, data }) => {
+        const estimate = await EstimatingService.updateEstimate(id, data);
         revalidatePath(`/dashboard/estimating/${id}`);
-        return { success: true, data: estimate };
-    } catch (error) {
-        return { success: false, error: 'Failed to update estimate' };
+        return estimate;
     }
+);
+
+// We export a wrapper to match the original signature if strict compatibility is needed,
+// OR we can just export the new action. 
+// For this lesson, let's expose the cleaner API and assume the client adapts, 
+// but here is how we would bridge it:
+export async function updateEstimate(id: string, data: any) {
+    return updateEstimateAction({ id, data });
 }
 
 // --- Line Item Actions ---
 
-export async function addLineItem(estimateId: string, data: any) {
-    const session = await getServerSession(authOptions);
-    if (!session) return { success: false, error: 'Unauthorized' };
-
-    try {
-        // Get current max line number
-        const maxLine = await prisma.estimateLine.aggregate({
-            where: { estimateId },
-            _max: { lineNumber: true },
-        });
-        const nextLineNumber = (maxLine._max.lineNumber || 0) + 1;
-
-        // Calculate totals
-        const subtotal = data.quantity * data.unitCost;
-        const total = subtotal * (1 + (data.markup || 0));
-
-        await prisma.estimateLine.create({
-            data: {
-                estimateId,
-                lineNumber: nextLineNumber,
-                description: data.description,
-                quantity: data.quantity,
-                unit: data.unit,
-                unitCost: data.unitCost,
-                markup: data.markup || 0,
-                subtotal,
-                total,
-                // Optional cost breakdowns
-                laborCost: data.laborCost || 0,
-                equipmentCost: data.equipmentCost || 0,
-                materialCost: data.materialCost || 0,
-            },
-        });
-
-        await recalculateEstimateTotals(estimateId);
+export const addLineItem = authenticatedAction(
+    z.object({
+        estimateId: z.string(),
+        data: CreateEstimateItemSchema
+    }),
+    async ({ estimateId, data }) => {
+        await EstimatingService.addLineItem(estimateId, data);
         revalidatePath(`/dashboard/estimating/${estimateId}`);
         return { success: true };
-    } catch (error) {
-        console.error('Failed to add line item:', error);
-        return { success: false, error: 'Failed to add line item' };
     }
-}
+);
+
+// Original signature: updateLineItem(id, data)
+const updateLineItemAction = authenticatedAction(
+    z.object({
+        id: z.string(),
+        data: UpdateLineItemSchema.omit({ id: true }) // Schema has ID, but we pass it separately in the wrapper
+    }),
+    async ({ id, data }) => {
+        // We need to cast data to the partial input expected by service
+        const line = await EstimatingService.updateLineItem(id, data);
+        revalidatePath(`/dashboard/estimating/${line.estimateId}`);
+        return { success: true };
+    }
+);
 
 export async function updateLineItem(id: string, data: any) {
-    const session = await getServerSession(authOptions);
-    if (!session) return { success: false, error: 'Unauthorized' };
-
-    try {
-        // Calculate totals
-        const subtotal = data.quantity * data.unitCost;
-        const total = subtotal * (1 + (data.markup || 0));
-
-        const line = await prisma.estimateLine.update({
-            where: { id },
-            data: {
-                ...data,
-                subtotal,
-                total,
-            },
-        });
-
-        await recalculateEstimateTotals(line.estimateId);
-        revalidatePath(`/dashboard/estimating/${line.estimateId}`);
-        return { success: true };
-    } catch (error) {
-        return { success: false, error: 'Failed to update line item' };
-    }
+    return updateLineItemAction({ id, data });
 }
 
-export async function deleteLineItem(id: string) {
-    const session = await getServerSession(authOptions);
-    if (!session) return { success: false, error: 'Unauthorized' };
-
-    try {
-        const line = await prisma.estimateLine.delete({ where: { id } });
-        await recalculateEstimateTotals(line.estimateId);
+export const deleteLineItem = authenticatedAction(
+    z.string(),
+    async (id) => {
+        const line = await EstimatingService.deleteLineItem(id);
         revalidatePath(`/dashboard/estimating/${line.estimateId}`);
         return { success: true };
-    } catch (error) {
-        return { success: false, error: 'Failed to delete line item' };
     }
-}
+);
 
-export async function duplicateEstimate(id: string) {
-    const session = await getServerSession(authOptions);
-    if (!session) return { success: false, error: 'Unauthorized' };
-
-    try {
-        const original = await prisma.estimate.findUnique({
-            where: { id },
-            include: { lines: true }
-        });
-
-        if (!original) return { success: false, error: 'Estimate not found' };
-
-        const newEstimate = await prisma.estimate.create({
-            data: {
-                name: `${original.name} (Copy)`,
-                description: original.description,
-                customerName: original.customerName,
-                customerEmail: original.customerEmail,
-                customerPhone: original.customerPhone,
-                status: 'DRAFT',
-                createdById: session.user.id,
-                subtotal: original.subtotal,
-                markupPercent: original.markupPercent,
-                markupAmount: original.markupAmount,
-                taxPercent: original.taxPercent,
-                taxAmount: original.taxAmount,
-                total: original.total,
-                notes: original.notes,
-                terms: original.terms,
-                lines: {
-                    create: original.lines.map(line => ({
-                        lineNumber: line.lineNumber,
-                        description: line.description,
-                        quantity: line.quantity,
-                        unit: line.unit,
-                        unitCost: line.unitCost,
-                        laborCost: line.laborCost,
-                        equipmentCost: line.equipmentCost,
-                        materialCost: line.materialCost,
-                        subtotal: line.subtotal,
-                        markup: line.markup,
-                        total: line.total,
-                        costItemId: line.costItemId
-                    }))
-                }
-            }
-        });
-
+export const duplicateEstimate = authenticatedAction(
+    z.string(),
+    async (id, userId) => {
+        const newEstimate = await EstimatingService.duplicateEstimate(userId, id);
         revalidatePath('/dashboard/estimating');
-        return { success: true, data: newEstimate };
-    } catch (error) {
-        console.error('Failed to duplicate estimate:', error);
-        return { success: false, error: 'Failed to duplicate estimate' };
+        return newEstimate;
     }
-}
+);
 
-export async function convertEstimateToProject(id: string) {
-    const session = await getServerSession(authOptions);
-    if (!session) return { success: false, error: 'Unauthorized' };
-
-    try {
-        const estimate = await prisma.estimate.findUnique({
-            where: { id },
-            include: { lines: true }
-        });
-
-        if (!estimate) return { success: false, error: 'Estimate not found' };
-
-        // Create Project
-        const project = await prisma.project.create({
-            data: {
-                name: estimate.name,
-                description: estimate.description,
-                customerName: estimate.customerName,
-                budget: estimate.total,
-                status: 'PLANNING',
-                createdById: session.user.id,
-            }
-        });
-
-        // Link Estimate to Project
-        await prisma.estimate.update({
-            where: { id },
-            data: { projectId: project.id, status: 'APPROVED' }
-        });
-
-        // Create Bores from Line Items (Simple Heuristic)
-        // If line item description contains "Drill" or "Bore", create a Bore
-        const drillLines = estimate.lines.filter(l =>
-            l.description.toLowerCase().includes('drill') ||
-            l.description.toLowerCase().includes('bore')
-        );
-
-        for (const line of drillLines) {
-            await prisma.bore.create({
-                data: {
-                    projectId: project.id,
-                    name: `Bore from Line ${line.lineNumber}`,
-                    productMaterial: line.description, // e.g. "Drill 4-inch HDPE"
-                    totalLength: line.quantity, // Assuming quantity is LF
-                    status: 'PLANNED'
-                }
-            });
-        }
-
+export const convertEstimateToProject = authenticatedAction(
+    z.string(),
+    async (id, userId) => {
+        const project = await EstimatingService.convertEstimateToProject(userId, id);
         revalidatePath('/dashboard/projects');
-        return { success: true, data: project };
-    } catch (error) {
-        console.error('Failed to convert estimate:', error);
-        return { success: false, error: 'Failed to convert estimate' };
+        return project;
     }
-}
+);
 
 // --- Helper ---
 
-async function recalculateEstimateTotals(estimateId: string) {
-    const lines = await prisma.estimateLine.findMany({ where: { estimateId } });
-
-    const subtotal = lines.reduce((sum, line) => sum + line.subtotal, 0);
-    // We can support global markup/tax here if needed, for now just sum line totals
-    // Or if Estimate has global markup, apply it to subtotal.
-    // Let's assume Estimate.markupPercent applies to the whole subtotal if lines don't have individual markup,
-    // but our model has markup on lines. Let's sum the line totals for now.
-
-    const total = lines.reduce((sum, line) => sum + line.total, 0);
-    const markupAmount = total - subtotal;
-
-    await prisma.estimate.update({
-        where: { id: estimateId },
-        data: {
-            subtotal,
-            markupAmount,
-            total, // TODO: Add tax calculation if needed
-        },
-    });
-}
-
-export async function getCostItems() {
-    try {
-        const items = await prisma.costItem.findMany({
-            orderBy: { code: 'asc' }
-        });
-        return { success: true, data: items };
-    } catch (error) {
-        console.error('Failed to fetch cost items:', error);
-        return { success: false, error: 'Failed to fetch cost items' };
+export const getCostItems = authenticatedActionNoInput(
+    async () => {
+        return await EstimatingService.getCostItems();
     }
-}
+);

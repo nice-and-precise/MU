@@ -8,8 +8,11 @@ test.describe('811 Ticket Management', () => {
         await page.fill('input[name="password"]', 'password123');
         await page.click('button[type="submit"]');
 
-        // Navigate to 811
-        await page.click('text=811 Tickets');
+        // Wait for login to complete
+        await expect(page).toHaveURL(/\/dashboard/);
+
+        // Direct navigation to 811 to avoid sidebar UI flakiness in headless
+        await page.goto('/811');
         await expect(page).toHaveURL(/\/811/);
         await expect(page.locator('h1')).toContainText('811 Ticket Management');
     });

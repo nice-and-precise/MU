@@ -19,7 +19,7 @@ export function ShiftCard({ shift }: ShiftCardProps) {
     const handleStatusUpdate = async (newStatus: string) => {
         setLoading(true);
         try {
-            await updateShift(shift.id, { status: newStatus });
+            await updateShift({ id: shift.id, status: newStatus });
             setStatus(newStatus);
         } catch (error) {
             console.error(error);

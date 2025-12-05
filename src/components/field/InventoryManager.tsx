@@ -27,7 +27,7 @@ export function InventoryManager({ projectId, userId = "current-user" }: Invento
 
     async function loadInventory() {
         setLoading(true);
-        const res = await getInventory(projectId);
+        const res = await getInventory();
         if (res.success) {
             setInventory(res.data || []);
         }
@@ -48,7 +48,6 @@ export function InventoryManager({ projectId, userId = "current-user" }: Invento
                 quantity: Math.abs(quantity),
                 type: quantity < 0 ? 'USE' : 'RESTOCK',
                 projectId,
-                userId: userId,
                 notes: `Quick action via Field Dashboard`
             });
 

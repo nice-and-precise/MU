@@ -1,107 +1,56 @@
 'use server';
 
-import { prisma } from '@/lib/prisma';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
+import { authenticatedAction, authenticatedActionNoInput } from '@/lib/safe-action';
+import { EquipmentService } from '@/services/equipment';
+import {
+    CreateAssetSchema,
+    CreateMaintenanceLogSchema,
+    GetMaintenanceLogsSchema,
+    CreateUsageLogSchema
+} from '@/schemas/equipment';
 
 // --- Assets ---
 
-export async function createAsset(data: { name: string; type: string; model?: string; serialNumber?: string; status?: string }) {
-    const session = await getServerSession(authOptions);
-    if (!session) return { success: false, error: 'Unauthorized' };
-
-    try {
-        const asset = await prisma.asset.create({
-            data: {
-                name: data.name,
-                type: data.type,
-                model: data.model,
-                serialNumber: data.serialNumber,
-                status: data.status || 'AVAILABLE',
-            }
-        });
+export const createAsset = authenticatedAction(
+    CreateAssetSchema,
+    async (data) => {
+        const asset = await EquipmentService.createAsset(data);
         revalidatePath('/dashboard/equipment');
-        return { success: true, data: asset };
-    } catch (error) {
-        console.error('Failed to create asset:', error);
-        return { success: false, error: 'Failed to create asset' };
+        return asset;
     }
-}
+);
 
-export async function getAssets() {
-    const session = await getServerSession(authOptions);
-    if (!session) return [];
-    return await prisma.asset.findMany({ orderBy: { name: 'asc' } });
-}
+export const getAssets = authenticatedActionNoInput(async () => {
+    return await EquipmentService.getAssets();
+});
 
 // --- Maintenance ---
 
-export async function createMaintenanceLog(data: {
-    assetId: string;
-    date: Date;
-    type: string;
-    description: string;
-    cost: number;
-    performedBy?: string
-}) {
-    const session = await getServerSession(authOptions);
-    if (!session) return { success: false, error: 'Unauthorized' };
-
-    try {
-        const log = await prisma.maintenanceLog.create({
-            data: {
-                assetId: data.assetId,
-                date: data.date,
-                type: data.type,
-                description: data.description,
-                cost: data.cost,
-                performedBy: data.performedBy,
-            }
-        });
+export const createMaintenanceLog = authenticatedAction(
+    CreateMaintenanceLogSchema,
+    async (data) => {
+        const log = await EquipmentService.createMaintenanceLog(data);
         revalidatePath('/dashboard/equipment');
-        return { success: true, data: log };
-    } catch (error) {
-        console.error('Failed to create maintenance log:', error);
-        return { success: false, error: 'Failed to create maintenance log' };
+        return log;
     }
-}
+);
 
-export async function getMaintenanceLogs(assetId: string) {
-    const session = await getServerSession(authOptions);
-    if (!session) return [];
-    return await prisma.maintenanceLog.findMany({
-        where: { assetId },
-        orderBy: { date: 'desc' }
-    });
-}
+export const getMaintenanceLogs = authenticatedAction(
+    GetMaintenanceLogsSchema,
+    async ({ assetId }) => {
+        return await EquipmentService.getMaintenanceLogs(assetId);
+    }
+);
 
 // --- Usage ---
 
-export async function createUsageLog(data: {
-    assetId: string;
-    projectId: string;
-    date: Date;
-    hours: number;
-    notes?: string
-}) {
-    const session = await getServerSession(authOptions);
-    if (!session) return { success: false, error: 'Unauthorized' };
-
-    try {
-        const log = await prisma.equipmentUsage.create({
-            data: {
-                assetId: data.assetId,
-                projectId: data.projectId,
-                date: data.date,
-                hours: data.hours,
-                notes: data.notes,
-            }
-        });
+export const createUsageLog = authenticatedAction(
+    CreateUsageLogSchema,
+    async (data) => {
+        const log = await EquipmentService.createUsageLog(data);
         revalidatePath(`/dashboard/projects/${data.projectId}`);
-        return { success: true, data: log };
-    } catch (error) {
-        console.error('Failed to create usage log:', error);
-        return { success: false, error: 'Failed to create usage log' };
+        return log;
     }
-}
+);
+

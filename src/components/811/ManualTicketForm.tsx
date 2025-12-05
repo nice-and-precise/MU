@@ -45,9 +45,9 @@ const ticketSchema = z.object({
     nearestIntersection: z.string().optional(),
     gpsCoordinates: z.string().optional(),
     markingInstructions: z.string().optional(),
-    explosives: z.boolean().default(false),
-    tunneling: z.boolean().default(false),
-    rightOfWay: z.boolean().default(false),
+    explosives: z.boolean(),
+    tunneling: z.boolean(),
+    rightOfWay: z.boolean(),
     mapLink: z.string().url().optional().or(z.literal("")),
 });
 
@@ -62,7 +62,7 @@ export default function ManualTicketForm() {
     const [showMap, setShowMap] = useState(false);
 
     const form = useForm<TicketValues>({
-        resolver: zodResolver(ticketSchema),
+        resolver: zodResolver(ticketSchema) as any,
         defaultValues: {
             projectId: "",
             ticketNumber: "",
@@ -100,8 +100,9 @@ export default function ManualTicketForm() {
         if (!pasteContent) return;
         setIsParsing(true);
         try {
-            const parsed = await parseTicketEmail(pasteContent);
-            if (parsed) {
+            const res = await parseTicketEmail(pasteContent);
+            if (res.success && res.data) {
+                const parsed = res.data;
                 form.reset({
                     ...form.getValues(),
                     ticketNumber: parsed.ticketNumber || form.getValues().ticketNumber,
@@ -114,6 +115,8 @@ export default function ManualTicketForm() {
                     county: parsed.county || form.getValues().county,
                 });
                 toast.success("Parsed email content successfully");
+            } else {
+                toast.error(res.error || "Failed to parse email content");
             }
         } catch (e) {
             console.error(e);
@@ -123,15 +126,22 @@ export default function ManualTicketForm() {
         }
     };
 
-    const handleMapPolygon = (coords: [number, number][], center: [number, number], references: string[], dimensions: string[]) => {
+    const handleMapPolygon = (coords: [number, number][], center: [number, number], references: string[], dimensions: string[], instructions?: string) => {
         console.log('Polygon data:', coords);
 
         // Generate AMI
         import('@/lib/AMIGenerator').then(mod => {
             const ami = mod.generateAMI(dimensions, references);
             form.setValue("gpsCoordinates", JSON.stringify(coords));
-            form.setValue("markingInstructions", ami);
-            toast.success("Map data applied to form");
+
+            // Prefer WASM instructions if available, otherwise fallback to legacy AMI
+            if (instructions && instructions.length > 0) {
+                form.setValue("markingInstructions", instructions);
+                toast.success("Map data applied (MN 2026 Compliant)");
+            } else {
+                form.setValue("markingInstructions", ami);
+                toast.success("Map data applied");
+            }
         });
     };
 
@@ -171,14 +181,16 @@ export default function ManualTicketForm() {
             projectId: data.projectId || null,
         };
 
-        const result = await createTicket(ticketData);
+        const result = await createTicket(ticketData as any);
 
-        if (result.success) {
-            toast.success("Ticket created successfully");
-            router.push('/811');
-        } else {
-            toast.error(result.error || 'Failed to create ticket');
+        if (!result.success) {
+            toast.error((result as any).error || 'Failed to create ticket');
+            setLoading(false);
+            return;
         }
+
+        toast.success("Ticket created successfully");
+        router.push('/811');
         setLoading(false);
     };
 

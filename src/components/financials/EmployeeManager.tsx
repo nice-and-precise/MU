@@ -72,7 +72,7 @@ export function EmployeeManager({ initialEmployees }: EmployeeManagerProps) {
                         alert("Error creating employee");
                     }
                 } else if (selectedEmployeeId) {
-                    const res = await updateEmployee(selectedEmployeeId, formData);
+                    const res = await updateEmployee({ id: selectedEmployeeId, data: formData as any });
                     if (res.success) {
                         alert("Employee updated!");
                         window.location.reload();

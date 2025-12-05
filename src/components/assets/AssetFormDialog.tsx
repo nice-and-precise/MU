@@ -68,10 +68,10 @@ export function AssetFormDialog({ asset, trigger, open, onOpenChange }: AssetFor
         setLoading(true);
         try {
             if (isEdit && asset) {
-                await updateAsset(asset.id, data);
+                await updateAsset({ id: asset.id, data: data as any });
                 toast.success("Asset updated successfully");
             } else {
-                await createAsset(data);
+                await createAsset(data as any);
                 toast.success("Asset created successfully");
             }
             handleOpenChange(false);

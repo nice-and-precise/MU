@@ -77,7 +77,7 @@ export default async function DashboardLayout({
                 <div className="flex items-center gap-2">
                     <Sheet>
                         <SheetTrigger asChild>
-                            <Button variant="ghost" size="icon" className="text-white hover:bg-gray-700">
+                            <Button variant="ghost" size="icon" className="text-white hover:bg-gray-700" aria-label="Toggle navigation menu">
                                 <Menu className="h-6 w-6" />
                             </Button>
                         </SheetTrigger>

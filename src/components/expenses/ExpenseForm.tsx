@@ -40,7 +40,7 @@ export default function ExpenseForm({ projectId, onSuccess }: ExpenseFormProps) 
     const [loading, setLoading] = useState(false);
 
     const form = useForm<ExpenseValues>({
-        resolver: zodResolver(expenseSchema),
+        resolver: zodResolver(expenseSchema) as any,
         defaultValues: {
             date: new Date().toISOString().split('T')[0],
             category: '',

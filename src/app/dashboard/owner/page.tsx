@@ -12,7 +12,8 @@ import { ExpiringTicketsWidget } from "@/components/dashboard/ExpiringTicketsWid
 export default async function OwnerDashboard() {
     const stats = await getOwnerStats();
     const { data: employees } = await getAvailableCrewMembers();
-    const { data: assets } = await getAssets();
+    const res = await getAssets();
+    const assets = res.success && res.data ? res.data : [];
     const { data: projects } = await getActiveProjects();
 
     return (

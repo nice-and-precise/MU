@@ -36,7 +36,7 @@ export function LinearProgressBar({ projectId, totalLength, progressData }: Line
         setLoading(true);
         try {
             await addProgress({
-                project: { connect: { id: projectId } },
+                projectId,
                 startStation: Number(formData.startStation),
                 endStation: Number(formData.endStation),
                 status: formData.status,

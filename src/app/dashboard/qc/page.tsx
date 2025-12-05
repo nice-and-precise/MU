@@ -15,8 +15,22 @@ export default async function QCDashboard() {
     // For now, just pick the first project or all items
     // In a real app, this would be filtered by the selected project
     const currentProjectId = projects?.[0]?.id || "";
-    const punchItems = await getPunchList(currentProjectId);
-    const photos = await getProjectPhotos(currentProjectId);
+    // For dashboard, maybe we want all projects? Refactored action takes projectId.
+    // If we pass undefined/null it might fail validation if schema requires string.
+    // Schema: z.string().
+    // We need to fetch for all projects or iterating?
+    // Original code: getPunchList(currentProjectId)
+    // We need currentProjectId from somewhere.
+
+    // Check line 18 in original file from context?
+    // "const punchItems = await getPunchList(currentProjectId);"
+
+    // I will assume the page logic defines currentProjectId and just wrap the result.
+    const punchItemsRes = await getPunchList(currentProjectId);
+    const punchItems = punchItemsRes.data || [];
+
+    const photosRes = await getProjectPhotos(currentProjectId);
+    const photos = photosRes.data || [];
 
     return (
         <div className="p-6 space-y-6">

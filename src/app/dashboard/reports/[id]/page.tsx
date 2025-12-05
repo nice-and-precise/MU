@@ -7,30 +7,34 @@ import { getInventoryTransactions } from '@/actions/inventory';
 
 export default async function ReportDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = await params;
-    const report = await getReport(resolvedParams.id);
+    const reportRes = await getReport(resolvedParams.id);
 
-    if (!report) {
+    if (!reportRes.success || !reportRes.data) {
         notFound();
     }
+    const report = reportRes.data;
 
     // Fetch related data for the project and date
     const date = new Date(report.reportDate);
 
     // Safety
-    const safetyMeetings = await getSafetyMeetings(report.projectId);
+    const safetyMeetingsRes = await getSafetyMeetings(report.projectId);
+    const safetyMeetings = safetyMeetingsRes.data || [];
     const todaysMeetings = safetyMeetings.filter(m => new Date(m.date).toDateString() === date.toDateString());
 
-    const jsas = await getJSAs(report.projectId);
+    const jsasRes = await getJSAs(report.projectId);
+    const jsas = jsasRes.data || [];
     const todaysJSAs = jsas.filter(j => new Date(j.date).toDateString() === date.toDateString());
 
     // QC
-    const punchList = await getPunchList(report.projectId);
+    const punchListRes = await getPunchList(report.projectId);
+    const punchList = punchListRes.data || [];
     // Filter punch items created or updated today? Or just show open ones?
     // Let's show items created today for the report context
     const todaysPunchItems = punchList.filter(p => new Date(p.createdAt).toDateString() === date.toDateString());
 
     // Inventory
-    const inventoryRes = await getInventoryTransactions(report.projectId, date);
+    const inventoryRes = await getInventoryTransactions({ projectId: report.projectId, date });
     const todaysInventory = inventoryRes.success ? inventoryRes.data : [];
 
     // Employees & Assets for Dropdowns

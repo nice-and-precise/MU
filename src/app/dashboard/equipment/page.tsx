@@ -2,7 +2,8 @@ import { getAssets } from "@/actions/equipment";
 import AssetManager from "@/components/equipment/AssetManager";
 
 export default async function EquipmentPage() {
-    const assets = await getAssets();
+    const result = await getAssets();
+    const assets = result.data || [];
 
     return (
         <div className="p-8 space-y-8">

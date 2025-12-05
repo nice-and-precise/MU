@@ -5,12 +5,15 @@ import PhotoGallery from "@/components/qc/PhotoGallery";
 
 export default async function QCPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const projectId = id;
-    const [punchItems, photos, users] = await Promise.all([
-        getPunchList(projectId),
-        getProjectPhotos(projectId),
+
+    const [punchItemsRes, photosRes, users] = await Promise.all([
+        getPunchList(id),
+        getProjectPhotos(id),
         prisma.user.findMany({ orderBy: { name: 'asc' } })
     ]);
+
+    const punchItems = punchItemsRes.data || [];
+    const photos = photosRes.data || [];
 
     return (
         <div className="p-8 space-y-8">
@@ -21,10 +24,10 @@ export default async function QCPage({ params }: { params: Promise<{ id: string 
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-1">
-                    <PunchList projectId={projectId} items={punchItems} users={users} />
+                    <PunchList projectId={id} items={punchItems} users={users} />
                 </div>
                 <div className="lg:col-span-2">
-                    <PhotoGallery photos={photos} projectId={projectId} />
+                    <PhotoGallery photos={photos} projectId={id} />
                 </div>
             </div>
         </div>

@@ -6,5 +6,5 @@ edition = "2024"
 [dependencies]
 
 [workspace]
-members = ["engine", "subterra"]
+members = ["engine", "subterra", "mn_compliance_core"]
 resolver = "2"

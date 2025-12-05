@@ -58,13 +58,16 @@ export default function DailyReportEditForm({
     const handleSave = async () => {
         setLoading(true);
         try {
-            await updateDailyReport(report.id, {
-                crew: JSON.stringify(crew),
-                production: JSON.stringify(production),
-                materials: JSON.stringify(materials),
-                equipment: JSON.stringify(equipment),
-                notes,
-                weather
+            await updateDailyReport({
+                id: report.id,
+                data: {
+                    crew: JSON.stringify(crew),
+                    production: JSON.stringify(production),
+                    materials: JSON.stringify(materials),
+                    equipment: JSON.stringify(equipment),
+                    notes,
+                    weather
+                }
             });
             router.refresh();
             alert('Report saved successfully');

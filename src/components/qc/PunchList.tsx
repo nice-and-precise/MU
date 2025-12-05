@@ -48,7 +48,8 @@ export default function PunchList({ projectId, items, users }: PunchListProps) {
 
     const toggleStatus = async (item: any) => {
         const newStatus = item.status === 'OPEN' ? 'COMPLETED' : 'OPEN';
-        await updatePunchItem(item.id, {
+        await updatePunchItem({
+            id: item.id,
             status: newStatus,
             completedAt: newStatus === 'COMPLETED' ? new Date() : undefined
         });

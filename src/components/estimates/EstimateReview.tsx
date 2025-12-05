@@ -5,6 +5,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Trash2, Save } from "lucide-react";
+import { createEstimateFromItems } from "@/actions/estimating";
+import { toast } from "sonner";
 
 interface EstimateItem {
     id: string;
@@ -37,10 +39,39 @@ export function EstimateReview({ initialData }: { initialData: EstimateItem[] })
         setItems((prev) => prev.filter((item) => item.id !== id));
     };
 
-    const handleSave = () => {
-        console.log("Saving items:", items);
-        // TODO: API call to save to database
-        alert("Estimate saved!");
+    const handleSave = async () => {
+        try {
+            const name = prompt("Enter a name for this estimate:", "Imported Estimate");
+            if (!name) return;
+
+            toast.loading("Saving estimate...");
+            const result = await createEstimateFromItems({
+                name,
+                items: items.map(item => ({
+                    description: item.description,
+                    quantity: item.quantity,
+                    unit: item.unit,
+                    unitCost: item.unitCost,
+                    markup: 0, // Default
+                    laborCost: 0,
+                    equipmentCost: 0,
+                    materialCost: 0
+                }))
+            });
+
+            if (result.success) {
+                toast.dismiss();
+                toast.success("Estimate saved successfully!");
+                // Optional: Redirect to the new estimate
+                // window.location.href = `/dashboard/estimating/${result.data.id}`;
+            } else {
+                toast.dismiss();
+                toast.error("Failed to save estimate: " + result.error);
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("An unexpected error occurred");
+        }
     };
 
     return (

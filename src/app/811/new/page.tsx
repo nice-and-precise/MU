@@ -1,4 +1,11 @@
-import ManualTicketForm from '@/components/811/ManualTicketForm';
+'use client';
+
+import dynamic from 'next/dynamic';
+
+const ManualTicketForm = dynamic(() => import('@/components/811/ManualTicketForm'), {
+    ssr: false,
+    loading: () => <div className="p-8 text-center">Loading form...</div>
+});
 
 export default function NewTicketPage() {
     return (

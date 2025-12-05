@@ -7,12 +7,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default async function SafetyPage({ params }: { params: Promise<{ id: string }> }) {
     const { id: projectId } = await params;
-    const [meetings, jsas, inspections, assets] = await Promise.all([
+    const [meetingsRes, jsasRes, inspectionsRes, assetsRes] = await Promise.all([
         getSafetyMeetings(projectId),
         getJSAs(projectId),
         getInspections(projectId),
         getAssets()
     ]);
+
+    const meetings = meetingsRes.data || [];
+    const jsas = jsasRes.data || [];
+    const inspections = inspectionsRes.data || [];
+    const assets = assetsRes.data || [];
 
     return (
         <div className="p-8 space-y-8">
