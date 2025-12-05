@@ -1,5 +1,5 @@
 import { getPunchList, getProjectPhotos } from "@/actions/qc";
-import { prisma } from "@/lib/prisma"; // Direct access for users list
+import { prisma } from "@/lib/prisma";
 import PunchList from "@/components/qc/PunchList";
 import PhotoGallery from "@/components/qc/PhotoGallery";
 
@@ -16,17 +16,23 @@ export default async function QCPage({ params }: { params: Promise<{ id: string 
     const photos = photosRes.data || [];
 
     return (
-        <div className="p-8 space-y-8">
-            <div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Quality Control</h1>
-                <p className="text-gray-500">Punch list and project documentation.</p>
+        <div className="container mx-auto p-6 md:p-8 space-y-8 max-w-7xl">
+            <div className="flex flex-col gap-2">
+                <h1 className="text-3xl md:text-4xl font-bold font-heading text-primary tracking-tight">
+                    Quality Control
+                </h1>
+                <p className="text-muted-foreground text-lg max-w-2xl">
+                    Manage punch list items, track issues, and document project progress with photos.
+                </p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-1">
+            <hr className="my-6 border-border" />
+
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                <div className="xl:col-span-1 order-2 xl:order-1 h-full">
                     <PunchList projectId={id} items={punchItems} users={users} />
                 </div>
-                <div className="lg:col-span-2">
+                <div className="xl:col-span-2 order-1 xl:order-2 h-full">
                     <PhotoGallery photos={photos} projectId={id} />
                 </div>
             </div>

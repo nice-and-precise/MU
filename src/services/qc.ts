@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/prisma';
-import { CreatePunchItemSchema, UpdatePunchItemSchema, CreatePhotoSchema } from '@/schemas/qc';
+import { CreatePunchItemSchema, UpdatePunchItemSchema, CreatePhotoSchema, DeletePhotoSchema } from '@/schemas/qc';
 import { z } from 'zod';
+
+type CreatePhotoInput = z.infer<typeof CreatePhotoSchema>;
 
 export const QCService = {
     getPunchList: async (projectId: string) => {
@@ -28,10 +30,19 @@ export const QCService = {
         return await prisma.punchItem.update({
             where: { id },
             data: {
+                title: data.title,
+                description: data.description,
+                priority: data.priority,
                 status: data.status,
                 assigneeId: data.assigneeId,
                 completedAt: data.completedAt,
             }
+        });
+    },
+
+    deletePunchItem: async (id: string) => {
+        return await prisma.punchItem.delete({
+            where: { id }
         });
     },
 
@@ -43,7 +54,7 @@ export const QCService = {
         });
     },
 
-    createPhoto: async (data: z.infer<typeof CreatePhotoSchema>, userId: string) => {
+    createPhoto: async (data: CreatePhotoInput, userId: string) => {
         return await prisma.photo.create({
             data: {
                 projectId: data.projectId,
@@ -54,6 +65,12 @@ export const QCService = {
                 mimeType: 'image/jpeg',
                 uploadedById: userId
             }
+        });
+    },
+
+    deletePhoto: async (id: string) => {
+        return await prisma.photo.delete({
+            where: { id }
         });
     }
 };

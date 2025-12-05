@@ -4,6 +4,12 @@
 **Current Phase:** Phase 16 (Final Polish & Handover)
 
 ## Recent Accomplishments
+-   **Phase 22 Complete (QC Enhancements):**
+    -   **Filtering:** Added Status/Priority/Assignee filters to Punch Lists.
+    -   **Metrics:** Implemented "open item" and "high priority" counters in QC Dashboard.
+    -   **Photo Gallery:** Added Lightbox view and Delete functionality with confirmation.
+    -   **Refactoring:** Completed "Fortress Pattern" implementation for server actions (`financials`, `time`, `projects`, `qc`).
+
 -   **Phase 21 Complete (Deployment Fixes):**
     -   **Deployment Strategy:** Increased WASM cache limits to support large compliance modules.
     -   **Data Integrity:** Fixed TypeScript errors in `EmployeeService` relations.

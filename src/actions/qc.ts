@@ -6,8 +6,10 @@ import { QCService } from '@/services/qc';
 import {
     CreatePunchItemSchema,
     UpdatePunchItemSchema,
+    DeletePunchItemSchema,
     GetProjectPhotosSchema,
-    CreatePhotoSchema
+    CreatePhotoSchema,
+    DeletePhotoSchema
 } from '@/schemas/qc';
 
 // --- Punch List ---
@@ -33,6 +35,15 @@ export const updatePunchItem = authenticatedAction(
     }
 );
 
+export const deletePunchItem = authenticatedAction(
+    DeletePunchItemSchema,
+    async ({ id, projectId }) => {
+        await QCService.deletePunchItem(id);
+        revalidatePath(`/dashboard/projects/${projectId}/qc`);
+        return { success: true };
+    }
+);
+
 export const getPunchList = authenticatedAction(
     GetProjectPhotosSchema, // Reusing schema as it is just projectId string
     async (projectId) => {
@@ -55,6 +66,15 @@ export const createPhoto = authenticatedAction(
         const photo = await QCService.createPhoto(data, userId);
         revalidatePath(`/dashboard/projects/${data.projectId}/qc`);
         return photo;
+    }
+);
+
+export const deletePhoto = authenticatedAction(
+    DeletePhotoSchema,
+    async ({ id, projectId }) => {
+        await QCService.deletePhoto(id);
+        revalidatePath(`/dashboard/projects/${projectId}/qc`);
+        return { success: true };
     }
 );
 

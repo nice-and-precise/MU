@@ -1,16 +1,15 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('811 Ticket Management', () => {
-    test('should allow navigating to 811 dashboard', async ({ page }) => {
-        // Login
+    test.beforeEach(async ({ page }) => {
         await page.goto('/login');
         await page.fill('input[name="email"]', 'owner@midwestunderground.com');
         await page.fill('input[name="password"]', 'password123');
         await page.click('button[type="submit"]');
-
-        // Wait for login to complete
         await expect(page).toHaveURL(/\/dashboard/);
+    });
 
+    test('should allow navigating to 811 dashboard', async ({ page }) => {
         // Direct navigation to 811 to avoid sidebar UI flakiness in headless
         await page.goto('/811');
         await expect(page).toHaveURL(/\/811/);
