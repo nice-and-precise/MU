@@ -14,6 +14,12 @@ export default withAuth(
             return NextResponse.redirect(new URL("/dashboard", req.url));
         }
 
+        // CREW Restrictions
+        const restrictedForCrew = ["/dashboard/admin", "/financials", "/billing"];
+        if (token?.role === "CREW" && restrictedForCrew.some(p => path.startsWith(p))) {
+            return NextResponse.redirect(new URL("/dashboard", req.url));
+        }
+
         // Crew can access their dashboard, but maybe restrict others?
         // For now, assume basic role checks are sufficient.
     },

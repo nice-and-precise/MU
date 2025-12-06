@@ -49,18 +49,18 @@ export const NAV_ITEMS: NavGroup[] = [
     {
         title: "Resources",
         items: [
-            { title: "Dispatch", href: "/dashboard/crew", icon: Users },
-            { title: "Labor", href: "/dashboard/labor", icon: Users },
-            { title: "Inventory", href: "/dashboard/inventory", icon: Package },
-            { title: "Assets", href: "/dashboard/assets", icon: Package },
+            { title: "Dispatch", href: "/dashboard/crew", icon: Users, roles: ["OWNER", "SUPER"] },
+            { title: "Labor", href: "/dashboard/labor", icon: Users }, // Everyone needs to see time
+            { title: "Inventory", href: "/dashboard/inventory", icon: Package, roles: ["OWNER", "SUPER"] },
+            { title: "Assets", href: "/dashboard/assets", icon: Package, roles: ["OWNER", "SUPER"] },
         ]
     },
     {
         title: "Administration",
         items: [
-            { title: "Estimating", href: "/dashboard/estimating", icon: Calculator },
-            { title: "Command Center", href: "/dashboard/admin", icon: LayoutDashboard, roles: ["OWNER"] },
-            { title: "Settings", href: "/dashboard/settings", icon: Settings, roles: ["OWNER"] },
+            { title: "Estimating", href: "/dashboard/estimating", icon: Calculator, roles: ["OWNER", "SUPER"] },
+            { title: "Command Center", href: "/dashboard/admin", icon: LayoutDashboard, roles: ["OWNER", "SUPER"] },
+            { title: "Settings", href: "/dashboard/settings", icon: Settings, roles: ["OWNER", "SUPER"] },
         ]
     }
 ];

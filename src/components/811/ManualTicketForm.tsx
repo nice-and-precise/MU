@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2 } from 'lucide-react';
+import { HelpTrigger } from "@/components/help/HelpTrigger";
 
 // Dynamically import map to avoid SSR issues with Leaflet
 const WhiteLineMap = dynamic(() => import('./WhiteLineMap'), { ssr: false, loading: () => <div className="h-[400px] bg-slate-100 animate-pulse rounded-lg" /> });
@@ -55,6 +56,7 @@ const ticketSchema = z.object({
 type TicketValues = z.infer<typeof ticketSchema>;
 
 export default function ManualTicketForm() {
+
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [projects, setProjects] = useState<{ id: string; name: string }[]>([]);
@@ -202,8 +204,9 @@ export default function ManualTicketForm() {
 
     return (
         <Card className="w-full max-w-4xl mx-auto">
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle>New 811 Ticket (Manual Entry)</CardTitle>
+                <HelpTrigger helpKey="manual-ticket" label="Compliance Help" />
             </CardHeader>
             <CardContent>
                 {/* Paste Area */}
@@ -576,7 +579,7 @@ export default function ManualTicketForm() {
                         </div>
                     </form>
                 </Form>
-            </CardContent>
+            </CardContent >
         </Card >
     );
 }

@@ -14,15 +14,27 @@ export const getUserPreferences = authenticatedActionNoInput(
 export const updateUserPreferences = authenticatedAction(
     z.object({
         notifications: z.boolean().optional(),
-        // Add other preferences here as needed
+        onboardingComplete: z.boolean().optional(),
+        phone: z.string().optional(),
+        theme: z.string().optional(),
     }),
-    async (preferences, userId) => {
-        // Fetch existing to merge
-        const existing = await UserService.getUserPreferences(userId);
-        const merged = { ...existing, ...preferences };
+    async (data, userId) => {
+        // Separate actual table fields from JSON preferences
+        const { phone, ...prefs } = data;
 
-        await UserService.updateUserPreferences(userId, merged);
+        // Fetch existing to merge preferences
+        const existingUser = await UserService.getUserPreferences(userId); // returns user with preferences
+
+        // Parse existing preferences if they are stored as string (UserService usually parses)
+        // Assume service returns parsed or we handle it in service?
+        // UserService.getUserPreferences returns { preferences: JsonValue, ... }
+        // Let's rely on UserService.updateUserPreferences handling the merge or do it here.
+        // Actually UserService.updateUserPreferences takes (userId, data). 
+        // Let's look at the Service.
+
+        // Simpler approach: Pass everything to service and let it handle splitting.
+        await UserService.updateUserPreferences(userId, { phone, preferences: prefs });
         revalidatePath('/dashboard/settings');
-        return merged;
+        return { success: true };
     }
 );

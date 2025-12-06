@@ -4,18 +4,24 @@ export class UserService {
     static async getUserPreferences(userId: string) {
         const user = await prisma.user.findUnique({
             where: { id: userId },
-            select: { preferences: true }
+            select: { preferences: true, phone: true }
         });
-        return user?.preferences ? JSON.parse(user.preferences) : {};
+        return {
+            phone: user?.phone,
+            ...(user?.preferences ? JSON.parse(user.preferences) : {})
+        };
     }
 
-    static async updateUserPreferences(userId: string, preferences: any) {
+    static async updateUserPreferences(userId: string, data: { phone?: string, preferences?: any }) {
+        const { phone, preferences } = data;
+
         return await prisma.user.update({
             where: { id: userId },
             data: {
-                preferences: JSON.stringify(preferences)
+                ...(phone !== undefined && { phone }),
+                ...(preferences && { preferences: JSON.stringify(preferences) })
             },
-            select: { preferences: true }
+            select: { preferences: true, phone: true }
         });
     }
 }
