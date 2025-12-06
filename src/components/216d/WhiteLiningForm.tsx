@@ -127,27 +127,45 @@ export function WhiteLiningForm({ projectId, onComplete }: WhiteLiningFormProps)
                             </div>
                         )}
 
-                        <div className="flex items-center justify-center w-full">
-                            <label
-                                htmlFor="dropzone-file"
-                                className="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-300 dark:border-slate-700 border-dashed rounded-lg cursor-pointer bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors"
-                            >
-                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                    <Camera className="w-8 h-8 mb-4 text-slate-400" />
-                                    <p className="mb-2 text-sm text-slate-500 dark:text-slate-400">
-                                        <span className="font-semibold text-emerald-600 hover:text-emerald-500">Click to upload</span> or drag and drop
-                                    </p>
-                                    <p className="text-xs text-slate-400 dark:text-slate-500">PNG, JPG (MAX. 5MB)</p>
-                                </div>
+                        {/* Dual Action Buttons */}
+                        <div className="grid grid-cols-2 gap-4">
+                            {/* Camera Button - Triggers Environment Camera */}
+                            <div className="relative">
                                 <input
-                                    id="dropzone-file"
+                                    id="camera-input"
+                                    type="file"
+                                    className="hidden"
+                                    accept="image/*"
+                                    capture="environment" // Forces rear camera
+                                    onChange={handleFileChange}
+                                />
+                                <Label
+                                    htmlFor="camera-input"
+                                    className="flex flex-col items-center justify-center p-6 border-2 border-slate-300 dark:border-slate-700 border-dashed rounded-lg cursor-pointer bg-slate-50 dark:bg-slate-900/50 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:border-emerald-500 transition-all group h-32"
+                                >
+                                    <Camera className="w-8 h-8 mb-2 text-slate-400 group-hover:text-emerald-500" />
+                                    <span className="text-sm font-semibold text-slate-600 dark:text-slate-300 group-hover:text-emerald-600">Take Photo</span>
+                                </Label>
+                            </div>
+
+                            {/* Upload Button - Triggers File Picker */}
+                            <div className="relative">
+                                <input
+                                    id="upload-input"
                                     type="file"
                                     className="hidden"
                                     multiple
                                     accept="image/*"
                                     onChange={handleFileChange}
                                 />
-                            </label>
+                                <Label
+                                    htmlFor="upload-input"
+                                    className="flex flex-col items-center justify-center p-6 border-2 border-slate-300 dark:border-slate-700 border-dashed rounded-lg cursor-pointer bg-slate-50 dark:bg-slate-900/50 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-500 transition-all group h-32"
+                                >
+                                    <Upload className="w-8 h-8 mb-2 text-slate-400 group-hover:text-blue-500" />
+                                    <span className="text-sm font-semibold text-slate-600 dark:text-slate-300 group-hover:text-blue-600">Upload File</span>
+                                </Label>
+                            </div>
                         </div>
                     </div>
 
