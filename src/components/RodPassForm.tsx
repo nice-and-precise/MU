@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { addRodPass, getLastRodPass } from "@/actions/drilling";
-import { Loader2, ArrowRight, History } from "lucide-react";
+import { Loader2, ArrowRight, History, WifiOff } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { OfflineQueue } from "@/lib/offline-queue";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
@@ -81,6 +82,41 @@ export default function RodPassForm({ bores }: { bores: any[] }) {
     const onSubmit = async (data: RodPassValues) => {
         setLoading(true);
         try {
+            if (!navigator.onLine) {
+                // Offline Mode
+                OfflineQueue.add('ROD_PASS', {
+                    boreId: data.boreId,
+                    length: data.linearFeet,
+                    pitch: data.pitch || 0,
+                    azimuth: data.azimuth || 0,
+                    viscosity: data.viscosity,
+                    mudWeight: data.mudWeight,
+                    reamerDiameter: data.reamerDiameter,
+                    steeringToolFace: data.steeringToolFace,
+                    notes: data.notes
+                });
+                toast.success("Offline: Rod Pass saved to queue!");
+
+                // Reset non-sticky fields manually since we don't have server response
+                form.reset({
+                    boreId: data.boreId,
+                    sequence: data.sequence + 1,
+                    linearFeet: 10,
+                    notes: "",
+                    // Keep telemetry empty for new reading
+                    pitch: undefined,
+                    azimuth: undefined,
+                    depth: undefined,
+                    viscosity: undefined,
+                    mudWeight: undefined,
+                    steeringToolFace: undefined,
+                    reamerDiameter: undefined,
+                });
+                // Optimistic UI update for last pass could go here, but keeping it simple for now
+                setLoading(false);
+                return;
+            }
+
             const res = await addRodPass({
                 boreId: data.boreId,
                 length: data.linearFeet,

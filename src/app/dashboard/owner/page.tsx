@@ -1,6 +1,7 @@
 import { getOwnerStats } from "@/actions/dashboard";
 
 import { ProductionChart } from "@/components/dashboard/ProductionChart";
+import { QuickActions } from "@/components/dashboard/QuickActions";
 import { MapPin } from "lucide-react";
 import Link from "next/link";
 import { CrewDispatch } from "@/components/financials/CrewDispatch";
@@ -28,6 +29,7 @@ export default async function OwnerDashboard() {
 
     return (
         <div className="p-8 space-y-8">
+            <QuickActions role="OWNER" />
             <div className="border-b border-gray-200 pb-4">
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white uppercase tracking-tight">OWNERSHIP DASHBOARD</h1>
                 {/* Rebuild Trigger */}

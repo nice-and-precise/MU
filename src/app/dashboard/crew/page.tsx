@@ -1,5 +1,6 @@
 
 import { FieldDashboard } from "@/components/field/FieldDashboard";
+import { QuickActions } from "@/components/dashboard/QuickActions";
 import { getAvailableCrewMembers } from "@/actions/employees";
 import { getAssets } from "@/actions/assets";
 import { getActiveProjects } from "@/actions/projects";
@@ -32,18 +33,21 @@ export default async function CrewDashboard() {
     const activeTicketId = tickets?.[0]?.id;
 
     return (
-        <FieldDashboard
-            userRole={userRole}
-            projectId={currentProject.id}
-            projectName={currentProject.name}
-            projectAddress={currentProject.location || "Unknown Location"}
-            projectLat={currentProject.latitude || 0}
-            projectLong={currentProject.longitude || 0}
-            currentUserId={session?.user?.id || ""}
-            employees={employees || []}
-            assets={assets || []}
-            projects={projects || []}
-            activeTicketId={activeTicketId}
-        />
+        <div className="p-4 md:p-8">
+            <QuickActions role={userRole} />
+            <FieldDashboard
+                userRole={userRole}
+                projectId={currentProject.id}
+                projectName={currentProject.name}
+                projectAddress={currentProject.location || "Unknown Location"}
+                projectLat={currentProject.latitude || 0}
+                projectLong={currentProject.longitude || 0}
+                currentUserId={session?.user?.id || ""}
+                employees={employees || []}
+                assets={assets || []}
+                projects={projects || []}
+                activeTicketId={activeTicketId}
+            />
+        </div>
     );
 }

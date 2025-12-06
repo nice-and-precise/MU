@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, WifiOff } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { OfflineQueue } from "@/lib/offline-queue";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
@@ -51,6 +52,14 @@ export default function DailyReportForm({ projects }: { projects: any[] }) {
     const onSubmit = async (data: FormValues) => {
         setLoading(true);
         try {
+            if (!navigator.onLine) {
+                OfflineQueue.add('DAILY_REPORT', data);
+                toast.success("Offline: Report saved to drafts queue.");
+                router.push("/dashboard/reports");
+                router.refresh();
+                return;
+            }
+
             const { createDailyReport } = await import("@/actions/reports");
             await createDailyReport(data);
             toast.success("Daily report created successfully");

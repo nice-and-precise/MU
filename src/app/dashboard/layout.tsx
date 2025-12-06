@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { LogOut, User, Menu } from "lucide-react";
+import { LogOut, User, Menu, PenTool, FileText, PlusCircle } from "lucide-react";
 import { NAV_ITEMS } from "@/config/nav";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { Toaster } from "sonner";
 import { UserService } from "@/services/user";
 import { UserOnboarding } from "@/components/onboarding/UserOnboarding";
 import { HelpProvider } from "@/components/help/HelpContext";
+import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 
 export default async function DashboardLayout({
     children,
@@ -34,6 +35,25 @@ export default async function DashboardLayout({
             </div>
 
             <nav className="flex-1 px-4 space-y-6 mt-6 overflow-y-auto">
+                {/* Mobile Favorites */}
+                <div className="md:hidden mb-6">
+                    <p className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Favorites</p>
+                    <div className="grid grid-cols-3 gap-2 px-1">
+                        <Link href="/dashboard/rod-pass" className="flex flex-col items-center justify-center p-3 bg-gray-700/50 hover:bg-gray-700 rounded-lg text-center transition-colors">
+                            <PenTool className="h-5 w-5 mb-1 text-blue-400" />
+                            <span className="text-[10px] text-gray-300 font-medium">Log Rod</span>
+                        </Link>
+                        <Link href="/dashboard/reports/new" className="flex flex-col items-center justify-center p-3 bg-gray-700/50 hover:bg-gray-700 rounded-lg text-center transition-colors">
+                            <FileText className="h-5 w-5 mb-1 text-green-400" />
+                            <span className="text-[10px] text-gray-300 font-medium">Daily Rep</span>
+                        </Link>
+                        <Link href="/dashboard/qc" className="flex flex-col items-center justify-center p-3 bg-gray-700/50 hover:bg-gray-700 rounded-lg text-center transition-colors">
+                            <PlusCircle className="h-5 w-5 mb-1 text-orange-400" />
+                            <span className="text-[10px] text-gray-300 font-medium">Punch</span>
+                        </Link>
+                    </div>
+                </div>
+
                 {NAV_ITEMS.map((group, i) => {
                     // Filter groups by role if defined
                     if (group.roles && !group.roles.includes(userRole)) return null;
@@ -87,6 +107,7 @@ export default async function DashboardLayout({
     return (
         <HelpProvider>
             <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col md:flex-row">
+                <InstallPrompt />
                 <UserOnboarding user={fullUser as any} />
 
                 {/* Mobile Top Bar */}

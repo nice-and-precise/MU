@@ -6,7 +6,7 @@ import { BigButton } from "@/components/ui/BigButton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UserCog, Briefcase, MapPin, Plus, Save, Loader2, Key } from "lucide-react";
+import { UserCog, Briefcase, MapPin, Plus, Save, Loader2, Key, Camera } from "lucide-react";
 import { updateEmployee, createEmployee, createSystemUser } from "@/actions/employees";
 import { Employee, Crew, CrewMember, User } from "@prisma/client";
 
@@ -120,7 +120,18 @@ export function EmployeeManager({ initialEmployees }: EmployeeManagerProps) {
                                 <SelectItem value="new" className="text-green-600 font-bold">+ Create New Employee</SelectItem>
                                 {employees.map(e => (
                                     <SelectItem key={e.id} value={e.id}>
-                                        {e.firstName} {e.lastName} ({e.role})
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-8 w-8 rounded-full bg-slate-200 overflow-hidden flex-shrink-0">
+                                                {e.photoUrl ? (
+                                                    <img src={e.photoUrl} alt="Avatar" className="h-full w-full object-cover" />
+                                                ) : (
+                                                    <div className="h-full w-full flex items-center justify-center bg-slate-300 text-xs font-bold text-slate-600">
+                                                        {e.firstName?.[0]}{e.lastName?.[0]}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <span>{e.firstName} {e.lastName} ({e.role})</span>
+                                        </div>
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -132,11 +143,32 @@ export function EmployeeManager({ initialEmployees }: EmployeeManagerProps) {
 
                             {/* Personal Info */}
                             <div className="space-y-4 p-4 border rounded-lg bg-secondary/10">
-                                <div className="flex items-center gap-2 font-bold text-lg">
-                                    <UserCog className="h-5 w-5" />
-                                    Personal Information
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2 font-bold text-lg">
+                                        <UserCog className="h-5 w-5" />
+                                        Personal Information
+                                    </div>
+                                    {/* Profile Avatar */}
+                                    <div className="h-16 w-16 rounded-full bg-slate-200 border-2 border-white shadow-sm overflow-hidden relative group">
+                                        {formData.photoUrl ? (
+                                            <img src={formData.photoUrl} alt="Profile" className="object-cover w-full h-full" />
+                                        ) : (
+                                            <UserCog className="h-8 w-8 text-gray-400 m-auto absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                                        )}
+                                    </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2 col-span-2">
+                                        <Label>Profile Photo URL</Label>
+                                        <div className="flex gap-2">
+                                            <Input
+                                                value={formData.photoUrl || ""}
+                                                onChange={e => handleChange("photoUrl", e.target.value)}
+                                                placeholder="https://example.com/photo.jpg"
+                                            />
+                                            {/* Future: Add file upload button here */}
+                                        </div>
+                                    </div>
                                     <div className="space-y-2">
                                         <Label>First Name</Label>
                                         <Input value={formData.firstName || ""} onChange={e => handleChange("firstName", e.target.value)} />
