@@ -55,9 +55,9 @@ export function GsocTicketForm({ projectId, onComplete }: GsocTicketFormProps) {
     };
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>File GSOC Ticket</CardTitle>
+        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
+            <CardHeader className="bg-slate-50 dark:bg-slate-900/50">
+                <CardTitle className="text-xl">File GSOC Ticket</CardTitle>
                 <CardDescription>
                     Enter the ticket details confirmed by Gopher State One Call.
                 </CardDescription>
@@ -66,13 +66,14 @@ export function GsocTicketForm({ projectId, onComplete }: GsocTicketFormProps) {
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label htmlFor="ticketNumber">Ticket Number</Label>
+                            <Label htmlFor="ticketNumber" className="text-slate-900 dark:text-slate-100 font-medium">Ticket Number</Label>
                             <Input
                                 id="ticketNumber"
                                 placeholder="e.g. 2501010001"
                                 value={ticketNumber}
                                 onChange={(e) => setTicketNumber(e.target.value)}
                                 required
+                                className="bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:ring-emerald-500"
                             />
                         </div>
                         <div className="space-y-2">
@@ -92,13 +93,14 @@ export function GsocTicketForm({ projectId, onComplete }: GsocTicketFormProps) {
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="filedAt">Filed At (Confirmation Time)</Label>
+                        <Label htmlFor="filedAt" className="text-slate-900 dark:text-slate-100 font-medium">Filed At (Confirmation Time)</Label>
                         <Input
                             id="filedAt"
                             type="datetime-local"
                             value={filedAt}
                             onChange={handleDateChange}
                             required
+                            className="bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:ring-emerald-500"
                         />
                     </div>
 

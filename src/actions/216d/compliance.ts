@@ -69,6 +69,7 @@ export const createWhiteLining = authenticatedAction(
                 capturedByUserId: userId,
                 fieldDescription: description,
                 isOverMarked,
+                photoUrls: JSON.stringify(data.photoUrls || []),
             },
         });
 

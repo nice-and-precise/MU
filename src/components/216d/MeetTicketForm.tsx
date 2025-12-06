@@ -100,9 +100,9 @@ export function MeetTicketForm({ projectId, ticketId, onComplete }: MeetTicketFo
     };
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Schedule Meet & Submit Documentation</CardTitle>
+        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
+            <CardHeader className="bg-slate-50 dark:bg-slate-900/50">
+                <CardTitle className="text-xl">Schedule Meet & Submit Documentation</CardTitle>
                 <CardDescription>
                     Required for projects {'>'} 1 mile. Captures attendees and agreements per 216D.04 Subd.1b.
                 </CardDescription>
@@ -112,22 +112,24 @@ export function MeetTicketForm({ projectId, ticketId, onComplete }: MeetTicketFo
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label htmlFor="meetTime">Meet Date & Time</Label>
+                            <Label htmlFor="meetTime" className="text-slate-900 dark:text-slate-100 font-medium">Meet Date & Time</Label>
                             <Input
                                 id="meetTime"
                                 type="datetime-local"
                                 value={meetTime}
                                 onChange={handleDateChange}
                                 required
+                                className="bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:ring-emerald-500"
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="location">Meet Location</Label>
+                            <Label htmlFor="location" className="text-slate-900 dark:text-slate-100 font-medium">Meet Location</Label>
                             <Input
                                 id="location"
                                 placeholder="e.g. Intersection of 5th & Main"
                                 value={location}
                                 onChange={(e) => setLocation(e.target.value)}
+                                className="bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:ring-emerald-500"
                             />
                         </div>
                     </div>
@@ -200,11 +202,12 @@ export function MeetTicketForm({ projectId, ticketId, onComplete }: MeetTicketFo
                     </div>
 
                     <div className="space-y-2">
-                        <Label>Agreement Notes / Diagram URL</Label>
+                        <Label className="text-slate-900 dark:text-slate-100 font-medium">Agreement Notes / Diagram URL</Label>
                         <Textarea
                             placeholder="Summary of agreements, marking instructions, or link to diagram..."
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
+                            className="bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:ring-emerald-500 min-h-[100px]"
                         />
                     </div>
 

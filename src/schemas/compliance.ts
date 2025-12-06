@@ -14,6 +14,7 @@ export const CreateWhiteLiningSchema = z.object({
     ticketId: z.string().optional(), // Can be null/undefined if creating drafted ticket
     description: z.string().min(1, "Description is required"),
     isOverMarked: z.boolean().default(false),
+    photoUrls: z.array(z.string()).optional().default([]),
 });
 
 export const MeetAttendeeSchema = z.object({
