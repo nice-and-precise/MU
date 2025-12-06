@@ -293,62 +293,116 @@ export default function RodPlanningGrid() {
                         </div>
                     )}
                 </CardHeader>
-                <CardContent className="flex-1 overflow-auto p-0">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[40px]">#</TableHead>
-                                <TableHead className="w-[60px]">Len</TableHead>
-                                <TableHead className="w-[60px]">Pitch</TableHead>
-                                <TableHead className="w-[60px]">Azi</TableHead>
-                                <TableHead className="w-[80px]">Pull (lb)</TableHead>
-                                <TableHead className="w-[80px]">P_max</TableHead>
-                                <TableHead className="w-[40px]"></TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {rods.map((rod, i) => (
-                                <TableRow key={rod.id}>
-                                    <TableCell className="p-2 text-center">{i + 1}</TableCell>
-                                    <TableCell className="p-1">
+                <CardContent className="flex-1 overflow-auto p-0 md:bg-white bg-slate-100">
+                    {/* Desktop Table */}
+                    <div className="hidden md:block">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="w-[40px]">#</TableHead>
+                                    <TableHead className="w-[60px]">Len</TableHead>
+                                    <TableHead className="w-[60px]">Pitch</TableHead>
+                                    <TableHead className="w-[60px]">Azi</TableHead>
+                                    <TableHead className="w-[80px]">Pull (lb)</TableHead>
+                                    <TableHead className="w-[80px]">P_max</TableHead>
+                                    <TableHead className="w-[40px]"></TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {rods.map((rod, i) => (
+                                    <TableRow key={rod.id}>
+                                        <TableCell className="p-2 text-center">{i + 1}</TableCell>
+                                        <TableCell className="p-1">
+                                            <Input
+                                                type="number"
+                                                value={rod.length}
+                                                onChange={(e) => updateRod(i, 'length', parseFloat(e.target.value))}
+                                                className="h-7 w-full px-1 text-center"
+                                            />
+                                        </TableCell>
+                                        <TableCell className="p-1">
+                                            <Input
+                                                type="number"
+                                                value={rod.pitch}
+                                                onChange={(e) => updateRod(i, 'pitch', parseFloat(e.target.value))}
+                                                className="h-7 w-full px-1 text-center"
+                                            />
+                                        </TableCell>
+                                        <TableCell className="p-1">
+                                            <Input
+                                                type="number"
+                                                value={rod.azimuth}
+                                                onChange={(e) => updateRod(i, 'azimuth', parseFloat(e.target.value))}
+                                                className="h-7 w-full px-1 text-center"
+                                            />
+                                        </TableCell>
+                                        <TableCell className="p-2 text-xs font-mono text-blue-600 font-bold text-right">
+                                            {rod.pullback ? Math.round(rod.pullback).toLocaleString() : '-'}
+                                        </TableCell>
+                                        <TableCell className="p-2 text-xs font-mono text-purple-600 font-bold text-right">
+                                            {rod.pMax ? Math.round(rod.pMax).toLocaleString() : '-'}
+                                        </TableCell>
+                                        <TableCell className="p-1">
+                                            <Button variant="ghost" size="icon" className="h-7 w-7 text-red-500" onClick={() => removeRod(i)}>
+                                                <Trash2 className="w-3 h-3" />
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
+
+                    {/* Mobile Rod Cards */}
+                    <div className="md:hidden space-y-2 p-2">
+                        {rods.map((rod, i) => (
+                            <div key={rod.id} className="bg-white p-3 rounded-lg shadow-sm border space-y-2">
+                                <div className="flex justify-between items-center border-b pb-1 mb-1">
+                                    <span className="font-bold text-sm text-slate-700">Rod #{i + 1}</span>
+                                    <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400" onClick={() => removeRod(i)}>
+                                        <Trash2 className="w-3 h-3" />
+                                    </Button>
+                                </div>
+                                <div className="grid grid-cols-3 gap-2">
+                                    <div>
+                                        <label className="text-[10px] uppercase text-muted-foreground font-bold">Length</label>
                                         <Input
                                             type="number"
                                             value={rod.length}
                                             onChange={(e) => updateRod(i, 'length', parseFloat(e.target.value))}
-                                            className="h-7 w-full px-1 text-center"
+                                            className="h-8 shadow-none"
                                         />
-                                    </TableCell>
-                                    <TableCell className="p-1">
+                                    </div>
+                                    <div>
+                                        <label className="text-[10px] uppercase text-muted-foreground font-bold">Pitch</label>
                                         <Input
                                             type="number"
                                             value={rod.pitch}
                                             onChange={(e) => updateRod(i, 'pitch', parseFloat(e.target.value))}
-                                            className="h-7 w-full px-1 text-center"
+                                            className="h-8 shadow-none"
                                         />
-                                    </TableCell>
-                                    <TableCell className="p-1">
+                                    </div>
+                                    <div>
+                                        <label className="text-[10px] uppercase text-muted-foreground font-bold">Azimuth</label>
                                         <Input
                                             type="number"
                                             value={rod.azimuth}
                                             onChange={(e) => updateRod(i, 'azimuth', parseFloat(e.target.value))}
-                                            className="h-7 w-full px-1 text-center"
+                                            className="h-8 shadow-none"
                                         />
-                                    </TableCell>
-                                    <TableCell className="p-2 text-xs font-mono text-blue-600 font-bold text-right">
-                                        {rod.pullback ? Math.round(rod.pullback).toLocaleString() : '-'}
-                                    </TableCell>
-                                    <TableCell className="p-2 text-xs font-mono text-purple-600 font-bold text-right">
-                                        {rod.pMax ? Math.round(rod.pMax).toLocaleString() : '-'}
-                                    </TableCell>
-                                    <TableCell className="p-1">
-                                        <Button variant="ghost" size="icon" className="h-7 w-7 text-red-500" onClick={() => removeRod(i)}>
-                                            <Trash2 className="w-3 h-3" />
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+                                    </div>
+                                </div>
+                                <div className="flex justify-between items-center pt-1 text-xs">
+                                    <div className="text-blue-600">
+                                        Pull: <span className="font-mono font-bold">{rod.pullback ? Math.round(rod.pullback).toLocaleString() : '-'}</span>
+                                    </div>
+                                    <div className="text-purple-600">
+                                        P_max: <span className="font-mono font-bold">{rod.pMax ? Math.round(rod.pMax).toLocaleString() : '-'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </CardContent>
             </Card>
 

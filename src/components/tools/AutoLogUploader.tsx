@@ -34,7 +34,7 @@ export default function AutoLogUploader() {
         <div className="p-4 bg-gray-900 rounded-lg border border-gray-700">
             <h3 className="text-lg font-bold text-neon-blue mb-1">Auto-Log (OCR)</h3>
             <p className="text-xs text-gray-400 mb-4">Upload a photo of your drill log to automatically digitize it.</p>
-            <div className="flex gap-4 mb-4">
+            <div className="flex flex-col md:flex-row gap-4 mb-4">
                 <input
                     type="file"
                     onChange={handleFileChange}
@@ -43,12 +43,12 @@ export default function AutoLogUploader() {
                         file:rounded-full file:border-0
                         file:text-sm file:font-semibold
                         file:bg-neon-blue file:text-black
-                        hover:file:bg-blue-400"
+                        hover:file:bg-blue-400 mb-2 md:mb-0"
                 />
                 <button
                     onClick={handleUpload}
                     disabled={uploading || !file}
-                    className="px-4 py-2 bg-neon-green text-black font-bold rounded disabled:opacity-50"
+                    className="px-4 py-2 bg-neon-green text-black font-bold rounded disabled:opacity-50 w-full md:w-auto"
                 >
                     {uploading ? 'Scanning...' : 'Upload & Parse'}
                 </button>

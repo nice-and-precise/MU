@@ -177,8 +177,8 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
                             <span className="text-xs font-medium text-muted-foreground bg-slate-100 px-2 py-1 rounded-full">{crewMembers.length} Assigned</span>
                         </div>
 
-                        <div className="flex gap-2 items-end bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border dark:border-slate-700">
-                            <div className="flex-1 space-y-2">
+                        <div className="flex flex-col md:flex-row gap-2 items-end bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border dark:border-slate-700">
+                            <div className="w-full md:flex-1 space-y-2">
                                 <Label className="text-xs uppercase text-muted-foreground font-bold">Employee</Label>
                                 <Select value={selectedEmployeeId} onValueChange={setSelectedEmployeeId}>
                                     <SelectTrigger className="bg-white dark:bg-slate-950">
@@ -191,7 +191,7 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="w-1/3 space-y-2">
+                            <div className="w-full md:w-1/3 space-y-2">
                                 <Label className="text-xs uppercase text-muted-foreground font-bold">Role</Label>
                                 <Select value={selectedRole} onValueChange={setSelectedRole}>
                                     <SelectTrigger className="bg-white dark:bg-slate-950">
@@ -206,7 +206,9 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <BigButton icon={UserPlus} onClick={addMember} className="py-2 h-10" label="" fullWidth={false} />
+                            <div className="w-full md:w-auto">
+                                <BigButton icon={UserPlus} onClick={addMember} className="py-2 h-10 w-full md:w-auto" label="" fullWidth={false} />
+                            </div>
                         </div>
 
                         <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
@@ -249,8 +251,8 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
                                 <span className="text-xs font-medium text-muted-foreground bg-slate-100 px-2 py-1 rounded-full">{selectedAssets.length} Assigned</span>
                             </div>
 
-                            <div className="flex gap-2 items-end bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border dark:border-slate-700">
-                                <div className="flex-1 space-y-2">
+                            <div className="flex flex-col md:flex-row gap-2 items-end bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border dark:border-slate-700">
+                                <div className="w-full md:flex-1 space-y-2">
                                     <Label className="text-xs uppercase text-muted-foreground font-bold">Asset</Label>
                                     <Select value={selectedAssetId} onValueChange={setSelectedAssetId}>
                                         <SelectTrigger className="bg-white dark:bg-slate-950">
@@ -263,7 +265,7 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                <div className="w-1/3">
+                                <div className="w-full md:w-1/3">
                                     <BigButton icon={UserPlus} onClick={addAsset} className="py-2 h-10 w-full" label="" fullWidth={false} />
                                 </div>
                             </div>

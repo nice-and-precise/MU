@@ -168,36 +168,44 @@ export default function DailyReportEditForm({
                         </CardHeader>
                         <CardContent className="space-y-2">
                             {crew.map((member, idx) => (
-                                <div key={idx} className="flex gap-2 items-center">
-                                    <Select value={member.employeeId} onValueChange={val => {
-                                        const newCrew = [...crew]; newCrew[idx].employeeId = val;
-                                        // Auto-set role if possible, or just keep default
-                                        const emp = employees.find(e => e.id === val);
-                                        if (emp) newCrew[idx].role = emp.role;
-                                        setCrew(newCrew);
-                                    }} disabled={isApproved}>
-                                        <SelectTrigger className="flex-1"><SelectValue placeholder="Select Employee" /></SelectTrigger>
-                                        <SelectContent>
-                                            {employees.map(e => (
-                                                <SelectItem key={e.id} value={e.id}>{e.firstName} {e.lastName}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <Input type="number" placeholder="Hours" className="w-24" value={member.hours} onChange={e => {
-                                        const newCrew = [...crew]; newCrew[idx].hours = Number(e.target.value); setCrew(newCrew);
-                                    }} disabled={isApproved} />
-                                    <Select value={member.role} onValueChange={val => {
-                                        const newCrew = [...crew]; newCrew[idx].role = val; setCrew(newCrew);
-                                    }} disabled={isApproved}>
-                                        <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Foreman">Foreman</SelectItem>
-                                            <SelectItem value="Operator">Operator</SelectItem>
-                                            <SelectItem value="Labor">Labor</SelectItem>
-                                            <SelectItem value="Driver">Driver</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    {!isApproved && <Button size="icon" variant="ghost" onClick={() => removeCrew(idx)}><Trash2 className="w-4 h-4 text-red-500" /></Button>}
+                                <div key={idx} className="flex flex-col md:flex-row gap-2 md:items-center border p-3 rounded-lg md:border-0 md:p-0 bg-slate-50 md:bg-transparent">
+                                    <div className="w-full md:flex-1">
+                                        <Select value={member.employeeId} onValueChange={val => {
+                                            const newCrew = [...crew]; newCrew[idx].employeeId = val;
+                                            // Auto-set role if possible, or just keep default
+                                            const emp = employees.find(e => e.id === val);
+                                            if (emp) newCrew[idx].role = emp.role;
+                                            setCrew(newCrew);
+                                        }} disabled={isApproved}>
+                                            <SelectTrigger><SelectValue placeholder="Select Employee" /></SelectTrigger>
+                                            <SelectContent>
+                                                {employees.map(e => (
+                                                    <SelectItem key={e.id} value={e.id}>{e.firstName} {e.lastName}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="flex gap-2 w-full md:w-auto">
+                                        <div className="flex-1 md:w-24">
+                                            <Input type="number" placeholder="Hours" value={member.hours} onChange={e => {
+                                                const newCrew = [...crew]; newCrew[idx].hours = Number(e.target.value); setCrew(newCrew);
+                                            }} disabled={isApproved} />
+                                        </div>
+                                        <div className="flex-1 md:w-40">
+                                            <Select value={member.role} onValueChange={val => {
+                                                const newCrew = [...crew]; newCrew[idx].role = val; setCrew(newCrew);
+                                            }} disabled={isApproved}>
+                                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="Foreman">Foreman</SelectItem>
+                                                    <SelectItem value="Operator">Operator</SelectItem>
+                                                    <SelectItem value="Labor">Labor</SelectItem>
+                                                    <SelectItem value="Driver">Driver</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        {!isApproved && <Button size="icon" variant="ghost" onClick={() => removeCrew(idx)} className="shrink-0"><Trash2 className="w-4 h-4 text-red-500" /></Button>}
+                                    </div>
                                 </div>
                             ))}
                         </CardContent>
@@ -211,21 +219,27 @@ export default function DailyReportEditForm({
                         </CardHeader>
                         <CardContent className="space-y-2">
                             {equipment.map((eq, idx) => (
-                                <div key={idx} className="flex gap-2 items-center">
-                                    <Select value={eq.assetId} onValueChange={val => {
-                                        const newEq = [...equipment]; newEq[idx].assetId = val; setEquipment(newEq);
-                                    }} disabled={isApproved}>
-                                        <SelectTrigger className="flex-1"><SelectValue placeholder="Select Asset" /></SelectTrigger>
-                                        <SelectContent>
-                                            {assets.map(a => (
-                                                <SelectItem key={a.id} value={a.id}>{a.name} ({a.type})</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <Input type="number" placeholder="Hours" className="w-24" value={eq.hours} onChange={e => {
-                                        const newEq = [...equipment]; newEq[idx].hours = Number(e.target.value); setEquipment(newEq);
-                                    }} disabled={isApproved} />
-                                    {!isApproved && <Button size="icon" variant="ghost" onClick={() => removeEquipment(idx)}><Trash2 className="w-4 h-4 text-red-500" /></Button>}
+                                <div key={idx} className="flex flex-col md:flex-row gap-2 md:items-center border p-3 rounded-lg md:border-0 md:p-0 bg-slate-50 md:bg-transparent">
+                                    <div className="w-full md:flex-1">
+                                        <Select value={eq.assetId} onValueChange={val => {
+                                            const newEq = [...equipment]; newEq[idx].assetId = val; setEquipment(newEq);
+                                        }} disabled={isApproved}>
+                                            <SelectTrigger><SelectValue placeholder="Select Asset" /></SelectTrigger>
+                                            <SelectContent>
+                                                {assets.map(a => (
+                                                    <SelectItem key={a.id} value={a.id}>{a.name} ({a.type})</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="flex gap-2 w-full md:w-auto">
+                                        <div className="flex-1 md:w-24">
+                                            <Input type="number" placeholder="Hours" value={eq.hours} onChange={e => {
+                                                const newEq = [...equipment]; newEq[idx].hours = Number(e.target.value); setEquipment(newEq);
+                                            }} disabled={isApproved} />
+                                        </div>
+                                        {!isApproved && <Button size="icon" variant="ghost" onClick={() => removeEquipment(idx)} className="shrink-0"><Trash2 className="w-4 h-4 text-red-500" /></Button>}
+                                    </div>
                                 </div>
                             ))}
                         </CardContent>
@@ -239,29 +253,33 @@ export default function DailyReportEditForm({
                         </CardHeader>
                         <CardContent className="space-y-2">
                             {production.map((log, idx) => (
-                                <div key={idx} className="flex gap-2 items-center">
-                                    <Select value={log.activity} onValueChange={val => {
-                                        const newProd = [...production]; newProd[idx].activity = val; setProduction(newProd);
-                                    }} disabled={isApproved}>
-                                        <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Drill">Drill</SelectItem>
-                                            <SelectItem value="Pilot">Pilot</SelectItem>
-                                            <SelectItem value="Ream">Ream</SelectItem>
-                                            <SelectItem value="Pull">Pull</SelectItem>
-                                            <SelectItem value="Setup">Setup</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <Input type="number" placeholder="LF" className="w-24" value={log.lf} onChange={e => {
-                                        const newProd = [...production]; newProd[idx].lf = Number(e.target.value); setProduction(newProd);
-                                    }} disabled={isApproved} />
-                                    <Input type="number" placeholder="Pitch" className="w-24" value={log.pitch} onChange={e => {
-                                        const newProd = [...production]; newProd[idx].pitch = Number(e.target.value); setProduction(newProd);
-                                    }} disabled={isApproved} />
-                                    <Input type="number" placeholder="Azimuth" className="w-24" value={log.azimuth} onChange={e => {
-                                        const newProd = [...production]; newProd[idx].azimuth = Number(e.target.value); setProduction(newProd);
-                                    }} disabled={isApproved} />
-                                    {!isApproved && <Button size="icon" variant="ghost" onClick={() => removeProduction(idx)}><Trash2 className="w-4 h-4 text-red-500" /></Button>}
+                                <div key={idx} className="flex flex-col md:flex-row gap-2 md:items-center border p-3 rounded-lg md:border-0 md:p-0 bg-slate-50 md:bg-transparent">
+                                    <div className="w-full md:w-40">
+                                        <Select value={log.activity} onValueChange={val => {
+                                            const newProd = [...production]; newProd[idx].activity = val; setProduction(newProd);
+                                        }} disabled={isApproved}>
+                                            <SelectTrigger><SelectValue /></SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="Drill">Drill</SelectItem>
+                                                <SelectItem value="Pilot">Pilot</SelectItem>
+                                                <SelectItem value="Ream">Ream</SelectItem>
+                                                <SelectItem value="Pull">Pull</SelectItem>
+                                                <SelectItem value="Setup">Setup</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-2 flex-1 w-full md:w-auto md:flex">
+                                        <Input type="number" placeholder="LF" className="w-full md:w-24" value={log.lf} onChange={e => {
+                                            const newProd = [...production]; newProd[idx].lf = Number(e.target.value); setProduction(newProd);
+                                        }} disabled={isApproved} />
+                                        <Input type="number" placeholder="Pitch" className="w-full md:w-24" value={log.pitch} onChange={e => {
+                                            const newProd = [...production]; newProd[idx].pitch = Number(e.target.value); setProduction(newProd);
+                                        }} disabled={isApproved} />
+                                        <Input type="number" placeholder="Azi" className="w-full md:w-24" value={log.azimuth} onChange={e => {
+                                            const newProd = [...production]; newProd[idx].azimuth = Number(e.target.value); setProduction(newProd);
+                                        }} disabled={isApproved} />
+                                    </div>
+                                    {!isApproved && <Button size="icon" variant="ghost" onClick={() => removeProduction(idx)} className="self-end md:self-center shrink-0"><Trash2 className="w-4 h-4 text-red-500" /></Button>}
                                 </div>
                             ))}
                         </CardContent>
@@ -275,21 +293,27 @@ export default function DailyReportEditForm({
                         </CardHeader>
                         <CardContent className="space-y-2">
                             {materials.map((mat, idx) => (
-                                <div key={idx} className="flex gap-2 items-center">
-                                    <Select value={mat.inventoryItemId} onValueChange={val => {
-                                        const newMat = [...materials]; newMat[idx].inventoryItemId = val; setMaterials(newMat);
-                                    }} disabled={isApproved}>
-                                        <SelectTrigger className="flex-1"><SelectValue placeholder="Select Item" /></SelectTrigger>
-                                        <SelectContent>
-                                            {inventoryItems.map(item => (
-                                                <SelectItem key={item.id} value={item.id}>{item.name} ({item.unit})</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <Input type="number" placeholder="Qty" className="w-32" value={mat.quantity} onChange={e => {
-                                        const newMat = [...materials]; newMat[idx].quantity = Number(e.target.value); setMaterials(newMat);
-                                    }} disabled={isApproved} />
-                                    {!isApproved && <Button size="icon" variant="ghost" onClick={() => removeMaterial(idx)}><Trash2 className="w-4 h-4 text-red-500" /></Button>}
+                                <div key={idx} className="flex flex-col md:flex-row gap-2 md:items-center border p-3 rounded-lg md:border-0 md:p-0 bg-slate-50 md:bg-transparent">
+                                    <div className="w-full md:flex-1">
+                                        <Select value={mat.inventoryItemId} onValueChange={val => {
+                                            const newMat = [...materials]; newMat[idx].inventoryItemId = val; setMaterials(newMat);
+                                        }} disabled={isApproved}>
+                                            <SelectTrigger><SelectValue placeholder="Select Item" /></SelectTrigger>
+                                            <SelectContent>
+                                                {inventoryItems.map(item => (
+                                                    <SelectItem key={item.id} value={item.id}>{item.name} ({item.unit})</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="flex gap-2 w-full md:w-auto">
+                                        <div className="flex-1 md:w-32">
+                                            <Input type="number" placeholder="Qty" value={mat.quantity} onChange={e => {
+                                                const newMat = [...materials]; newMat[idx].quantity = Number(e.target.value); setMaterials(newMat);
+                                            }} disabled={isApproved} />
+                                        </div>
+                                        {!isApproved && <Button size="icon" variant="ghost" onClick={() => removeMaterial(idx)} className="shrink-0"><Trash2 className="w-4 h-4 text-red-500" /></Button>}
+                                    </div>
                                 </div>
                             ))}
                         </CardContent>
