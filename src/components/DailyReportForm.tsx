@@ -8,6 +8,7 @@ import { OfflineQueue } from "@/lib/offline-queue";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
+import { DailyReportTour } from "@/components/daily-reports/DailyReportTour";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -76,12 +77,24 @@ export default function DailyReportForm({ projects }: { projects: any[] }) {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 bg-card p-6 rounded-xl shadow-sm border border-border">
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 flex items-start gap-3 justify-between">
+                    <div className="flex items-start gap-3">
+                        <div className="bg-blue-100 dark:bg-blue-800 p-1 rounded-full shrink-0">
+                            <span className="text-blue-600 dark:text-blue-300 text-xs font-bold px-2">OFFICE IMPACT</span>
+                        </div>
+                        <p className="text-sm text-blue-800 dark:text-blue-200">
+                            Approving this Daily Report creates timecards and equipment usage for payroll and costs.
+                        </p>
+                    </div>
+                    <DailyReportTour />
+                </div>
+
                 <FormField
                     control={form.control}
                     name="projectId"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Project</FormLabel>
+                            <FormLabel required>Project</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl>
                                     <SelectTrigger>
@@ -106,7 +119,7 @@ export default function DailyReportForm({ projects }: { projects: any[] }) {
                     name="reportDate"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Date</FormLabel>
+                            <FormLabel required>Date</FormLabel>
                             <FormControl>
                                 <Input type="date" {...field} />
                             </FormControl>

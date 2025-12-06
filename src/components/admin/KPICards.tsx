@@ -13,12 +13,13 @@ interface KPICardsProps {
         totalEmployees: number;
         laborCostPerHour?: number;
         laborCostPerFoot?: number;
+        qcOpenLast7Days?: number;
     };
 }
 
 export function KPICards({ stats }: KPICardsProps) {
     return (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6">
             <Card className="bg-white dark:bg-slate-900 border-l-4 border-l-blue-500 shadow-sm">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium text-muted-foreground">Active Projects</CardTitle>
@@ -56,6 +57,19 @@ export function KPICards({ stats }: KPICardsProps) {
                     <div className="text-2xl font-bold text-slate-900 dark:text-white">{stats.activeTickets}</div>
                     <p className="text-xs text-muted-foreground">
                         Requires Attention
+                    </p>
+                </CardContent>
+            </Card>
+
+            <Card className="bg-white dark:bg-slate-900 border-l-4 border-l-red-500 shadow-sm">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-muted-foreground">New QC Items (7d)</CardTitle>
+                    <AlertTriangle className="h-4 w-4 text-red-500" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{stats.qcOpenLast7Days || 0}</div>
+                    <p className="text-xs text-muted-foreground">
+                        Open items from this week
                     </p>
                 </CardContent>
             </Card>

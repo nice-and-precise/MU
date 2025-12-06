@@ -34,6 +34,19 @@ export async function getDashboardStatsService() {
     const dailyLaborCost = totalHourlyCost * 10; // 10 hour day
     const laborCostPerFoot = estimatedDailyProduction > 0 ? dailyLaborCost / estimatedDailyProduction : 0;
 
+    // Calculate QC/Punch List Trends
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const qcOpenLast7Days = await prisma.punchItem.count({
+        where: {
+            status: 'OPEN',
+            createdAt: {
+                gte: sevenDaysAgo
+            }
+        }
+    });
+
     return {
         activeProjects,
         activeTickets,
@@ -42,7 +55,8 @@ export async function getDashboardStatsService() {
         activeCrews,
         totalEmployees: employees,
         laborCostPerHour: totalHourlyCost,
-        laborCostPerFoot: laborCostPerFoot
+        laborCostPerFoot: laborCostPerFoot,
+        qcOpenLast7Days
     };
 }
 

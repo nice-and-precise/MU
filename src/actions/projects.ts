@@ -18,3 +18,10 @@ export const getProject = authenticatedAction(
         return await ProjectService.getProject(id);
     }
 );
+
+export const getProjectTimeline = authenticatedAction(
+    z.string(),
+    async (id) => {
+        return await ProjectService.getProjectTimeline(id);
+    }
+);

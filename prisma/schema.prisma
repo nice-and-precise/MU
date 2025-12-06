@@ -14,6 +14,7 @@ model User {
   name                  String?
   password              String
   role                  String                 @default("CREW")
+  hasCompletedOnboarding Boolean               @default(false)
   phone                 String?
   avatar                String?
   preferences           String?                // JSON string for user preferences (theme, notifications, etc.)

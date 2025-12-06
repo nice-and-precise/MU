@@ -7,6 +7,8 @@ import { getActiveProjects } from "@/actions/projects";
 import { getTickets } from "@/actions/tickets";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { DashboardOnboarding } from "@/components/dashboard/DashboardOnboarding";
 
 export default async function CrewDashboard() {
     const session = await getServerSession(authOptions);
@@ -32,8 +34,19 @@ export default async function CrewDashboard() {
     const { data: tickets } = await getTickets({ projectId: currentProject.id, status: 'ACTIVE' });
     const activeTicketId = tickets?.[0]?.id;
 
+    // Check onboarding
+    const currentUser = await prisma.user.findUnique({
+        where: { id: session?.user?.id },
+        select: { hasCompletedOnboarding: true, name: true }
+    });
+
     return (
         <div className="p-4 md:p-8">
+            <DashboardOnboarding
+                role={userRole.toUpperCase()}
+                hasCompletedOnboarding={currentUser?.hasCompletedOnboarding ?? false}
+                userName={currentUser?.name || ""}
+            />
             <QuickActions role={userRole} />
             <FieldDashboard
                 userRole={userRole}

@@ -4,6 +4,14 @@ import { notFound } from "next/navigation";
 import Project3DViewer from './Project3DViewer';
 import { prisma } from '@/lib/prisma';
 import { SurveyStation } from '@/lib/drilling/types';
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 export default async function Project3DPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -90,6 +98,21 @@ export default async function Project3DPage({ params }: { params: Promise<{ id: 
         <div className="p-6 h-full">
             <div className="mb-6 flex justify-between items-center">
                 <div>
+                    <Breadcrumb className="mb-2">
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/dashboard/projects">Projects</BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href={`/dashboard/projects/${project.id}`}>{project.name}</BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage>3D View</BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-white">3D Visualization</h1>
                     <p className="text-gray-500">Real-time digital twin powered by Rust Engine</p>
                 </div>

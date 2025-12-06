@@ -9,8 +9,15 @@ import { getAvailableCrewMembers } from "@/actions/employees";
 import { getAssets } from "@/actions/assets";
 import { getActiveProjects } from "@/actions/projects";
 import { ExpiringTicketsWidget } from "@/components/dashboard/ExpiringTicketsWidget";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { DashboardOnboarding } from "@/components/dashboard/DashboardOnboarding";
+import { CommandCenterTour } from "@/components/dashboard/CommandCenterTour";
 
 export default async function OwnerDashboard() {
+    const session = await getServerSession(authOptions);
+
     const [statsRes, { data: employees }, res, { data: projects }] = await Promise.all([
         getOwnerStats(),
         getAvailableCrewMembers(),
@@ -27,13 +34,26 @@ export default async function OwnerDashboard() {
         openSafetyIssues: 0
     };
 
+    const currentUser = await prisma.user.findUnique({
+        where: { id: session?.user?.id },
+        select: { hasCompletedOnboarding: true, name: true }
+    });
+
     return (
         <div className="p-8 space-y-8">
+            <DashboardOnboarding
+                role="OWNER"
+                hasCompletedOnboarding={currentUser?.hasCompletedOnboarding ?? false}
+                userName={currentUser?.name || ""}
+            />
             <QuickActions role="OWNER" />
-            <div className="border-b border-gray-200 pb-4">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white uppercase tracking-tight">OWNERSHIP DASHBOARD</h1>
-                {/* Rebuild Trigger */}
-                <p className="text-gray-500 mt-1">Financial & Project Overview</p>
+            <div className="border-b border-gray-200 pb-4 flex justify-between items-end">
+                <div>
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white uppercase tracking-tight">OWNERSHIP DASHBOARD</h1>
+                    {/* Rebuild Trigger */}
+                    <p className="text-gray-500 mt-1">Financial & Project Overview</p>
+                </div>
+                <CommandCenterTour />
             </div>
 
             {/* Key Metrics */}

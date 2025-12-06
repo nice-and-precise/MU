@@ -55,5 +55,41 @@ export const ProjectService = {
                 },
             },
         });
+    },
+
+    getProjectTimeline: async (id: string) => {
+        const project = await prisma.project.findUnique({
+            where: { id },
+            select: {
+                id: true,
+                createdAt: true,
+                name: true,
+                status: true,
+            }
+        });
+
+        if (!project) return null;
+
+        const [estimates, bores, punchItems] = await Promise.all([
+            prisma.estimate.findMany({
+                where: { projectId: id }, // Assuming estimates are linked to project
+                select: { id: true, name: true, createdAt: true, status: true, total: true }
+            }),
+            prisma.bore.findMany({
+                where: { projectId: id },
+                select: { id: true, name: true, status: true, createdAt: true, updatedAt: true }
+            }),
+            prisma.punchItem.findMany({
+                where: { projectId: id },
+                select: { id: true, title: true, status: true, createdAt: true, completedAt: true }
+            })
+        ]);
+
+        return {
+            project,
+            estimates,
+            bores,
+            punchItems
+        };
     }
 };

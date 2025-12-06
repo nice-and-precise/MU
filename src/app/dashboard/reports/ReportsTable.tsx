@@ -19,6 +19,8 @@ interface ReportsTableProps {
     reports: Report[];
 }
 
+import { EmptyState } from "@/components/ui/EmptyState";
+
 export default function ReportsTable({ reports }: ReportsTableProps) {
     const parentRef = useRef<HTMLDivElement>(null);
 
@@ -28,6 +30,18 @@ export default function ReportsTable({ reports }: ReportsTableProps) {
         estimateSize: () => 73, // Approximate row height
         overscan: 5,
     });
+
+    if (reports.length === 0) {
+        return (
+            <div className="bg-white rounded-lg shadow-sm border border-border p-8">
+                <EmptyState
+                    title="No Reports"
+                    description="No reports today. Create one for each active crew."
+                    icon={FileText}
+                />
+            </div>
+        );
+    }
 
     return (
         <div className="bg-white rounded-lg shadow-sm border border-border overflow-hidden flex flex-col h-[600px]">

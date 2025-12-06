@@ -14,6 +14,7 @@ import {
     FormControl,
     FormField,
     FormItem,
+    FormLabel,
     FormMessage,
 } from '@/components/ui/form';
 import {
@@ -50,6 +51,8 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface PunchListProps {
     projectId: string;
@@ -71,7 +74,7 @@ export default function PunchList({ projectId, items, users }: PunchListProps) {
     const [deletingItem, setDeletingItem] = useState<any>(null);
 
     // Filters
-    const [statusFilter, setStatusFilter] = useState<string>('ALL');
+    const [viewMode, setViewMode] = useState<string>('all_open');
     const [priorityFilter, setPriorityFilter] = useState<string>('ALL');
     const [assigneeFilter, setAssigneeFilter] = useState<string>('ALL');
 
@@ -175,7 +178,25 @@ export default function PunchList({ projectId, items, users }: PunchListProps) {
 
     // Derived state
     const filteredItems = items.filter(item => {
-        if (statusFilter !== 'ALL' && item.status !== statusFilter) return false;
+        const createdDate = new Date(item.createdAt);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+        // View Mode Filter
+        if (viewMode === 'all_open') {
+            if (item.status !== 'OPEN') return false;
+        } else if (viewMode === 'closed') {
+            if (item.status !== 'COMPLETED') return false;
+        } else if (viewMode === 'today') {
+            // Created today
+            if (createdDate < today) return false;
+        } else if (viewMode === 'last_30_days') {
+            // Created in last 30 days
+            if (createdDate < thirtyDaysAgo) return false;
+        }
+
         if (priorityFilter !== 'ALL' && item.priority !== priorityFilter) return false;
         if (assigneeFilter !== 'ALL') {
             if (assigneeFilter === 'UNASSIGNED') {
@@ -236,55 +257,57 @@ export default function PunchList({ projectId, items, users }: PunchListProps) {
                     </div>
                 </div>
 
-                {/* Filters */}
-                <div className="flex flex-col md:flex-row gap-2 pt-2">
-                    <Select value={statusFilter} onValueChange={setStatusFilter}>
-                        <SelectTrigger className="w-full md:w-[130px] h-8 text-xs">
-                            <SelectValue placeholder="Status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="ALL">All Status</SelectItem>
-                            <SelectItem value="OPEN">Open</SelectItem>
-                            <SelectItem value="COMPLETED">Completed</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-                        <SelectTrigger className="w-full md:w-[130px] h-8 text-xs">
-                            <SelectValue placeholder="Priority" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="ALL">All Priority</SelectItem>
-                            <SelectItem value="HIGH">High</SelectItem>
-                            <SelectItem value="MEDIUM">Medium</SelectItem>
-                            <SelectItem value="LOW">Low</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <Select value={assigneeFilter} onValueChange={setAssigneeFilter}>
-                        <SelectTrigger className="w-full md:w-[150px] h-8 text-xs">
-                            <SelectValue placeholder="Assignee" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="ALL">All Assignees</SelectItem>
-                            <SelectItem value="UNASSIGNED">Unassigned</SelectItem>
-                            {users.map(u => (
-                                <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    {(statusFilter !== 'ALL' || priorityFilter !== 'ALL' || assigneeFilter !== 'ALL') && (
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                                setStatusFilter('ALL');
-                                setPriorityFilter('ALL');
-                                setAssigneeFilter('ALL');
-                            }}
-                            className="h-8 px-2 text-xs ml-auto md:ml-0"
-                        >
-                            Reset
-                        </Button>
-                    )}
+                {/* Tabs & Filters */}
+                <div className="space-y-4 pt-2">
+                    <Tabs value={viewMode} onValueChange={setViewMode} className="w-full">
+                        <TabsList className="grid w-full grid-cols-4">
+                            <TabsTrigger value="today">Today</TabsTrigger>
+                            <TabsTrigger value="last_30_days">Last 30 Days</TabsTrigger>
+                            <TabsTrigger value="all_open">All Open</TabsTrigger>
+                            <TabsTrigger value="closed">Closed</TabsTrigger>
+                        </TabsList>
+                    </Tabs>
+
+                    <div className="flex flex-col md:flex-row gap-2">
+                        {/* Status Filter Removed */}
+                        <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+                            <SelectTrigger className="w-full md:w-[130px] h-8 text-xs">
+                                <SelectValue placeholder="Priority" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="ALL">All Priority</SelectItem>
+                                <SelectItem value="HIGH">High</SelectItem>
+                                <SelectItem value="MEDIUM">Medium</SelectItem>
+                                <SelectItem value="LOW">Low</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <Select value={assigneeFilter} onValueChange={setAssigneeFilter}>
+                            <SelectTrigger className="w-full md:w-[150px] h-8 text-xs">
+                                <SelectValue placeholder="Assignee" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="ALL">All Assignees</SelectItem>
+                                <SelectItem value="UNASSIGNED">Unassigned</SelectItem>
+                                {users.map(u => (
+                                    <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {(viewMode !== 'all_open' || priorityFilter !== 'ALL' || assigneeFilter !== 'ALL') && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                    setViewMode('all_open');
+                                    setPriorityFilter('ALL');
+                                    setAssigneeFilter('ALL');
+                                }}
+                                className="h-8 px-2 text-xs ml-auto md:ml-0"
+                            >
+                                Reset
+                            </Button>
+                        )}
+                    </div>
                 </div>
             </CardHeader>
             <CardContent className="flex-1 overflow-auto p-4 pt-0">
@@ -297,6 +320,7 @@ export default function PunchList({ projectId, items, users }: PunchListProps) {
                                     name="title"
                                     render={({ field }) => (
                                         <FormItem>
+                                            <FormLabel required>Description</FormLabel>
                                             <FormControl>
                                                 <Input placeholder="Describe the issue..." {...field} className="bg-background" />
                                             </FormControl>
@@ -310,6 +334,7 @@ export default function PunchList({ projectId, items, users }: PunchListProps) {
                                         name="priority"
                                         render={({ field }) => (
                                             <FormItem className="flex-1">
+                                                <FormLabel required>Priority</FormLabel>
                                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                     <FormControl>
                                                         <SelectTrigger className="bg-background">
@@ -317,9 +342,9 @@ export default function PunchList({ projectId, items, users }: PunchListProps) {
                                                         </SelectTrigger>
                                                     </FormControl>
                                                     <SelectContent>
-                                                        <SelectItem value="LOW">Low Priority</SelectItem>
-                                                        <SelectItem value="MEDIUM">Medium Priority</SelectItem>
-                                                        <SelectItem value="HIGH">High Priority</SelectItem>
+                                                        <SelectItem value="LOW">Low</SelectItem>
+                                                        <SelectItem value="MEDIUM">Medium</SelectItem>
+                                                        <SelectItem value="HIGH">High</SelectItem>
                                                     </SelectContent>
                                                 </Select>
                                             </FormItem>
@@ -330,10 +355,11 @@ export default function PunchList({ projectId, items, users }: PunchListProps) {
                                         name="assigneeId"
                                         render={({ field }) => (
                                             <FormItem className="flex-1">
+                                                <FormLabel>Assign To</FormLabel>
                                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                     <FormControl>
                                                         <SelectTrigger className="bg-background">
-                                                            <SelectValue placeholder="Assign To" />
+                                                            <SelectValue placeholder="Unassigned" />
                                                         </SelectTrigger>
                                                     </FormControl>
                                                     <SelectContent>
@@ -412,22 +438,29 @@ export default function PunchList({ projectId, items, users }: PunchListProps) {
                         </div>
                     ))}
                     {filteredItems.length === 0 && !showForm && (
-                        <div className="flex flex-col items-center justify-center py-12 text-center space-y-3 text-muted-foreground">
-                            <div className="p-3 bg-muted/30 rounded-full">
-                                <Filter className="w-8 h-8 opacity-40" />
-                            </div>
-                            <p className="text-sm">No items found matching your filters.</p>
-                            <Button
-                                variant="link"
-                                size="sm"
-                                onClick={() => {
-                                    setStatusFilter('ALL');
-                                    setPriorityFilter('ALL');
-                                    setAssigneeFilter('ALL');
-                                }}
-                            >
-                                Clear Filters
-                            </Button>
+                        <div className="py-8">
+                            <EmptyState
+                                title={items.length === 0 ? "No Punch Items" : "No Matches Found"}
+                                description={items.length === 0
+                                    ? "No punch items yet. This is where field issues will appear once created."
+                                    : "No items found matching your filters."}
+                                icon={Filter}
+                            />
+                            {items.length > 0 && (
+                                <div className="text-center mt-4">
+                                    <Button
+                                        variant="link"
+                                        size="sm"
+                                        onClick={() => {
+                                            setViewMode('all_open');
+                                            setPriorityFilter('ALL');
+                                            setAssigneeFilter('ALL');
+                                        }}
+                                    >
+                                        Clear Filters
+                                    </Button>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
@@ -446,6 +479,7 @@ export default function PunchList({ projectId, items, users }: PunchListProps) {
                                 name="title"
                                 render={({ field }) => (
                                     <FormItem>
+                                        <FormLabel required>Description</FormLabel>
                                         <FormControl>
                                             <Input placeholder="Describe the issue..." {...field} />
                                         </FormControl>
@@ -459,6 +493,7 @@ export default function PunchList({ projectId, items, users }: PunchListProps) {
                                     name="priority"
                                     render={({ field }) => (
                                         <FormItem className="flex-1">
+                                            <FormLabel required>Priority</FormLabel>
                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl>
                                                     <SelectTrigger>
@@ -479,6 +514,7 @@ export default function PunchList({ projectId, items, users }: PunchListProps) {
                                     name="assigneeId"
                                     render={({ field }) => (
                                         <FormItem className="flex-1">
+                                            <FormLabel>Assign To</FormLabel>
                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl>
                                                     <SelectTrigger>

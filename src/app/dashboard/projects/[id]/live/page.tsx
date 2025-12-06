@@ -1,6 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import LiveTelemetry from "@/components/drilling/LiveTelemetry";
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -28,6 +36,21 @@ export default async function LiveDashboardPage({ params }: PageProps) {
         <div className="flex flex-col h-full p-6 space-y-6">
             <div className="flex justify-between items-center">
                 <div>
+                    <Breadcrumb className="mb-2">
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/dashboard/projects">Projects</BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href={`/dashboard/projects/${project.id}`}>{project.name}</BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage>Live Ops</BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
                     <h1 className="text-3xl font-bold tracking-tight">Live Operations</h1>
                     <p className="text-muted-foreground">
                         Real-time telemetry for {project.name}

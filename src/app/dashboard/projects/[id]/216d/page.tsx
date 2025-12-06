@@ -6,6 +6,14 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { export216dPacket } from "@/actions/216d/export";
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 export default async function ProjectCompliancePage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -27,13 +35,21 @@ export default async function ProjectCompliancePage({ params }: { params: Promis
         <div className="p-8">
             <div className="mb-8 flex justify-between items-start">
                 <div>
-                    <div className="flex items-center space-x-2 text-sm text-gray-500 mb-2">
-                        <Link href="/dashboard/projects" className="hover:text-blue-500">Projects</Link>
-                        <span>/</span>
-                        <Link href={`/dashboard/projects/${id}`} className="hover:text-blue-500">{project.name}</Link>
-                        <span>/</span>
-                        <span>216D Compliance</span>
-                    </div>
+                    <Breadcrumb className="mb-2">
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/dashboard/projects">Projects</BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href={`/dashboard/projects/${id}`}>{project.name}</BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage>216D Compliance</BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white">216D Compliance</h1>
                     <p className="text-gray-500 mt-1">Manage GSOC tickets, white lining, and meet requirements.</p>
                 </div>

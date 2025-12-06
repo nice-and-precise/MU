@@ -171,7 +171,7 @@ export default function RodPassForm({ bores }: { bores: any[] }) {
                             name="boreId"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Select Bore</FormLabel>
+                                    <FormLabel required>Select Bore</FormLabel>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
@@ -197,7 +197,7 @@ export default function RodPassForm({ bores }: { bores: any[] }) {
                                 name="sequence"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Rod Sequence #</FormLabel>
+                                        <FormLabel required>Rod Sequence #</FormLabel>
                                         <FormControl>
                                             <Input type="number" {...field} className="font-mono" />
                                         </FormControl>
@@ -210,7 +210,7 @@ export default function RodPassForm({ bores }: { bores: any[] }) {
                                 name="linearFeet"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Length (LF)</FormLabel>
+                                        <FormLabel required>Length (LF)</FormLabel>
                                         <FormControl>
                                             <Input type="number" {...field} />
                                         </FormControl>

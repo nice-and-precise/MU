@@ -7,6 +7,14 @@ import { LinearProgressBar } from "@/components/projects/LinearProgressBar";
 import DataImportDropzone from "@/components/import/DataImportDropzone";
 import CloseoutModal from "@/components/closeout/CloseoutModal";
 import { TicketManager } from "@/components/safety/TicketManager";
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 export default async function ProjectDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -25,11 +33,18 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
         <div className="p-8">
             {/* Header */}
             <div className="mb-8">
-                <div className="flex items-center space-x-2 text-sm text-gray-500 mb-2">
-                    <Link href="/dashboard/projects" className="hover:text-blue-500">Projects</Link>
-                    <span>/</span>
-                    <span>{project.name}</span>
-                </div>
+                <Breadcrumb className="mb-2">
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink href="/dashboard/projects">Projects</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbPage>{project.name}</BreadcrumbPage>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
+
                 <div className="flex justify-between items-start">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{project.name}</h1>
@@ -109,6 +124,12 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
                     className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors whitespace-nowrap"
                 >
                     Live Ops
+                </Link>
+                <Link
+                    href={`/dashboard/projects/${project.id}/timeline`}
+                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors whitespace-nowrap"
+                >
+                    Timeline
                 </Link>
                 <Link
                     href={`/dashboard/projects/${project.id}/216d`}
