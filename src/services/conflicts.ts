@@ -38,10 +38,12 @@ export const ConflictService = {
         }
 
         // 2. Check Employee Conflicts
-        if (employeeId) {
+        if (employeeId || (params.employeeIds && params.employeeIds.length > 0)) {
+            const idsToCheck = params.employeeIds || [employeeId];
+
             const conflictingShifts = await prisma.shift.findMany({
                 where: {
-                    employeeId,
+                    employeeId: { in: idsToCheck },
                     id: { not: excludeShiftId },
                     OR: [
                         { startTime: { lte: endTime }, endTime: { gte: startTime } }
@@ -53,7 +55,7 @@ export const ConflictService = {
             for (const shift of conflictingShifts) {
                 conflicts.push({
                     type: 'EMPLOYEE',
-                    id: employeeId,
+                    id: shift.employeeId || '',
                     name: shift.employee ? `${shift.employee.firstName} ${shift.employee.lastName}` : 'Unknown Employee',
                     message: `Employee is already scheduled from ${shift.startTime.toLocaleString()} to ${shift.endTime.toLocaleString()}`,
                     conflictingShiftId: shift.id

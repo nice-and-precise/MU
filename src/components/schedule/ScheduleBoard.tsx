@@ -40,6 +40,29 @@ export function ScheduleBoard({ shifts, crews, employees, projects }: ScheduleBo
     const handlePrev = () => setCurrentDate(addDays(currentDate, -7));
     const handleNext = () => setCurrentDate(addDays(currentDate, 7));
 
+    const totalLaborCost = useMemo(() => {
+        let total = 0;
+        const visibleShifts = shifts.filter(s => {
+            const shiftStart = new Date(s.startTime);
+            const viewStart = startDate;
+            const viewEnd = addDays(startDate, 7);
+            return shiftStart >= viewStart && shiftStart < viewEnd;
+        });
+
+        for (const shift of visibleShifts) {
+            // Only calculate for individual employee shifts to avoid double counting with crew headers
+            if (shift.employee) {
+                const start = new Date(shift.startTime).getTime();
+                const end = new Date(shift.endTime).getTime();
+                const hours = (end - start) / (1000 * 60 * 60);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const rate = (shift.employee as any).hourlyRate || 0;
+                total += hours * rate;
+            }
+        }
+        return total;
+    }, [shifts, startDate]);
+
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -51,6 +74,9 @@ export function ScheduleBoard({ shifts, crews, employees, projects }: ScheduleBo
                         <Button variant="ghost" size="icon" onClick={handlePrev}><ChevronLeft className="w-4 h-4" /></Button>
                         <Button variant="ghost" size="icon" onClick={() => setCurrentDate(new Date())}><CalendarIcon className="w-4 h-4" /></Button>
                         <Button variant="ghost" size="icon" onClick={handleNext}><ChevronRight className="w-4 h-4" /></Button>
+                    </div>
+                    <div className="ml-4 px-3 py-1 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded-full text-sm font-semibold">
+                        Est. Labor: ${totalLaborCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </div>
                 </div>
                 <Button onClick={() => { setSelectedShift(null); setIsModalOpen(true); }}>

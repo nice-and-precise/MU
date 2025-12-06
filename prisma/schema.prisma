@@ -980,12 +980,23 @@ model Employee {
   terminationDate DateTime?
   
   // Payroll
-  payType     String     @default("HOURLY") // HOURLY, SALARY
-  hourlyRate  Float      @default(0)
-  salary      Float?
-  taxStatus   String?    // W-4 Single, etc.
-  qboEmployeeId String?
-  adpEmployeeId String?
+  payType                 String     @default("HOURLY") // HOURLY, SALARY
+  paySchedule             String     @default("WEEKLY") // WEEKLY, BIWEEKLY, SEMIMONTHLY, MONTHLY
+  hourlyRate              Float      @default(0)
+  salary                  Float?
+  overtimeRule            String?    // "OVER_40_WEEK", "OVER_8_DAY", "UNION_X"
+  defaultOvertimeMultiplier Float    @default(1.5)
+  doubleTimeMultiplier    Float      @default(2.0)
+  
+  taxStatus               String?    // W-4 Single, etc.
+  primaryState            String?    // MN, ND, etc.
+  primaryWorkState        String?
+  is1099                  Boolean    @default(false)
+  
+  defaultPayrollItems     String     @default("[]") // JSON array of QBO Item IDs
+  
+  qboEmployeeId           String?
+  adpEmployeeId           String?
   
   // Relations
   crews       CrewMember[]

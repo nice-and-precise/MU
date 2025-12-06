@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, Phone, Mail, MapPin, Calendar, HardHat, FileText, Activity, Clock } from "lucide-react";
 import { format } from "date-fns";
+import { EmploymentTimelineCard } from "@/components/employees/EmploymentTimeline";
 
 export default async function EmployeeDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -130,6 +131,7 @@ export default async function EmployeeDetailPage({ params }: { params: Promise<{
                 </TabsContent>
 
                 <TabsContent value="history" className="mt-6 space-y-6">
+                    <EmploymentTimelineCard history={employee.statusHistory} />
                     <Card>
                         <CardHeader>
                             <CardTitle>Equipment Usage History</CardTitle>

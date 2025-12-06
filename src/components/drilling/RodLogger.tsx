@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Loader2, ArrowDown, ArrowUp, Send, History } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import LiveTelemetry from './LiveTelemetry';
 
 interface RodLoggerProps {
     bore: any;
@@ -44,8 +45,17 @@ export default function RodLogger({ bore }: RodLoggerProps) {
         setLoading(false);
     };
 
+    const handleCopyValues = (p: number, a: number) => {
+        setPitch(p.toFixed(1));
+        setAzimuth(a.toFixed(1));
+    };
+
     return (
         <div className="max-w-md mx-auto space-y-4">
+
+            {/* Live Data HUD */}
+            <LiveTelemetry boreId={bore.id} onCopyValues={handleCopyValues} />
+
             {/* HUD */}
             <div className="grid grid-cols-3 gap-2 text-center">
                 <Card className="bg-slate-900 text-white border-none">

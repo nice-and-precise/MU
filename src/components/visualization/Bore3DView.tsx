@@ -6,6 +6,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Text, Line, Cylinder, Environment } from '@react-three/drei';
 import * as THREE from 'three';
 import { calculateBorePath, SurveyStation } from '@/lib/drilling/math/survey';
+import BoreholeControls from '../drilling/BoreholeControls';
 
 interface Bore3DViewProps {
     length: number;
@@ -111,18 +112,16 @@ export default function Bore3DView({ length, diameter, entryAngle = 12, points, 
 
     return (
         <div className="relative h-[600px] w-full bg-slate-950 rounded-lg overflow-hidden border border-slate-800">
-            <div className="absolute top-4 left-4 z-10">
+            <BoreholeControls
+                viewMode={demoMode ? 'iso' : 'side'}
+                flyThrough={false}
+                onViewChange={() => setDemoMode(!demoMode)}
+                onFlyThroughToggle={() => { }}
+            />
+
+            <div className="absolute top-4 left-4 z-10 pointer-events-none">
                 <h3 className="text-white font-bold text-lg drop-shadow-md">3D Digital Twin</h3>
                 <p className="text-white/60 text-xs">Real-time drilling telemetry visualization</p>
-            </div>
-
-            <div className="absolute top-4 right-4 z-10 flex gap-2">
-                <button
-                    onClick={() => setDemoMode(!demoMode)}
-                    className={`px-3 py-1 rounded text-xs font-bold transition-colors ${demoMode ? 'bg-blue-600 text-white' : 'bg-white/10 text-white hover:bg-white/20'}`}
-                >
-                    {demoMode ? 'Disable Demo' : 'Load Demo Bore'}
-                </button>
             </div>
 
             <Canvas

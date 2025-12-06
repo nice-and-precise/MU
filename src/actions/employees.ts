@@ -69,3 +69,25 @@ export const getEmployeeTimeEntries = authenticatedAction(
         return await EmployeeService.getEmployeeTimeEntries(id);
     }
 );
+
+export const createSystemUser = authenticatedAction(
+    z.object({
+        employeeId: z.string(),
+        email: z.string().email(),
+        role: z.string()
+    }),
+    async ({ employeeId, email, role }) => {
+        const user = await EmployeeService.createSystemUser(employeeId, email, role);
+        revalidatePath('/dashboard/labor');
+        return user;
+    }
+);
+
+export const signDocument = authenticatedAction(
+    z.string(),
+    async (id) => {
+        await EmployeeService.signDocument(id);
+        revalidatePath('/mobile/profile');
+        return { success: true };
+    }
+);

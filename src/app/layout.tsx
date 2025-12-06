@@ -54,6 +54,7 @@ export const viewport = {
   // userScalable: false, // Removed for accessibility
   // maximumScale: 1, // Removed for accessibility
   themeColor: "#0f172a",
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

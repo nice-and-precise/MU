@@ -78,5 +78,26 @@ export const TelemetryService = {
         return await prisma.telemetryLog.createMany({
             data
         });
+    },
+
+    ingestBatch: async (boreId: string, logs: any[]) => {
+        // Validation could happen here, but for high-throughput we assume valid schema from API Zod check
+        const data = logs.map(l => ({
+            boreId,
+            timestamp: new Date(l.timestamp),
+            depth: l.depth,
+            pitch: l.pitch,
+            azimuth: l.azimuth,
+            toolFace: l.toolFace,
+            rpm: l.rpm,
+            wob: l.wob,
+            torque: l.torque,
+            pumpPressure: l.pumpPressure,
+            flowRate: l.flowRate,
+        }));
+
+        return await prisma.telemetryLog.createMany({
+            data
+        });
     }
 };

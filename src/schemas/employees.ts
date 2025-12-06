@@ -15,10 +15,25 @@ export const CreateEmployeeSchema = z.object({
     status: z.enum(['ACTIVE', 'TERMINATED', 'LEAVE']).default('ACTIVE'),
     hireDate: z.union([z.string(), z.date(), z.null()]).optional().transform(val => val ? new Date(val) : undefined),
     terminationDate: z.union([z.string(), z.date(), z.null()]).optional().transform(val => val ? new Date(val) : undefined),
+
+    // Payroll
     payType: z.enum(['HOURLY', 'SALARY']).default('HOURLY'),
+    paySchedule: z.enum(['WEEKLY', 'BIWEEKLY', 'SEMIMONTHLY', 'MONTHLY']).default('WEEKLY'),
     hourlyRate: z.number().min(0).default(0),
     salary: z.number().optional().nullable(),
+    overtimeRule: z.string().optional().nullable(),
+    defaultOvertimeMultiplier: z.number().default(1.5),
+    doubleTimeMultiplier: z.number().default(2.0),
+
     taxStatus: z.string().optional().nullable(),
+    primaryState: z.string().optional().nullable(),
+    primaryWorkState: z.string().optional().nullable(),
+    is1099: z.boolean().default(false),
+
+    defaultPayrollItems: z.string().default("[]"),
+    qboEmployeeId: z.string().optional().nullable(),
+    adpEmployeeId: z.string().optional().nullable(),
+
     userId: z.string().optional().nullable(), // Link to existing user
 });
 
