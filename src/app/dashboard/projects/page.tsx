@@ -1,9 +1,16 @@
-import { getProjects } from "@/app/actions/projects";
+import { getProjects } from "@/actions/projects";
 import Link from "next/link";
 import { Calendar, MapPin, Activity } from "lucide-react";
 
 export default async function ProjectsPage() {
-    const projects = await getProjects();
+    const res = await getProjects();
+
+    if (!res.data) {
+        // Handle error gracefully or throw
+        return <div className="p-8">Error loading projects.</div>;
+    }
+
+    const projects = res.data;
 
     return (
         <div className="p-8">

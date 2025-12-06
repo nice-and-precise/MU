@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Upload, FileText, X } from "lucide-react";
 import { EstimateReview } from "@/components/estimates/EstimateReview";
-import { processFile } from "@/app/actions/extraction";
+import { extractEstimateData } from "@/actions/import";
 
 export default function ImportEstimatesPage() {
     const [dragActive, setDragActive] = useState(false);
@@ -52,12 +52,12 @@ export default function ImportEstimatesPage() {
                 const formData = new FormData();
                 formData.append('file', file);
 
-                const result = await processFile(formData);
+                const result = await extractEstimateData(formData);
 
-                if (result.success && result.data) {
+                if (result?.data) {
                     allExtracted.push(...result.data);
                 } else {
-                    console.error(`Failed to process ${file.name}:`, result.error);
+                    console.error(`Failed to process ${file.name}:`, result?.error);
                 }
             }
 

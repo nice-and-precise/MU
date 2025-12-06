@@ -1,4 +1,4 @@
-import { getOwnerStats } from "@/app/actions/dashboard";
+import { getOwnerStats } from "@/actions/dashboard";
 
 import { ProductionChart } from "@/components/dashboard/ProductionChart";
 import { MapPin } from "lucide-react";
@@ -10,13 +10,21 @@ import { getActiveProjects } from "@/actions/projects";
 import { ExpiringTicketsWidget } from "@/components/dashboard/ExpiringTicketsWidget";
 
 export default async function OwnerDashboard() {
-    const [stats, { data: employees }, res, { data: projects }] = await Promise.all([
+    const [statsRes, { data: employees }, res, { data: projects }] = await Promise.all([
         getOwnerStats(),
         getAvailableCrewMembers(),
         getAssets(),
         getActiveProjects()
     ]);
     const assets = res.success && res.data ? res.data : [];
+    const stats = statsRes.data || {
+        activeProjects: 0,
+        totalRevenue: 0,
+        pendingApprovals: 0,
+        inventoryValue: 0,
+        activeFleet: 0,
+        openSafetyIssues: 0
+    };
 
     return (
         <div className="p-8 space-y-8">

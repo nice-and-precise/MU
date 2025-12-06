@@ -1,5 +1,5 @@
 import React from 'react';
-import { getProject } from "@/app/actions/projects";
+import { getProject } from "@/actions/projects";
 import { notFound } from "next/navigation";
 import Project3DViewer from './Project3DViewer';
 import { prisma } from '@/lib/prisma';
@@ -7,7 +7,8 @@ import { SurveyStation } from '@/lib/drilling/types';
 
 export default async function Project3DPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const project = await getProject(id);
+    const res = await getProject(id);
+    const project = res?.data;
 
     if (!project) {
         notFound();

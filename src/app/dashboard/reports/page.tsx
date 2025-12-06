@@ -1,4 +1,4 @@
-import { getReports } from "@/app/actions/reports";
+import { getReports } from "@/actions/reports";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FileText, User, Calendar } from "lucide-react";

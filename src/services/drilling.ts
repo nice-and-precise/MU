@@ -19,7 +19,9 @@ export const DrillingService = {
             where: { id },
             include: {
                 rodPasses: { orderBy: { sequence: 'asc' } },
-                project: true,
+                project: {
+                    include: { obstacles: true }
+                },
             }
         });
     },
@@ -31,6 +33,11 @@ export const DrillingService = {
         azimuth: number;
         fluidMix?: string;
         fluidVolume?: number;
+        viscosity?: number;
+        mudWeight?: number;
+        reamerDiameter?: number;
+        steeringToolFace?: number;
+        notes?: string;
     }) => {
         // 1. Get previous rod pass or bore start
         const lastPass = await prisma.rodPass.findFirst({
@@ -106,6 +113,11 @@ export const DrillingService = {
                 dls: nextStation.dls,
                 fluidMix: data.fluidMix,
                 fluidVolumeGal: data.fluidVolume,
+                viscosity: data.viscosity,
+                mudWeight: data.mudWeight,
+                reamerDiameter: data.reamerDiameter,
+                steeringToolFace: data.steeringToolFace,
+                notes: data.notes,
                 loggedById: userId,
                 startedAt: new Date(),
                 completedAt: new Date(),
@@ -118,5 +130,12 @@ export const DrillingService = {
         }
 
         return rodPass;
+    },
+
+    getLastRodPass: async (boreId: string) => {
+        return await prisma.rodPass.findFirst({
+            where: { boreId },
+            orderBy: { sequence: 'desc' }
+        });
     }
 };

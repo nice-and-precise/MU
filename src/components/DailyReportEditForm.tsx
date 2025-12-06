@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { updateDailyReport, approveDailyReport } from '@/app/actions/reports';
+import { updateDailyReport, approveDailyReport } from '@/actions/reports';
 import { getInventoryItems } from '@/actions/inventory';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

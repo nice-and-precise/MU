@@ -1,6 +1,6 @@
 import { ComplianceTab } from "@/components/216d/ComplianceTab";
 import { ComplianceTimeline } from "@/components/216d/ComplianceTimeline";
-import { getProject } from "@/app/actions/projects";
+import { getProject } from "@/actions/projects";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,8 @@ import { export216dPacket } from "@/actions/216d/export";
 
 export default async function ProjectCompliancePage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const project = await getProject(id);
+    const res = await getProject(id);
+    const project = res?.data;
 
     if (!project) {
         notFound();

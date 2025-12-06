@@ -3,8 +3,8 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { simulateDrillingData } from '@/app/actions/simulate';
-import { getBore, saveImportedLogs } from '@/app/actions/drilling';
+import { simulateTelemetry, saveImportedLogs } from '@/actions/telemetry';
+import { getBoreDetails } from '@/actions/drilling';
 import { Activity, ArrowUp, ArrowDown, Play, RefreshCw, Sun, Moon, Upload, AlertTriangle } from 'lucide-react';
 import {
     Chart as ChartJS,
@@ -73,7 +73,8 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
 
     useEffect(() => {
         // Fetch bore details for magnetic params and obstacles
-        getBore(boreId).then((bore: any) => {
+        getBoreDetails({ id: boreId }).then((res) => {
+            const bore: any = res?.data;
             if (bore) {
                 setMagneticParams({ dip: bore.dip || 0, declination: bore.declination || 0 });
                 if (bore.project && bore.project.obstacles) {
@@ -158,12 +159,12 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
     const handleSimulate = async () => {
         setIsSimulating(true);
         try {
-            const result = await simulateDrillingData(boreId);
-            if (result.success) {
+            const result = await simulateTelemetry(boreId);
+            if (result?.success) {
                 await fetchData(); // Immediate update
             } else {
-                console.error("Simulation failed:", result.error);
-                alert("Failed to simulate data packet: " + result.error);
+                console.error("Simulation failed:", result?.error);
+                alert("Failed to simulate data packet: " + result?.error);
             }
         } catch (error) {
             console.error("Error triggering simulation:", error);
@@ -183,7 +184,7 @@ export function LiveTelemetry({ boreId, boreName }: LiveTelemetryProps) {
             azi: s.azi
         }));
 
-        await saveImportedLogs(boreId, logs);
+        await saveImportedLogs({ boreId, logs });
 
         // Refresh data
         // For now, just manually update history to show it immediately

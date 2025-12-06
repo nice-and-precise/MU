@@ -12,7 +12,12 @@ export const AddRodPassSchema = z.object({
     pitch: z.number(),
     azimuth: z.number(),
     fluidMix: z.string().optional(),
-    fluidVolume: z.number().optional()
+    fluidVolume: z.number().optional(),
+    viscosity: z.number().optional(),
+    mudWeight: z.number().optional(),
+    reamerDiameter: z.number().optional(),
+    steeringToolFace: z.number().optional(),
+    notes: z.string().optional()
 });
 
 export const GetBoreDetailsSchema = z.object({

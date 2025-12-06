@@ -20,3 +20,20 @@ export const getTelemetryHistory = authenticatedAction(
         return await TelemetryService.getTelemetryHistory(boreId, limit);
     }
 );
+
+export const simulateTelemetry = authenticatedAction(
+    z.string(),
+    async (boreId) => {
+        return await TelemetryService.simulateTelemetry(boreId);
+    }
+);
+
+export const saveImportedLogs = authenticatedAction(
+    z.object({
+        boreId: z.string(),
+        logs: z.array(z.any())
+    }),
+    async ({ boreId, logs }) => {
+        return await TelemetryService.saveImportedLogs(boreId, logs);
+    }
+);

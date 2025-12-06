@@ -1,11 +1,13 @@
-import { getProject } from "@/app/actions/projects";
+import { getProject } from "@/actions/projects";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import InvoiceList from "@/components/invoicing/InvoiceList";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 export default async function ProjectInvoicingPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const project = await getProject(id);
+    const res = await getProject(id);
+    const project = res?.data;
 
     if (!project) {
         notFound();
@@ -26,28 +28,28 @@ export default async function ProjectInvoicingPage({ params }: { params: Promise
             </div>
 
             {/* Navigation Tabs */}
-            <div className="flex space-x-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg mb-8 w-fit">
+            <div className="flex space-x-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg mb-8 w-fit overflow-x-auto">
                 <Link
                     href={`/dashboard/projects/${project.id}`}
-                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors"
+                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors whitespace-nowrap"
                 >
                     Overview
                 </Link>
                 <Link
                     href={`/dashboard/projects/${project.id}/financials`}
-                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors"
+                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors whitespace-nowrap"
                 >
                     Financials
                 </Link>
                 <Link
                     href={`/dashboard/projects/${project.id}/changes`}
-                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors"
+                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors whitespace-nowrap"
                 >
                     Changes
                 </Link>
                 <Link
                     href={`/dashboard/projects/${project.id}/invoicing`}
-                    className="px-4 py-2 text-sm font-medium rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
+                    className="px-4 py-2 text-sm font-medium rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm whitespace-nowrap"
                 >
                     Invoicing
                 </Link>

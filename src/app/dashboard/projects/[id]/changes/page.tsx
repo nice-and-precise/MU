@@ -1,4 +1,4 @@
-import { getProject } from "@/app/actions/projects";
+import { getProject } from "@/actions/projects";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import TMTicketForm from "@/components/change_management/TMTicketForm";
@@ -6,7 +6,8 @@ import ChangeOrderDashboard from "@/components/change_management/ChangeOrderDash
 
 export default async function ProjectChangesPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const project = await getProject(id);
+    const res = await getProject(id);
+    const project = res?.data;
 
     if (!project) {
         notFound();

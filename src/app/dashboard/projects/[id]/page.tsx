@@ -1,4 +1,4 @@
-import { getProject } from "@/app/actions/projects";
+import { getProject } from "@/actions/projects";
 import { getProjectSummary } from "@/actions/closeout";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -10,10 +10,11 @@ import { TicketManager } from "@/components/safety/TicketManager";
 
 export default async function ProjectDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const [project, summaryRes] = await Promise.all([
+    const [projectRes, summaryRes] = await Promise.all([
         getProject(id),
         getProjectSummary(id)
     ]);
+    const project = projectRes?.data;
     const summary = summaryRes?.data;
 
     if (!project || !summary) {

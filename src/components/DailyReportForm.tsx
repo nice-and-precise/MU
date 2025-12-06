@@ -51,7 +51,7 @@ export default function DailyReportForm({ projects }: { projects: any[] }) {
     const onSubmit = async (data: FormValues) => {
         setLoading(true);
         try {
-            const { createDailyReport } = await import("@/app/actions/reports");
+            const { createDailyReport } = await import("@/actions/reports");
             await createDailyReport(data);
             toast.success("Daily report created successfully");
             router.push("/dashboard/reports");

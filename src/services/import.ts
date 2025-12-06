@@ -3,7 +3,7 @@ import { parseWitsml } from '@/lib/parsers/witsml';
 import { parseCsv } from '@/lib/parsers/csv';
 
 export const ImportService = {
-    processSurveyFile: async (projectId: string, fileName: string, fileContent: string) => {
+    processSurveyFile: async (projectId: string, fileName: string, fileContent: string, userIdArg?: string) => {
         const extension = fileName.split('.').pop()?.toLowerCase();
         let points: any[] = [];
 
@@ -40,9 +40,7 @@ export const ImportService = {
             boreId = newBore.id;
         }
 
-        const userId = project.createdById; // Fallback to project creator if user not known in context
-        // Note: Ideally we'd use the authenticated user, but importSurveyData (FormAction) might be raw.
-        // We will allow passing userId if available.
+        const userId = userIdArg || project.createdById;
 
         await prisma.$transaction(async (tx) => {
             for (const p of points) {

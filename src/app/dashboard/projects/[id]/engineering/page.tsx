@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { getProject } from '@/app/actions/projects';
+import { getProject } from '@/actions/projects';
 import { getBoreEngineering, upsertBorePlan, upsertFluidPlan } from '@/actions/engineering';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -52,10 +52,13 @@ export default function EngineeringPage() {
     }, [selectedBoreId]);
 
     async function loadProject() {
-        const p = await getProject(projectId);
-        setProject(p);
-        if (p && p.bores.length > 0) {
-            setSelectedBoreId(p.bores[0].id);
+        const res = await getProject(projectId);
+        const p = res?.data;
+        if (p) {
+            setProject(p);
+            if (p.bores.length > 0) {
+                setSelectedBoreId(p.bores[0].id);
+            }
         }
         setLoading(false);
     }

@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { authenticatedAction, authenticatedActionNoInput } from '@/lib/safe-action';
 import { DrillingService } from '@/services/drilling';
 import { CreateBoreSchema, AddRodPassSchema, GetBoreDetailsSchema } from '@/schemas/drilling';
+import { z } from 'zod';
 
 export const createBore = authenticatedAction(
     CreateBoreSchema,
@@ -18,6 +19,13 @@ export const getBoreDetails = authenticatedAction(
     GetBoreDetailsSchema,
     async ({ id }) => {
         return await DrillingService.getBoreDetails(id);
+    }
+);
+
+export const getLastRodPass = authenticatedAction(
+    z.string(),
+    async (boreId) => {
+        return await DrillingService.getLastRodPass(boreId);
     }
 );
 

@@ -1,4 +1,4 @@
-import { getReport } from '@/app/actions/reports';
+import { getReport } from '@/actions/reports';
 import DailyReportEditForm from '@/components/DailyReportEditForm';
 import { notFound } from 'next/navigation';
 import { getSafetyMeetings, getJSAs } from '@/actions/safety';

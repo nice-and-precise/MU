@@ -1,32 +1,49 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { authenticatedAction } from '@/lib/safe-action';
 import { ImportService } from '@/services/import';
+import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
+import { extractDataFromText } from "@/lib/extraction/pipeline";
+const pdf = require("pdf-parse");
 
-export async function importSurveyData(formData: FormData) {
-    const session = await getServerSession(authOptions);
-    if (!session) return { success: false, error: 'Unauthorized' };
-
-    try {
+export const importSurveyData = authenticatedAction(
+    z.instanceof(FormData),
+    async (formData, userId) => {
         const file = formData.get('file') as File;
         const projectId = formData.get('projectId') as string;
 
         if (!file || !projectId) {
-            return { success: false, error: 'Missing file or project ID' };
+            throw new Error('Missing file or project ID');
         }
 
         const buffer = await file.arrayBuffer();
         const content = new TextDecoder().decode(buffer);
 
-        const result = await ImportService.processSurveyFile(projectId, file.name, content);
+        const result = await ImportService.processSurveyFile(projectId, file.name, content, userId);
 
         revalidatePath(`/dashboard/projects/${projectId}`);
-        return { success: true, count: result.count };
-
-    } catch (error: any) {
-        console.error('Import error:', error);
-        return { success: false, error: error.message || 'Failed to process file' };
+        return { count: result.count };
     }
-}
+);
+
+export const extractEstimateData = authenticatedAction(
+    z.instanceof(FormData),
+    async (formData, userId) => {
+        const file = formData.get('file') as File;
+        if (!file) throw new Error("No file provided");
+
+        const buffer = Buffer.from(await file.arrayBuffer());
+        let text = "";
+
+        if (file.type === "application/pdf") {
+            const data = await pdf(buffer);
+            text = data.text;
+        } else {
+            text = buffer.toString('utf-8');
+        }
+
+        const extractedItems = await extractDataFromText(text);
+        return extractedItems;
+    }
+);

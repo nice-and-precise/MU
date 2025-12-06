@@ -1,4 +1,4 @@
-import { getProject } from "@/app/actions/projects";
+import { getProject } from "@/actions/projects";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import BoreList from "@/components/drilling/BoreList";
@@ -6,7 +6,8 @@ import { prisma } from "@/lib/prisma";
 
 export default async function ProjectProductionPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const project = await getProject(id);
+    const res = await getProject(id);
+    const project = res?.data;
 
     if (!project) {
         notFound();

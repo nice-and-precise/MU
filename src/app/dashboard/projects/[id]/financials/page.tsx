@@ -1,11 +1,12 @@
-import { getProject } from "@/app/actions/projects";
+import { getProject } from "@/actions/projects";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import FinancialsTab from "@/components/projects/FinancialsTab";
 
 export default async function ProjectFinancialsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const project = await getProject(id);
+    const res = await getProject(id);
+    const project = res?.data;
 
     if (!project) {
         notFound();

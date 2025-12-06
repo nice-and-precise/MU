@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { TicketsService } from '@/services/tickets';
+import { ScraperService } from '@/services/scraper';
 import {
     CreateTicketSchema,
     UpdateTicketSchema,
@@ -69,5 +70,12 @@ export const parseTicketEmail = authenticatedAction(
     z.string(),
     async (emailBody) => {
         return TicketsService.parseTicketEmail(emailBody);
+    }
+);
+
+export const checkTicketStatus = authenticatedAction(
+    z.string(), // Ticket Number
+    async (ticketNumber) => {
+        return await ScraperService.checkTicketStatus(ticketNumber);
     }
 );

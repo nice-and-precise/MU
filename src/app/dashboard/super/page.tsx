@@ -1,11 +1,12 @@
-import { getSuperStats } from "@/app/actions/dashboard";
+import { getSuperStats } from "@/actions/dashboard";
 import { CrewDispatch } from "@/components/financials/CrewDispatch";
 import { getAvailableCrewMembers } from "@/actions/employees";
 import { getAssets } from "@/actions/assets";
 import { getActiveProjects } from "@/actions/projects";
 
 export default async function SuperDashboard() {
-    const stats = await getSuperStats();
+    const statsRes = await getSuperStats();
+    const stats = statsRes.data || { count: 0, myProjects: 0, openInspections: 0, dailyReportsToday: 0 };
     const { data: employees } = await getAvailableCrewMembers();
     const res = await getAssets();
     const assets = res.success && res.data ? res.data : [];

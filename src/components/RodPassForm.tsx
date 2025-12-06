@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { logRodPass, getLastRodPass } from "@/app/actions/rod-pass";
+import { addRodPass, getLastRodPass } from "@/actions/drilling";
 import { Loader2, ArrowRight, History } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -68,7 +68,8 @@ export default function RodPassForm({ bores }: { bores: any[] }) {
     }, [selectedBoreId]);
 
     async function fetchLastPass(boreId: string) {
-        const pass = await getLastRodPass(boreId);
+        const result = await getLastRodPass(boreId);
+        const pass = result?.data;
         setLastPass(pass);
         if (pass) {
             form.setValue("sequence", pass.sequence + 1);
@@ -80,23 +81,25 @@ export default function RodPassForm({ bores }: { bores: any[] }) {
     const onSubmit = async (data: RodPassValues) => {
         setLoading(true);
         try {
-            // Convert data to FormData to match existing action signature if needed,
-            // or update action to accept JSON. Assuming action takes FormData for now based on previous code.
-            const formData = new FormData();
-            Object.entries(data).forEach(([key, value]) => {
-                if (value !== undefined && value !== null && value !== "") {
-                    formData.append(key, value.toString());
-                }
+            const res = await addRodPass({
+                boreId: data.boreId,
+                length: data.linearFeet,
+                pitch: data.pitch || 0,
+                azimuth: data.azimuth || 0,
+                viscosity: data.viscosity,
+                mudWeight: data.mudWeight,
+                reamerDiameter: data.reamerDiameter,
+                steeringToolFace: data.steeringToolFace,
+                notes: data.notes
             });
 
-            const res = await logRodPass(formData);
-            if (res.success) {
+            if (res?.data) {
                 toast.success("Rod pass logged successfully!");
 
                 // Reset non-sticky fields
                 form.reset({
                     boreId: data.boreId,
-                    sequence: (res.data?.sequence || data.sequence) + 1,
+                    sequence: (res.data.sequence || data.sequence) + 1,
                     linearFeet: 10,
                     notes: "",
                     // Keep telemetry empty for new reading
@@ -109,11 +112,9 @@ export default function RodPassForm({ bores }: { bores: any[] }) {
                     reamerDiameter: undefined,
                 });
 
-                if (res.data) {
-                    setLastPass(res.data);
-                }
+                setLastPass(res.data);
             } else {
-                toast.error("Failed to log rod pass");
+                toast.error(res?.error || "Failed to log rod pass");
             }
         } catch (error) {
             console.error(error);

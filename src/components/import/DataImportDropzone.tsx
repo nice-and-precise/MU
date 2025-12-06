@@ -30,8 +30,8 @@ export default function DataImportDropzone({ projectId, onImportComplete }: Data
         try {
             const result = await importSurveyData(formData);
 
-            if (result.success) {
-                setStatus({ type: 'success', message: `Successfully imported ${result.count} records from ${file.name}` });
+            if (result.success && result.data) {
+                setStatus({ type: 'success', message: `Successfully imported ${result.data.count} records from ${file.name}` });
                 if (onImportComplete) onImportComplete();
             } else {
                 setStatus({ type: 'error', message: result.error || 'Import failed' });
@@ -104,8 +104,8 @@ export default function DataImportDropzone({ projectId, onImportComplete }: Data
 
                 {status && (
                     <div className={`mt-4 p-3 rounded-md flex items-start gap-2 text-sm ${status.type === 'success' ? 'bg-green-500/10 text-green-400' :
-                            status.type === 'error' ? 'bg-red-500/10 text-red-400' :
-                                'bg-blue-500/10 text-blue-400'
+                        status.type === 'error' ? 'bg-red-500/10 text-red-400' :
+                            'bg-blue-500/10 text-blue-400'
                         }`}>
                         {status.type === 'success' ? <CheckCircle className="w-4 h-4 mt-0.5" /> :
                             status.type === 'error' ? <AlertCircle className="w-4 h-4 mt-0.5" /> :
