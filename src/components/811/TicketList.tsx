@@ -9,11 +9,12 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { StatusBadge } from '@/components/ui/StatusBadge';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { format } from 'date-fns';
-import { ExternalLink, Eye } from 'lucide-react';
+import { ExternalLink, Eye, CheckSquare } from 'lucide-react';
+import { EmptyState } from '@/components/ui/empty-state';
 
 type TicketWithResponses = Ticket811 & {
     responses: Ticket811Response[];
@@ -52,8 +53,14 @@ export default function TicketList({ tickets }: TicketListProps) {
                         <TableBody>
                             {tickets.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                                        No tickets found. Create one to get started.
+                                    <TableCell colSpan={7} className="py-8">
+                                        <EmptyState
+                                            title="No tickets found"
+                                            description="Create a new ticket to get started with 811 requests."
+                                            actionLabel="Create Ticket"
+                                            actionHref="/811/new"
+                                            icon={CheckSquare}
+                                        />
                                     </TableCell>
                                 </TableRow>
                             ) : (
@@ -108,9 +115,13 @@ export default function TicketList({ tickets }: TicketListProps) {
                 {/* Mobile Card View */}
                 <div className="md:hidden space-y-4 p-4 bg-gray-50 dark:bg-gray-900">
                     {tickets.length === 0 ? (
-                        <div className="text-center py-8 text-muted-foreground">
-                            No tickets found.
-                        </div>
+                        <EmptyState
+                            title="No tickets found"
+                            description="Create a new ticket to get started."
+                            actionLabel="Create Ticket"
+                            actionHref="/811/new"
+                            icon={CheckSquare}
+                        />
                     ) : (
                         tickets.map((ticket) => {
                             const daysUntil = Math.ceil((new Date(ticket.expirationDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));

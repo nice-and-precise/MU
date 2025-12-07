@@ -40,7 +40,7 @@ import {
 import { createEmployee, updateEmployee } from "@/actions/employees";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { EmptyState } from "@/components/ui/EmptyState";
+import { EmptyState } from "@/components/ui/empty-state";
 
 // Reuse previous types but inferred or imported would be better
 interface Employee {

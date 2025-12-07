@@ -10,7 +10,7 @@ import { NotificationSettings } from "@/components/settings/notification-setting
 import { EmployeeManager } from "@/components/financials/EmployeeManager";
 import { Employee, Crew, CrewMember, User as PrismaUser } from "@prisma/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { StatusBadge } from "@/components/ui/StatusBadge";
+import { StatusBadge } from "@/components/ui/status-badge";
 
 type EmployeeWithRelations = Employee & {
     crews: (CrewMember & { crew: Crew })[];

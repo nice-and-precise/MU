@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Plus, Loader2, User, HardHat, Search, Filter, Phone, Mail, MapPin } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
-import { StatusBadge } from '@/components/ui/StatusBadge';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface EmployeeDirectoryProps {

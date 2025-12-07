@@ -42,28 +42,11 @@ export default async function DashboardLayout({
                 <UserOnboarding user={fullUser as any} />
 
                 {/* Mobile Top Bar */}
-                <header className="md:hidden bg-gray-800 text-white p-4 flex items-center justify-between sticky top-0 z-40 shadow-md">
-                    <div className="flex items-center gap-2">
-                        <Sheet>
-                            <SheetTrigger asChild>
-                                <Button variant="ghost" size="icon" className="text-white hover:bg-gray-700" aria-label="Toggle navigation menu">
-                                    <Menu className="h-6 w-6" />
-                                </Button>
-                            </SheetTrigger>
-                            <SheetContent side="left" className="p-0 bg-gray-800 text-white border-r-gray-700 w-80">
-                                <Sidebar
-                                    role={userRole}
-                                    favorites={favorites}
-                                    user={fullUser}
-                                />
-                            </SheetContent>
-                        </Sheet>
-                        <span className="font-bold tracking-wide">MU <span className="text-yellow-500">OPS</span></span>
-                    </div>
-                    <div className="bg-blue-600 rounded-full p-1.5">
-                        <User className="h-4 w-4 text-white" />
-                    </div>
-                </header>
+                <MobileNav
+                    role={userRole}
+                    favorites={favorites}
+                    user={fullUser}
+                />
 
                 {/* Desktop Sidebar */}
                 <aside className="w-64 bg-gray-800 text-white hidden md:flex flex-col h-screen sticky top-0">

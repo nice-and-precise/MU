@@ -508,27 +508,27 @@ export default function EstimateEditor({ estimate }: EstimateEditorProps) {
                                         <TableRow className="bg-slate-50">
                                             <TableCell>
                                                 <FormLayout name="description" className="mb-0" children={(field) => (
-                                                    <Input placeholder="New Item Description" {...field} />
+                                                    <Input placeholder="New Item Description" {...field} aria-label="Description" />
                                                 )} />
                                             </TableCell>
                                             <TableCell>
                                                 <FormLayout name="quantity" className="mb-0" children={(field) => (
-                                                    <Input type="number" {...field} />
+                                                    <Input type="number" {...field} aria-label="Quantity" />
                                                 )} />
                                             </TableCell>
                                             <TableCell>
                                                 <FormLayout name="unit" className="mb-0" children={(field) => (
-                                                    <Input {...field} />
+                                                    <Input {...field} aria-label="Unit" />
                                                 )} />
                                             </TableCell>
                                             <TableCell>
                                                 <FormLayout name="unitCost" className="mb-0" children={(field) => (
-                                                    <Input type="number" placeholder="Cost" {...field} />
+                                                    <Input type="number" placeholder="Cost" {...field} aria-label="Unit Cost" />
                                                 )} />
                                             </TableCell>
                                             <TableCell>
                                                 <FormLayout name="markup" className="mb-0" children={(field) => (
-                                                    <Input type="number" {...field} onChange={e => field.onChange(Number(e.target.value) / 100)} value={(field.value || 0) * 100} />
+                                                    <Input type="number" {...field} onChange={e => field.onChange(Number(e.target.value) / 100)} value={(field.value || 0) * 100} aria-label="Markup Percentage" />
                                                 )} />
                                             </TableCell>
                                             <TableCell className="text-right">

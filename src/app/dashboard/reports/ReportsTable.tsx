@@ -19,7 +19,7 @@ interface ReportsTableProps {
     reports: Report[];
 }
 
-import { EmptyState } from "@/components/ui/EmptyState";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export default function ReportsTable({ reports }: ReportsTableProps) {
     const parentRef = useRef<HTMLDivElement>(null);

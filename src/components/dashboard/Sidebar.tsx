@@ -18,9 +18,10 @@ interface SidebarProps {
         image?: string | null;
     };
     className?: string;
+    onNavigate?: () => void;
 }
 
-export function Sidebar({ role, favorites, user, className }: SidebarProps) {
+export function Sidebar({ role, favorites, user, className, onNavigate }: SidebarProps) {
     const pathname = usePathname();
 
     const handleToggleFavorite = async (href: string, title: string) => {
@@ -73,6 +74,7 @@ export function Sidebar({ role, favorites, user, className }: SidebarProps) {
                                 <div key={`fav-${j}`} className="group relative flex items-center">
                                     <Link
                                         href={item.href}
+                                        onClick={onNavigate}
                                         className={cn(
                                             "flex-1 flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors",
                                             isActive ? "bg-gray-700 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"
@@ -106,6 +108,7 @@ export function Sidebar({ role, favorites, user, className }: SidebarProps) {
                                     <div key={j} className="group relative flex items-center">
                                         <Link
                                             href={item.href}
+                                            onClick={onNavigate}
                                             className={cn(
                                                 "flex-1 flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors",
                                                 isActive ? "bg-gray-700 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"

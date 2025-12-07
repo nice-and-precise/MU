@@ -3,7 +3,7 @@
 import { Ticket811, Ticket811Response } from '@prisma/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { StatusBadge } from '@/components/ui/StatusBadge';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { MapPin, Phone, Calendar, Clock, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';

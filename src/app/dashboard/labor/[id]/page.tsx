@@ -1,7 +1,7 @@
 import { getEmployee, getEmployeeUsage, getEmployeeTimeEntries } from "@/actions/employees";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { StatusBadge } from "@/components/ui/StatusBadge";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, Phone, Mail, MapPin, Calendar, HardHat, FileText, Activity, Clock } from "lucide-react";
 import { format } from "date-fns";

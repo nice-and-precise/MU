@@ -13,7 +13,7 @@ import { DamageForm } from "@/components/216d/DamageForm";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { EmptyState } from "@/components/ui/EmptyState";
+import { EmptyState } from "@/components/ui/empty-state";
 
 interface FieldDashboardProps {
     userRole: "Foreman" | "Operator" | "Laborer";
@@ -86,19 +86,19 @@ export function FieldDashboard({
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="grid w-full grid-cols-4 h-14">
-                    <TabsTrigger value="today" className="flex flex-col gap-1 py-1">
+                    <TabsTrigger value="today" className="flex flex-col gap-1 py-1" aria-label="Today">
                         <Clock className="h-4 w-4" />
                         <span className="text-xs hidden md:inline">Today</span>
                     </TabsTrigger>
-                    <TabsTrigger value="gear" className="flex flex-col gap-1 py-1">
+                    <TabsTrigger value="gear" className="flex flex-col gap-1 py-1" aria-label="Gear">
                         <Wrench className="h-4 w-4" />
                         <span className="text-xs hidden md:inline">Gear</span>
                     </TabsTrigger>
-                    <TabsTrigger value="safety" className="flex flex-col gap-1 py-1">
+                    <TabsTrigger value="safety" className="flex flex-col gap-1 py-1" aria-label="Safety">
                         <Shield className="h-4 w-4" />
                         <span className="text-xs hidden md:inline">Safety</span>
                     </TabsTrigger>
-                    <TabsTrigger value="docs" className="flex flex-col gap-1 py-1">
+                    <TabsTrigger value="docs" className="flex flex-col gap-1 py-1" aria-label="Documents">
                         <File className="h-4 w-4" />
                         <span className="text-xs hidden md:inline">Docs</span>
                     </TabsTrigger>
@@ -194,6 +194,7 @@ export function FieldDashboard({
                                         <textarea
                                             className="w-full min-h-[100px] p-2 border rounded-md bg-background mb-2"
                                             placeholder="Enter daily notes here..."
+                                            aria-label="Foreman's Daily Log"
                                         />
                                         <BigButton label="SAVE NOTES" onClick={() => toast.success("Notes saved successfully")} />
                                     </CardContent>

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { getTMTickets, getChangeOrders, createChangeOrder, approveChangeOrder } from '@/actions/change_management';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { StatusBadge } from '@/components/ui/StatusBadge';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, FileText, CheckCircle, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
