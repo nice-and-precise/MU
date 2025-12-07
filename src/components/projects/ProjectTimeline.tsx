@@ -122,10 +122,6 @@ export default function ProjectTimeline({ projectId }: ProjectTimelineProps) {
 
     return (
         <Card className="border-none shadow-none bg-transparent">
-            {/* <CardHeader>
-                <CardTitle>Project Timeline</CardTitle>
-                <CardDescription>Key milestones and events</CardDescription>
-            </CardHeader> */}
             <CardContent className="p-0">
                 <div className="relative border-l border-border ml-3 space-y-8 py-4">
                     {events.map((event, index) => (
