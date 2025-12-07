@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Loader2, Truck, Wrench } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { StatusBadge } from '@/components/ui/StatusBadge';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 interface AssetManagerProps {
     assets: any[];
@@ -101,7 +102,14 @@ export default function AssetManager({ assets }: AssetManagerProps) {
                         </div>
                     ))}
                     {assets.length === 0 && !showForm && (
-                        <p className="col-span-full text-center text-muted-foreground py-8">No assets found.</p>
+                        <div className="col-span-full">
+                            <EmptyState
+                                title="No assets found"
+                                description="Get started by adding your first piece of equipment."
+                                actionLabel="Add Asset"
+                                onAction={() => setShowForm(true)}
+                            />
+                        </div>
                     )}
                 </div>
             </CardContent>

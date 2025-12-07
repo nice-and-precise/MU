@@ -1,473 +1,432 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BigButton } from "@/components/ui/BigButton";
+import { useState, useTransition, useEffect } from "react";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogDescription
+} from "@/components/ui/dialog";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UserCog, Briefcase, MapPin, Plus, Save, Loader2, Key, Camera } from "lucide-react";
-import { updateEmployee, createEmployee, createSystemUser } from "@/actions/employees";
-import { Employee, Crew, CrewMember, User } from "@prisma/client";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+    Users, Plus, Search, FileText, Phone, Mail,
+    Construction, DollarSign, Calendar, Shield,
+    MoreHorizontal, Edit, Trash2, CheckCircle2, AlertCircle, Eye, EyeOff
+} from "lucide-react";
+import { createEmployee, updateEmployee } from "@/actions/employees";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { EmptyState } from "@/components/ui/EmptyState";
 
-type EmployeeWithRelations = Employee & {
-    crews: (CrewMember & { crew: Crew })[];
-    foremanCrews: Crew[];
-    user: User | null;
-};
-
-interface EmployeeManagerProps {
-    initialEmployees: EmployeeWithRelations[];
+// Reuse previous types but inferred or imported would be better
+interface Employee {
+    id: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+    status: string;
+    email?: string | null;
+    phone?: string | null;
+    hourlyRate?: number | null;
+    emergencyContact?: string | null;
+    ssn?: string | null;
+    payType?: string;
+    photoUrl?: string | null;
+    address?: string | null;
+    dob?: Date | string | null;
+    position?: string | null;
+    hireDate?: Date | string | null;
+    taxStatus?: string | null;
+    primaryState?: string | null;
+    primaryWorkState?: string | null;
+    is1099?: boolean;
+    paySchedule?: string;
+    overtimeRule?: string | null;
+    defaultOvertimeMultiplier?: number | null;
+    doubleTimeMultiplier?: number | null;
+    qboEmployeeId?: string | null;
+    adpEmployeeId?: string | null;
+    user?: {
+        name?: string | null;
+        email?: string | null;
+        role?: string | null;
+    } | null;
 }
 
-export function EmployeeManager({ initialEmployees }: EmployeeManagerProps) {
-    const [employees, setEmployees] = useState(initialEmployees);
-    const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>("");
-    const [isPending, startTransition] = useTransition();
-    const [isCreating, setIsCreating] = useState(false);
+interface EmployeeManagerProps {
+    employees: Employee[];
+}
 
-    // Form State
-    const [formData, setFormData] = useState<Partial<Employee>>({});
+export function EmployeeManager({ employees }: EmployeeManagerProps) {
+    const isDesktop = useMediaQuery("(min-width: 768px)");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
 
-    const selectedEmployee = employees.find(e => e.id === selectedEmployeeId);
+    // Derived state for filtered employees
+    const filteredEmployees = employees.filter(emp =>
+        emp.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        emp.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        emp.role.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
-    function handleSelect(id: string) {
-        if (id === "new") {
-            setIsCreating(true);
-            setSelectedEmployeeId("");
-            setFormData({
-                firstName: "",
-                lastName: "",
-                role: "Laborer",
-                status: "ACTIVE",
-                payType: "HOURLY",
-                paySchedule: "WEEKLY",
-                hourlyRate: 0,
-                defaultOvertimeMultiplier: 1.5,
-                doubleTimeMultiplier: 2.0,
-                is1099: false,
-            });
-        } else {
-            setIsCreating(false);
-            setSelectedEmployeeId(id);
-            const emp = employees.find(e => e.id === id);
-            if (emp) {
-                setFormData(emp);
-            }
-        }
-    }
+    const handleEditClick = (employee: Employee) => {
+        setSelectedEmployee(employee);
+        setIsEditing(true);
+        setIsDialogOpen(true);
+    };
 
-    function handleChange(field: keyof Employee, value: any) {
-        setFormData(prev => ({ ...prev, [field]: value }));
-    }
-
-    function handleSave() {
-        startTransition(async () => {
-            try {
-                if (isCreating) {
-                    const res = await createEmployee(formData as any);
-                    if (res.success && res.data) {
-                        // Optimistic update or wait for revalidate
-                        // For now, we rely on revalidatePath in action, but we should update local state to reflect change immediately if possible
-                        // or just reload. Since we passed initialEmployees, we might need to refresh.
-                        // Ideally the parent should re-fetch, but for now let's just alert.
-                        alert("Employee created!");
-                        window.location.reload(); // Simple reload to get fresh data
-                    } else {
-                        alert("Error creating employee");
-                    }
-                } else if (selectedEmployeeId) {
-                    const res = await updateEmployee({ id: selectedEmployeeId, data: formData as any });
-                    if (res.success) {
-                        alert("Employee updated!");
-                        window.location.reload();
-                    } else {
-                        alert("Error updating employee");
-                    }
-                }
-            } catch (e) {
-                console.error(e);
-                alert("An error occurred");
-            }
-        });
-    }
+    const handleCreateClick = () => {
+        setSelectedEmployee(null); // Clear selection for new
+        setIsEditing(false);
+        setIsDialogOpen(true);
+    };
 
     return (
-        <div className="space-y-6 max-w-5xl mx-auto">
+        <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h2 className="text-2xl font-bold tracking-tight">Team Members</h2>
+                    <p className="text-muted-foreground">Manage your roster, payroll details, and access.</p>
+                </div>
+                <Button onClick={handleCreateClick} className="bg-[#003366] text-white hover:bg-[#002244]">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Employee
+                </Button>
+            </div>
+
             <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <UserCog className="h-6 w-6" />
-                            Employee Management
-                        </div>
-                        <BigButton
-                            label="ADD NEW"
-                            icon={Plus}
-                            onClick={() => handleSelect("new")}
-                            className="bg-green-600 hover:bg-green-700 text-white w-auto px-4 py-2 text-sm"
+                <CardHeader className="pb-3">
+                    <div className="relative">
+                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            placeholder="Search by name or role..."
+                            className="pl-9 max-w-sm"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <div className="space-y-2">
-                        <Label>Select Employee</Label>
-                        <Select value={selectedEmployeeId} onValueChange={handleSelect}>
-                            <SelectTrigger className="h-14 text-lg">
-                                <SelectValue placeholder="Choose an employee to edit..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="new" className="text-green-600 font-bold">+ Create New Employee</SelectItem>
-                                {employees.map(e => (
-                                    <SelectItem key={e.id} value={e.id}>
-                                        <div className="flex items-center gap-3">
-                                            <div className="h-8 w-8 rounded-full bg-slate-200 overflow-hidden flex-shrink-0">
-                                                {e.photoUrl ? (
-                                                    <img src={e.photoUrl} alt="Avatar" className="h-full w-full object-cover" />
-                                                ) : (
-                                                    <div className="h-full w-full flex items-center justify-center bg-slate-300 text-xs font-bold text-slate-600">
-                                                        {e.firstName?.[0]}{e.lastName?.[0]}
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <span>{e.firstName} {e.lastName} ({e.role})</span>
-                                        </div>
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
                     </div>
-
-                    {(selectedEmployeeId || isCreating) && (
-                        <div className="grid md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-4">
-
-                            {/* Personal Info */}
-                            <div className="space-y-4 p-4 border rounded-lg bg-secondary/10">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2 font-bold text-lg">
-                                        <UserCog className="h-5 w-5" />
-                                        Personal Information
-                                    </div>
-                                    {/* Profile Avatar */}
-                                    <div className="h-16 w-16 rounded-full bg-slate-200 border-2 border-white shadow-sm overflow-hidden relative group">
-                                        {formData.photoUrl ? (
-                                            <img src={formData.photoUrl} alt="Profile" className="object-cover w-full h-full" />
-                                        ) : (
-                                            <UserCog className="h-8 w-8 text-gray-400 m-auto absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2 col-span-2">
-                                        <Label>Profile Photo URL</Label>
-                                        <div className="flex gap-2">
-                                            <Input
-                                                value={formData.photoUrl || ""}
-                                                onChange={e => handleChange("photoUrl", e.target.value)}
-                                                placeholder="https://example.com/photo.jpg"
+                </CardHeader>
+                <CardContent>
+                    <div className="rounded-md border">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Employee</TableHead>
+                                    <TableHead className="hidden md:table-cell">Role</TableHead>
+                                    <TableHead className="hidden md:table-cell">Status</TableHead>
+                                    <TableHead className="hidden md:table-cell">Contact</TableHead>
+                                    <TableHead className="text-right">Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {filteredEmployees.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={5} className="h-48 text-center">
+                                            <EmptyState
+                                                title="No employees found"
+                                                description="Get started by adding your first crew member."
+                                                actionLabel="Add Employee"
+                                                onAction={handleCreateClick}
                                             />
-                                            {/* Future: Add file upload button here */}
-                                        </div>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label>First Name</Label>
-                                        <Input value={formData.firstName || ""} onChange={e => handleChange("firstName", e.target.value)} />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label>Last Name</Label>
-                                        <Input value={formData.lastName || ""} onChange={e => handleChange("lastName", e.target.value)} />
-                                    </div>
-                                    <div className="space-y-2 col-span-2">
-                                        <Label>Email</Label>
-                                        <Input value={formData.email || ""} onChange={e => handleChange("email", e.target.value)} />
-                                    </div>
-                                    <div className="space-y-2 col-span-2">
-                                        <Label>Phone</Label>
-                                        <Input value={formData.phone || ""} onChange={e => handleChange("phone", e.target.value)} />
-                                    </div>
-                                    <div className="space-y-2 col-span-2">
-                                        <Label>Home Address</Label>
-                                        <Input value={formData.address || ""} onChange={e => handleChange("address", e.target.value)} />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label>Date of Birth</Label>
-                                        <Input
-                                            type="date"
-                                            value={formData.dob ? new Date(formData.dob).toISOString().split('T')[0] : ""}
-                                            onChange={e => handleChange("dob", e.target.value ? new Date(e.target.value) : null)}
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="pt-4 mt-4 border-t border-gray-200">
-                                    <div className="flex items-center gap-2 font-bold text-sm text-gray-600 mb-3">
-                                        Emergency Contact
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label>Contact Details (JSON)</Label>
-                                        <Input
-                                            value={formData.emergencyContact || ""}
-                                            placeholder='{"name": "Jane Doe", "phone": "555-0199", "relation": "Spouse"}'
-                                            onChange={e => handleChange("emergencyContact", e.target.value)}
-                                        />
-                                        <p className="text-xs text-muted-foreground">Enter Name, Phone, and Relation.</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Employment & Role */}
-                            <div className="space-y-4 p-4 border rounded-lg bg-secondary/10">
-                                <div className="flex items-center gap-2 font-bold text-lg">
-                                    <Briefcase className="h-5 w-5" />
-                                    Role & Status
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Role</Label>
-                                    <Select value={formData.role || "Laborer"} onValueChange={v => handleChange("role", v)}>
-                                        <SelectTrigger>
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Foreman">Foreman</SelectItem>
-                                            <SelectItem value="Operator">Operator</SelectItem>
-                                            <SelectItem value="Locator">Locator</SelectItem>
-                                            <SelectItem value="Laborer">Laborer</SelectItem>
-                                            <SelectItem value="Truck Driver">Truck Driver</SelectItem>
-                                            <SelectItem value="Office">Office / Admin</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Detailed Position</Label>
-                                    <Input value={formData.position || ""} placeholder="e.g. Lead Drill Operator" onChange={e => handleChange("position", e.target.value)} />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Status</Label>
-                                    <Select value={formData.status || "ACTIVE"} onValueChange={v => handleChange("status", v)}>
-                                        <SelectTrigger>
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="ACTIVE">Active</SelectItem>
-                                            <SelectItem value="TERMINATED">Terminated</SelectItem>
-                                            <SelectItem value="LEAVE">On Leave</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Hire Date</Label>
-                                    <Input
-                                        type="date"
-                                        value={formData.hireDate ? new Date(formData.hireDate).toISOString().split('T')[0] : ""}
-                                        onChange={e => handleChange("hireDate", e.target.value ? new Date(e.target.value) : null)}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Payroll & Tax */}
-                            <div className="md:col-span-2 space-y-4 p-4 border rounded-lg bg-secondary/10">
-                                <div className="flex items-center gap-2 font-bold text-lg">
-                                    <Briefcase className="h-5 w-5" />
-                                    Tax & Classification
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div className="space-y-2">
-                                        <Label>Tax Status</Label>
-                                        <Select value={formData.taxStatus || "W-4 Single"} onValueChange={v => handleChange("taxStatus", v)}>
-                                            <SelectTrigger>
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="W-4 Single">W-4 Single</SelectItem>
-                                                <SelectItem value="W-4 Married">W-4 Married</SelectItem>
-                                                <SelectItem value="1099 Contractor">1099 Contractor</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label>State (Res / Work)</Label>
-                                        <div className="flex gap-2">
-                                            <Input placeholder="Res" value={formData.primaryState || ""} onChange={e => handleChange("primaryState", e.target.value)} />
-                                            <Input placeholder="Work" value={formData.primaryWorkState || ""} onChange={e => handleChange("primaryWorkState", e.target.value)} />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label>1099 Classification</Label>
-                                        <div className="flex items-center space-x-2 h-10">
-                                            <input
-                                                type="checkbox"
-                                                className="h-4 w-4"
-                                                checked={!!formData.is1099}
-                                                onChange={e => handleChange("is1099", e.target.checked)}
-                                            />
-                                            <span className="text-sm">Is 1099 Contractor</span>
-                                        </div>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label>SSN (Encrypted)</Label>
-                                        <Input value={formData.ssn || ""} placeholder="***-**-****" onChange={e => handleChange("ssn", e.target.value)} />
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center gap-2 font-bold text-lg mt-4">
-                                    <Briefcase className="h-5 w-5" />
-                                    Pay Structure
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div className="space-y-2">
-                                        <Label>Pay Type</Label>
-                                        <Select value={formData.payType || "HOURLY"} onValueChange={v => handleChange("payType", v)}>
-                                            <SelectTrigger>
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="HOURLY">Hourly</SelectItem>
-                                                <SelectItem value="SALARY">Salary</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label>Pay Schedule</Label>
-                                        <Select value={formData.paySchedule || "WEEKLY"} onValueChange={v => handleChange("paySchedule", v)}>
-                                            <SelectTrigger>
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="WEEKLY">Weekly</SelectItem>
-                                                <SelectItem value="BIWEEKLY">Bi-Weekly</SelectItem>
-                                                <SelectItem value="SEMIMONTHLY">Semi-Monthly</SelectItem>
-                                                <SelectItem value="MONTHLY">Monthly</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label>Hourly Rate ($)</Label>
-                                        <Input type="number" value={formData.hourlyRate || 0} onChange={e => handleChange("hourlyRate", parseFloat(e.target.value))} />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label>Overtime Rule</Label>
-                                        <Select value={formData.overtimeRule || "OVER_40_WEEK"} onValueChange={v => handleChange("overtimeRule", v)}>
-                                            <SelectTrigger>
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="OVER_40_WEEK">Over 40h / Week</SelectItem>
-                                                <SelectItem value="OVER_8_DAY">Over 8h / Day</SelectItem>
-                                                <SelectItem value="UNION_X">Union (Special)</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label>Multipliers (OT / DT)</Label>
-                                        <div className="flex gap-2">
-                                            <Input type="number" step="0.1" value={formData.defaultOvertimeMultiplier || 1.5} onChange={e => handleChange("defaultOvertimeMultiplier", parseFloat(e.target.value))} />
-                                            <Input type="number" step="0.1" value={formData.doubleTimeMultiplier || 2.0} onChange={e => handleChange("doubleTimeMultiplier", parseFloat(e.target.value))} />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center gap-2 font-bold text-lg mt-4">
-                                    <Briefcase className="h-5 w-5" />
-                                    Integrations (QuickBooks)
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div className="space-y-2">
-                                        <Label>QBO Employee ID</Label>
-                                        <Input value={formData.qboEmployeeId || ""} onChange={e => handleChange("qboEmployeeId", e.target.value)} />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label>ADP Employee ID</Label>
-                                        <Input value={formData.adpEmployeeId || ""} onChange={e => handleChange("adpEmployeeId", e.target.value)} />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* System Access */}
-                            <div className="md:col-span-2 space-y-4 p-4 border rounded-lg bg-indigo-50 dark:bg-indigo-950/20">
-                                <div className="flex items-center gap-2 font-bold text-lg text-indigo-700 dark:text-indigo-400">
-                                    <Key className="h-5 w-5" />
-                                    System Access
-                                </div>
-
-                                {selectedEmployee?.user ? (
-                                    <div className="flex items-center gap-4 bg-white dark:bg-slate-900 p-4 rounded border">
-                                        <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold">
-                                            {selectedEmployee.user.name?.[0]?.toUpperCase() || "U"}
-                                        </div>
-                                        <div>
-                                            <p className="font-medium">Linked User Account</p>
-                                            <p className="text-xs text-muted-foreground">{selectedEmployee.user.email} ({selectedEmployee.user.role})</p>
-                                        </div>
-                                    </div>
+                                        </TableCell>
+                                    </TableRow>
                                 ) : (
-                                    <div className="space-y-4">
-                                        <p className="text-sm text-muted-foreground">
-                                            This employee does not have a user account. Invite them to the portal to view their schedule and enter time.
-                                        </p>
-                                        <div className="flex gap-4 items-end">
-                                            <div className="space-y-2 flex-1">
-                                                <Label>System Role</Label>
-                                                <Select defaultValue="CREW" onValueChange={(val) => setFormData(prev => ({ ...prev, _inviteRole: val } as any))}>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select Role" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="CREW">Crew Member</SelectItem>
-                                                        <SelectItem value="FOREMAN">Foreman</SelectItem>
-                                                        <SelectItem value="OFFICE">Office Admin</SelectItem>
-                                                        <SelectItem value="SUPER">Supervisor</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                            <BigButton
-                                                label="CREATE USER ACCOUNT"
-                                                icon={Key}
-                                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                                onClick={async () => {
-                                                    if (!selectedEmployeeId || selectedEmployeeId === "new") {
-                                                        alert("Save employee first.");
-                                                        return;
-                                                    }
-                                                    if (!formData.email) {
-                                                        alert("Email is required to create a user.");
-                                                        return;
-                                                    }
-                                                    if (confirm(`Create user for ${formData.email} with password 'Welcome123!'?`)) {
-                                                        const res = await createSystemUser({
-                                                            employeeId: selectedEmployeeId,
-                                                            email: formData.email,
-                                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                                            role: (formData as any)._inviteRole || 'CREW'
-                                                        });
-                                                        if (res.success) {
-                                                            alert("User created!");
-                                                            window.location.reload();
-                                                        } else {
-                                                            alert("Error creating user: " + (res as any).serverError || "Unknown");
-                                                        }
-                                                    }
-                                                }}
-                                                className="bg-indigo-600 hover:bg-indigo-700 text-white w-auto"
-                                            />
-                                        </div>
-                                    </div>
+                                    filteredEmployees.map((employee) => (
+                                        <TableRow key={employee.id}>
+                                            <TableCell>
+                                                <div className="flex items-center gap-3">
+                                                    <Avatar>
+                                                        <AvatarFallback>{employee.firstName[0]}{employee.lastName[0]}</AvatarFallback>
+                                                    </Avatar>
+                                                    <div>
+                                                        <div className="font-medium">{employee.lastName}, {employee.firstName}</div>
+                                                        <div className="md:hidden text-xs text-muted-foreground">{employee.role}</div>
+                                                    </div>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="hidden md:table-cell">
+                                                <Badge variant="outline" className="font-normal">
+                                                    {employee.role}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="hidden md:table-cell">
+                                                <Badge className={
+                                                    employee.status === "ACTIVE" ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-100" :
+                                                        "bg-slate-100 text-slate-800 hover:bg-slate-100"
+                                                }>
+                                                    {employee.status}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="hidden md:table-cell">
+                                                <div className="grid gap-1 text-sm text-muted-foreground">
+                                                    {employee.email && <div className="flex items-center gap-2"><Mail className="h-3 w-3" />{employee.email}</div>}
+                                                    {employee.phone && <div className="flex items-center gap-2"><Phone className="h-3 w-3" />{employee.phone}</div>}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <Button variant="ghost" size="icon" onClick={() => handleEditClick(employee)}>
+                                                    <Edit className="h-4 w-4" />
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
                                 )}
-                            </div>
-
-                            <div className="md:col-span-2">
-                                <BigButton
-                                    label={isPending ? "SAVING..." : (isCreating ? "CREATE EMPLOYEE" : "UPDATE EMPLOYEE")}
-                                    icon={isPending ? Loader2 : Save}
-                                    onClick={handleSave}
-                                    disabled={isPending}
-                                    className="bg-orange-600 hover:bg-orange-700 text-white"
-                                />
-                            </div>
-                        </div>
-                    )}
+                            </TableBody>
+                        </Table>
+                    </div>
                 </CardContent>
             </Card>
+
+            <EmployeeDialog
+                open={isDialogOpen}
+                onOpenChange={setIsDialogOpen}
+                employee={selectedEmployee}
+                isEditing={isEditing}
+            />
         </div>
     );
 }
 
+function EmployeeDialog({ open, onOpenChange, employee, isEditing }: { open: boolean, onOpenChange: (Open: boolean) => void, employee: Employee | null, isEditing: boolean }) {
+    const router = useRouter();
+    const [formData, setFormData] = useState<Partial<Employee>>({});
+    const [eContact, setEContact] = useState({ name: "", phone: "", relation: "" });
+    const [isPending, startTransition] = useTransition();
+
+    const handleSubmit = async (payload: any) => {
+        startTransition(async () => {
+            try {
+                // @ts-ignore - Assuming standard action signature
+                const res = isEditing && employee?.id
+                    ? await updateEmployee({ id: employee.id, data: payload })
+                    : await createEmployee(payload);
+
+                if (res?.success) {
+                    toast.success(isEditing ? "Employee updated" : "Employee created");
+                    onOpenChange(false);
+                    router.refresh();
+                } else {
+                    // @ts-ignore
+                    toast.error(res?.error || "Operation failed");
+                }
+            } catch (err) {
+                console.error(err);
+                toast.error("An unexpected error occurred");
+            }
+        });
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0">
+                <DialogHeader className="px-6 py-4 border-b">
+                    <DialogTitle>{isEditing ? "Edit Employee" : "New Employee"}</DialogTitle>
+                    <DialogDescription>
+                        {isEditing ? `Managing record for ${employee?.firstName} ${employee?.lastName}` : "Add a new member to the crew"}
+                    </DialogDescription>
+                </DialogHeader>
+
+                <InnerForm
+                    key={employee?.id || 'new'}
+                    isEditing={isEditing}
+                    initialData={employee}
+                    onSubmit={handleSubmit}
+                    isPending={isPending}
+                />
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+// Separated to simplify state management reset
+function InnerForm({ isEditing, initialData, onSubmit, isPending }: any) {
+    const [data, setData] = useState(initialData || { status: "ACTIVE", role: "LABORER", payType: "HOURLY" });
+    const [ec, setEc] = useState(() => {
+        if (initialData?.emergencyContact) {
+            try { return JSON.parse(initialData.emergencyContact); } catch { return {}; }
+        }
+        return {};
+    });
+    const [showSSN, setShowSSN] = useState(false);
+
+    const handleChange = (field: string, val: any) => setData((prev: any) => ({ ...prev, [field]: val }));
+    const handleEcChange = (field: string, val: any) => setEc((prev: any) => ({ ...prev, [field]: val }));
+
+    const handleSave = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        const finalData = {
+            ...data,
+            hourlyRate: data.hourlyRate ? Number(data.hourlyRate) : null,
+            email: data.email || null,
+            phone: data.phone || null,
+            emergencyContact: JSON.stringify(ec),
+            // Ensure dates are dates if needed, or strings if action expects strings
+            dob: data.dob ? new Date(data.dob) : null,
+            hireDate: data.hireDate ? new Date(data.hireDate) : null
+        };
+
+        onSubmit(finalData);
+    };
+
+    return (
+        <form onSubmit={handleSave} className="flex-1 overflow-y-auto">
+            <div className="p-6">
+                <Tabs defaultValue="personal" className="w-full">
+                    <TabsList className="grid w-full grid-cols-3 lg:w-[450px] mb-6">
+                        <TabsTrigger value="personal">Personal</TabsTrigger>
+                        <TabsTrigger value="role">Pay Rules</TabsTrigger>
+                        <TabsTrigger value="secure">Tax & Union Class</TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="personal" className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label>First Name</Label>
+                                <Input required value={data.firstName || ''} onChange={e => handleChange('firstName', e.target.value)} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Last Name</Label>
+                                <Input required value={data.lastName || ''} onChange={e => handleChange('lastName', e.target.value)} />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Email</Label>
+                            <Input type="email" value={data.email || ''} onChange={e => handleChange('email', e.target.value)} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Phone</Label>
+                            <Input type="tel" value={data.phone || ''} onChange={e => handleChange('phone', e.target.value)} />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label>Date of Birth</Label>
+                            <Input
+                                type="date"
+                                value={data.dob ? new Date(data.dob).toISOString().split('T')[0] : ''}
+                                onChange={e => handleChange('dob', e.target.value)}
+                            />
+                        </div>
+
+                        <div className="pt-4 border-t">
+                            <h4 className="font-semibold mb-3 flex items-center gap-2 text-sm text-muted-foreground"><Shield className="h-4 w-4" /> Emergency Contact</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <div className="space-y-1">
+                                    <Label className="text-xs">Name</Label>
+                                    <Input value={ec.name || ''} onChange={e => handleEcChange('name', e.target.value)} />
+                                </div>
+                                <div className="space-y-1">
+                                    <Label className="text-xs">Relationship</Label>
+                                    <Input value={ec.relation || ''} onChange={e => handleEcChange('relation', e.target.value)} />
+                                </div>
+                                <div className="space-y-1">
+                                    <Label className="text-xs">Phone</Label>
+                                    <Input value={ec.phone || ''} onChange={e => handleEcChange('phone', e.target.value)} />
+                                </div>
+                            </div>
+                        </div>
+                    </TabsContent>
+
+                    <TabsContent value="role" className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label>Role</Label>
+                                <Select value={data.role} onValueChange={v => handleChange('role', v)}>
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="FOREMAN">Foreman</SelectItem>
+                                        <SelectItem value="OPERATOR">Operator</SelectItem>
+                                        <SelectItem value="LABORER">Laborer</SelectItem>
+                                        <SelectItem value="MECHANIC">Mechanic</SelectItem>
+                                        <SelectItem value="OFFICE">Office</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Status</Label>
+                                <Select value={data.status} onValueChange={v => handleChange('status', v)}>
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="ACTIVE">Active</SelectItem>
+                                        <SelectItem value="TERMINATED">Terminated</SelectItem>
+                                        <SelectItem value="LEAVE">Leave</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label>Pay Type</Label>
+                                <Select value={data.payType} onValueChange={v => handleChange('payType', v)}>
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="HOURLY">Hourly</SelectItem>
+                                        <SelectItem value="SALARY">Salary</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Rate ($)</Label>
+                                <Input type="number" step="0.01" value={data.hourlyRate || ''} onChange={e => handleChange('hourlyRate', e.target.value)} />
+                            </div>
+                        </div>
+                    </TabsContent>
+
+                    <TabsContent value="secure" className="space-y-4">
+                        <div className="space-y-2 p-4 bg-amber-50 dark:bg-amber-950/20 rounded-md border border-amber-200 dark:border-amber-800">
+                            <Label className="flex items-center gap-2">
+                                SSN
+                                <Button type="button" variant="ghost" size="xs" className="h-6 w-6 p-0" onClick={() => setShowSSN(!showSSN)}>
+                                    {showSSN ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                                </Button>
+                            </Label>
+                            <div className="flex gap-2">
+                                <Input
+                                    className="font-mono"
+                                    placeholder="000-00-0000"
+                                    value={data.ssn || ''}
+                                    type={showSSN ? "text" : "password"}
+                                    onChange={e => handleChange('ssn', e.target.value)}
+                                />
+                            </div>
+                            <p className="text-xs text-muted-foreground">Only enter if required for payroll. Stored encrypted.</p>
+                        </div>
+                    </TabsContent>
+                </Tabs>
+            </div>
+
+            <div className="p-6 border-t bg-gray-50 dark:bg-slate-900 flex justify-end gap-3">
+                <Button type="submit" disabled={isPending}>
+                    {isPending ? "Saving..." : "Save Employee"}
+                </Button>
+            </div>
+        </form>
+    );
+}

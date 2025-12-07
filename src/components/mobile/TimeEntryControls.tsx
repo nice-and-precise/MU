@@ -7,15 +7,18 @@ import { Project } from '@prisma/client';
 import { Loader2, Play, Square } from 'lucide-react';
 import { clockIn, clockOut } from '@/actions/time';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 interface TimeEntryControlsProps {
     employeeId: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     activeEntry: any | null;
     projects: Project[];
+    weeklyEstimatedGrossPay?: number;
 }
 
-export function TimeEntryControls({ employeeId, activeEntry, projects }: TimeEntryControlsProps) {
+export function TimeEntryControls({ employeeId, activeEntry, projects, weeklyEstimatedGrossPay }: TimeEntryControlsProps) {
+    const router = useRouter();
     const [selectedProject, setSelectedProject] = useState<string>(activeEntry?.projectId || "");
     const [isPending, startTransition] = useTransition();
 
@@ -47,7 +50,7 @@ export function TimeEntryControls({ employeeId, activeEntry, projects }: TimeEnt
 
             if (res.success) {
                 toast.success("Clocked In");
-                window.location.reload();
+                router.refresh(); // Refresh server state without reload
             } else {
                 toast.error(res.error || "Failed to clock in");
             }
@@ -66,7 +69,7 @@ export function TimeEntryControls({ employeeId, activeEntry, projects }: TimeEnt
 
             if (res.success) {
                 toast.success("Clocked Out");
-                window.location.reload();
+                router.refresh();
             } else {
                 toast.error(res.error || "Failed to clock out");
             }
@@ -84,7 +87,14 @@ export function TimeEntryControls({ employeeId, activeEntry, projects }: TimeEnt
                         </h3>
                         <p className="text-xs text-gray-400">Started at {new Date(activeEntry.startTime).toLocaleTimeString()}</p>
                     </div>
-                    <div className="animate-pulse h-3 w-3 rounded-full bg-emerald-500"></div>
+                    <div className="flex flex-col items-end">
+                        <div className="animate-pulse h-3 w-3 rounded-full bg-emerald-500 mb-1"></div>
+                        {typeof weeklyEstimatedGrossPay !== 'undefined' && (
+                            <p className="text-xs text-emerald-600 font-medium whitespace-nowrap">
+                                Est. Pay: ${weeklyEstimatedGrossPay.toLocaleString()}
+                            </p>
+                        )}
+                    </div>
                 </div>
 
                 <Button

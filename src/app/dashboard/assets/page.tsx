@@ -1,5 +1,5 @@
 import { getAssets } from '@/actions/assets';
-import { AssetCard } from '@/components/assets/AssetCard';
+import { AssetBrowser } from '@/components/assets/AssetBrowser';
 import { AssetFormDialog } from '@/components/assets/AssetFormDialog';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
@@ -26,16 +26,8 @@ export default async function AssetsPage() {
                 />
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {assets?.map((asset) => (
-                    <AssetCard key={asset.id} asset={asset} />
-                ))}
-                {(!assets || assets.length === 0) && (
-                    <div className="col-span-full text-center py-10 text-muted-foreground">
-                        No assets found. Create one to get started.
-                    </div>
-                )}
-            </div>
+            {/* Client-side filtering/browser */}
+            <AssetBrowser initialAssets={assets as any} />
         </div>
     );
 }

@@ -30,10 +30,12 @@ interface GeoClockInProps {
     geofenceRadius: number; // in feet
     employeeId: string;
     minimal?: boolean;
+    initialActiveEntry?: any; // Pass the active entry if known
 }
 
-export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius, employeeId, minimal = false }: GeoClockInProps) {
-    const [status, setStatus] = useState<"OUT" | "IN">("OUT");
+export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius, employeeId, minimal = false, initialActiveEntry }: GeoClockInProps) {
+    const [status, setStatus] = useState<"OUT" | "IN" | "BLOCKED">("OUT");
+    const [blockedProjectName, setBlockedProjectName] = useState<string | null>(null);
     const [location, setLocation] = useState<{ lat: number; long: number } | null>(null);
     const [distance, setDistance] = useState<number | null>(null);
     const [error, setError] = useState("");
@@ -41,11 +43,28 @@ export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius,
     const [isPending, startTransition] = useTransition();
 
     useEffect(() => {
-        // Check initial status
-        if (employeeId && employeeId !== "current-user") {
-            getClockStatus(employeeId).then(res => {
-                if (res.success && res.data) {
+        const checkStatus = (entry: any) => {
+            if (entry) {
+                if (entry.projectId === projectId) {
                     setStatus("IN");
+                } else {
+                    setStatus("BLOCKED");
+                    // Assuming entry might have project relation loaded, or we just say "Another Project"
+                    // If the entry came from getClockStatus, it might not have project name.
+                    setBlockedProjectName(entry.project?.name || "another project");
+                }
+            } else {
+                setStatus("OUT");
+            }
+        };
+
+        if (initialActiveEntry !== undefined) {
+            checkStatus(initialActiveEntry);
+        } else if (employeeId && employeeId !== "current-user") {
+            // Fallback to fetch if not provided
+            getClockStatus(employeeId).then(res => {
+                if (res.success) {
+                    checkStatus(res.data);
                 }
             });
         }
@@ -69,7 +88,7 @@ export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius,
         } else {
             setError("Geolocation not supported");
         }
-    }, [projectLat, projectLong, employeeId]);
+    }, [projectLat, projectLong, employeeId, projectId, initialActiveEntry]);
 
     function handleClockAction() {
         if (!location) {
@@ -144,12 +163,16 @@ export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius,
             <>
                 <Button
                     size="sm"
-                    variant={status === "OUT" ? "default" : "destructive"}
+                    variant={status === "IN" ? "destructive" : (status === "BLOCKED" ? "secondary" : "default")}
                     onClick={handleClockAction}
-                    disabled={isPending}
+                    disabled={isPending || status === "BLOCKED"}
                     className={status === "OUT" ? "bg-green-600 hover:bg-green-700" : ""}
                 >
-                    {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : (status === "OUT" ? "Clock In" : "Clock Out")}
+                    {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : (
+                        status === "IN" ? "Clock Out" : (
+                            status === "BLOCKED" ? `In at ${blockedProjectName}` : "Clock In"
+                        )
+                    )}
                 </Button>
 
                 {/* Inspection Modal for Minimal Mode */}

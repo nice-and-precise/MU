@@ -86,19 +86,19 @@ export function FieldDashboard({
                 <TabsList className="grid w-full grid-cols-4 h-14">
                     <TabsTrigger value="today" className="flex flex-col gap-1 py-1">
                         <Clock className="h-4 w-4" />
-                        <span className="text-xs">Today</span>
+                        <span className="text-xs hidden md:inline">Today</span>
                     </TabsTrigger>
                     <TabsTrigger value="gear" className="flex flex-col gap-1 py-1">
                         <Wrench className="h-4 w-4" />
-                        <span className="text-xs">Gear</span>
+                        <span className="text-xs hidden md:inline">Gear</span>
                     </TabsTrigger>
                     <TabsTrigger value="safety" className="flex flex-col gap-1 py-1">
                         <Shield className="h-4 w-4" />
-                        <span className="text-xs">Safety</span>
+                        <span className="text-xs hidden md:inline">Safety</span>
                     </TabsTrigger>
                     <TabsTrigger value="docs" className="flex flex-col gap-1 py-1">
                         <File className="h-4 w-4" />
-                        <span className="text-xs">Docs</span>
+                        <span className="text-xs hidden md:inline">Docs</span>
                     </TabsTrigger>
                 </TabsList>
 

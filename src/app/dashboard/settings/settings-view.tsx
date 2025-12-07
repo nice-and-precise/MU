@@ -101,7 +101,7 @@ export function SettingsView({ initialEmployees, preferences }: SettingsViewProp
                         <div className="flex items-center justify-between">
                             <h2 className="text-xl font-bold tracking-tight">Team Management</h2>
                         </div>
-                        <EmployeeManager initialEmployees={initialEmployees || []} />
+                        <EmployeeManager employees={initialEmployees || []} />
                     </div>
                 );
             case "Billing":

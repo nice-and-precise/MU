@@ -361,12 +361,84 @@ export async function getCrewStatsService(userId: string) {
             ],
             startTime: { gte: todayStart, lte: todayEnd }
         },
-        include: { project: true }
+        include: {
+            project: true,
+            assets: {
+                include: { asset: true }
+            },
+            crew: {
+                include: {
+                    members: {
+                        include: {
+                            employee: true
+                        }
+                    }
+                }
+            }
+        }
     });
 
     const currentProject = activeTimeEntry?.project || shift?.project;
 
-    // 3. Check Daily Report Status for this project/crew
+    // 3. Calculate "Labor Cost Lens"
+    // Fetch all time entries for this crew/project for TODAY
+    let todaysLaborCost = 0;
+    let effectiveHourlyRate = 0;
+
+    if (currentProject) {
+        // Identify who is "on the crew" to sum up costs
+        // If we found a shift, use that crew. If not, maybe just the current user (if solo).
+        const crewMemberIds = shift?.crew?.members.map(m => m.employeeId) || [];
+        // If no shift, we at least include the current user if they have an active entry
+        if (crewMemberIds.length === 0 && activeTimeEntry) {
+            crewMemberIds.push(activeTimeEntry.employeeId);
+        }
+
+        if (crewMemberIds.length > 0) {
+            const todaysEntries = await prisma.timeEntry.findMany({
+                where: {
+                    employeeId: { in: crewMemberIds },
+                    startTime: { gte: todayStart }
+                },
+                include: { employee: true }
+            });
+
+            const now = new Date();
+            let totalHours = 0;
+
+            todaysEntries.forEach(entry => {
+                const start = new Date(entry.startTime).getTime();
+                const end = entry.endTime ? new Date(entry.endTime).getTime() : now.getTime();
+                const durationHours = (end - start) / (1000 * 60 * 60);
+
+                // Simple Cost = Hours * Rate
+                // TODO: Add OT logic later if needed
+                const cost = durationHours * (entry.employee.hourlyRate || 0);
+                todaysLaborCost += cost;
+
+                // Only count "productive" hours for effective rate (exclude break?)
+                // For now, assume all logged time is productive or we just average the rates
+                if (entry.type === 'WORK') {
+                    totalHours += durationHours;
+                }
+            });
+
+            // Effective Rate = Average hourly rate of active/working crew members
+            // Or typically: Total Cost / Total Hours
+            if (totalHours > 0) {
+                effectiveHourlyRate = todaysLaborCost / totalHours;
+            } else {
+                // Fallback to average of base rates
+                const rates = todaysEntries.map(e => e.employee.hourlyRate || 0).filter(r => r > 0);
+                if (rates.length > 0) {
+                    effectiveHourlyRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+                }
+            }
+        }
+    }
+
+
+    // 4. Check Daily Report Status for this project/crew
     let dailyReportStatus = 'NOT_STARTED';
     let dailyReportId = null;
 
@@ -383,11 +455,17 @@ export async function getCrewStatsService(userId: string) {
         }
     }
 
+    // 5. Get Assigned Assets from Shift
+    const assignedAssets = shift?.assets.map((sa: any) => sa.asset) || [];
+
     return {
         activeTimeEntry,
         currentProject,
         dailyReportStatus,
         dailyReportId,
-        nextLocation: currentProject?.location || 'No Assignment'
+        nextLocation: currentProject?.location || 'No Assignment',
+        todaysLaborCost,
+        effectiveHourlyRate,
+        assignedAssets
     };
 }

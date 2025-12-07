@@ -154,7 +154,7 @@ export function AssetFormDialog({ asset, trigger, open, onOpenChange }: AssetFor
 
                         <FormLayout
                             name="location"
-                            label="Location (Yard/General)"
+                            label="Home Yard / Assignment"
                             children={(field) => (
                                 <Input placeholder="e.g. Main Yard" {...field} />
                             )}

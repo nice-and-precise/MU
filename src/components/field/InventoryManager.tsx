@@ -166,14 +166,16 @@ export function InventoryManager({ projectId, userId = "current-user" }: Invento
                         {inventory.length === 0 ? (
                             <p className="text-muted-foreground">No inventory loaded.</p>
                         ) : (
-                            inventory.map(item => (
-                                <div key={item.id} className="flex justify-between">
-                                    <span>{item.name}</span>
-                                    <span className={`font-mono ${item.quantityOnHand < (item.reorderPoint || 0) ? 'text-red-500 font-bold' : 'text-muted-foreground'}`}>
-                                        {item.quantityOnHand} {item.unit || 'units'}
-                                    </span>
-                                </div>
-                            ))
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                                {inventory.map(item => (
+                                    <div key={item.id} className="flex justify-between items-center p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border">
+                                        <span className="font-medium">{item.name}</span>
+                                        <span className={`font-mono px-2 py-1 rounded ${item.quantityOnHand < (item.reorderPoint || 0) ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 font-bold' : 'bg-slate-200 dark:bg-slate-800 text-muted-foreground'}`}>
+                                            {item.quantityOnHand} {item.unit || 'units'}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
                         )}
                     </div>
                 </div>

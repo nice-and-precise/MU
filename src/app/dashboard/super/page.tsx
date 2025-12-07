@@ -5,10 +5,15 @@ import { getAssets } from "@/actions/assets";
 import { getActiveProjects } from "@/actions/projects";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle, CheckCircle, AlertTriangle } from "lucide-react";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { DashboardOnboarding } from "@/components/dashboard/DashboardOnboarding";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export default async function SuperDashboard() {
+    const session = await getServerSession(authOptions);
     const statsRes = await getSuperStats();
     // Default values if data is missing
     const stats = statsRes.data || {
@@ -27,8 +32,30 @@ export default async function SuperDashboard() {
     const assets = res.success && res.data ? res.data : [];
     const { data: projects } = await getActiveProjects();
 
+    const currentUser = await prisma.user.findUnique({
+        where: { id: session?.user?.id },
+        select: { hasCompletedOnboarding: true, name: true, preferences: true }
+    });
+
+    // Check if profile is set up
+    let profileSetupComplete = false;
+    try {
+        const prefs = typeof currentUser?.preferences === 'string'
+            ? JSON.parse(currentUser.preferences)
+            : currentUser?.preferences || {};
+        profileSetupComplete = !!prefs.onboardingComplete;
+    } catch (e) {
+        profileSetupComplete = false;
+    }
+
     return (
         <div className="p-8 space-y-6">
+            <DashboardOnboarding
+                role="SUPER"
+                hasCompletedOnboarding={currentUser?.hasCompletedOnboarding ?? false}
+                userName={currentUser?.name || ""}
+                profileSetupComplete={profileSetupComplete}
+            />
             {/* UX Promise Header */}
             <div className="bg-gradient-to-r from-[#003366] to-slate-900 p-6 rounded-lg text-white shadow-lg">
                 <h1 className="text-3xl font-bold uppercase tracking-tight">Superintendent Dashboard</h1>

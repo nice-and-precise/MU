@@ -4,12 +4,14 @@ import { revalidatePath } from "next/cache"
 import { authenticatedAction } from "@/lib/safe-action"
 import { TimeService } from "@/services/time"
 import { ClockInSchema, ClockOutSchema, GetClockStatusSchema } from "@/schemas/time"
+import { z } from "zod"
 
 export const clockIn = authenticatedAction(
     ClockInSchema,
     async (data) => {
         const entry = await TimeService.clockIn(data);
         revalidatePath('/dashboard');
+        revalidatePath('/dashboard/time');
         return entry;
     }
 );
@@ -19,6 +21,7 @@ export const clockOut = authenticatedAction(
     async (data) => {
         const entry = await TimeService.clockOut(data);
         revalidatePath('/dashboard');
+        revalidatePath('/dashboard/time');
         return entry;
     }
 );
@@ -27,6 +30,13 @@ export const getClockStatus = authenticatedAction(
     GetClockStatusSchema,
     async (employeeId) => {
         return await TimeService.getClockStatus(employeeId);
+    }
+);
+
+export const getWeeklyEstGrossPay = authenticatedAction(
+    z.string(), // employeeId
+    async (employeeId) => {
+        return await TimeService.getWeeklyEstGrossPay(employeeId);
     }
 );
 

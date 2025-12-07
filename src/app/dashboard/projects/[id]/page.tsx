@@ -1,4 +1,4 @@
-import { getProject } from "@/actions/projects";
+import { getProject, getProjectLaborStats } from "@/actions/projects";
 import { getProjectSummary } from "@/actions/closeout";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -10,12 +10,14 @@ import { TicketManager } from "@/components/safety/TicketManager";
 
 export default async function ProjectDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const [projectRes, summaryRes] = await Promise.all([
+    const [projectRes, summaryRes, laborRes] = await Promise.all([
         getProject(id),
-        getProjectSummary(id)
+        getProjectSummary(id),
+        getProjectLaborStats(id)
     ]);
     const project = projectRes?.data;
     const summary = summaryRes?.data;
+    const laborStats = laborRes?.data;
 
     if (!project || !summary) {
         notFound();
@@ -35,16 +37,32 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
                     </p>
                     <p className="text-xs text-muted-foreground">Invoiced of Budget</p>
                 </div>
+
+                {/* Labor Stats Card */}
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center text-gray-500 mb-2">
                         <HardHat className="h-4 w-4 mr-2" />
-                        <span className="text-sm font-medium">Production</span>
+                        <span className="text-sm font-medium">Labor Cost</span>
                     </div>
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                        {summary.production.totalFootage.toLocaleString()} LF
+                        ${laborStats?.actualLaborCost.toLocaleString() || '0'}
                     </p>
-                    <p className="text-xs text-muted-foreground">{summary.production.activeBores} Active Bores</p>
+                    <div className="flex justify-between items-center text-xs mt-1">
+                        <span className="text-gray-500">Est. Budget:</span>
+                        <span className="font-medium text-gray-700 dark:text-gray-300">
+                            ${laborStats?.estimatedLaborBudget.toLocaleString() || '0'}
+                        </span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                        <div
+                            className={`bg-blue-600 h-1.5 rounded-full`}
+                            style={{
+                                width: `${Math.min(100, ((laborStats?.actualLaborCost || 0) / (laborStats?.estimatedLaborBudget || 1)) * 100)}%`
+                            }}
+                        ></div>
+                    </div>
                 </div>
+
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center text-gray-500 mb-2">
                         <ShieldCheck className="h-4 w-4 mr-2" />

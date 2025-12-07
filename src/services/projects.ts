@@ -91,5 +91,35 @@ export const ProjectService = {
             bores,
             punchItems
         };
+    },
+
+    getLaborStats: async (projectId: string) => {
+        const project = await prisma.project.findUnique({
+            where: { id: projectId },
+            select: { budget: true }
+        });
+
+        const entries = await prisma.timeEntry.findMany({
+            where: { projectId },
+            include: { employee: { select: { hourlyRate: true } } }
+        });
+
+        let actualCost = 0;
+        const now = new Date();
+
+        entries.forEach(e => {
+            const start = e.startTime.getTime();
+            const end = e.endTime ? e.endTime.getTime() : now.getTime();
+            const hours = (end - start) / (1000 * 60 * 60);
+            const rate = e.employee.hourlyRate || 0;
+            actualCost += hours * rate;
+        });
+
+        return {
+            actualLaborCost: Math.round(actualCost * 100) / 100,
+            projectBudget: project?.budget || 0,
+            // Simple heuristic: 40% of budget is typically labor in this industry if not specified
+            estimatedLaborBudget: (project?.budget || 0) * 0.4
+        };
     }
 };

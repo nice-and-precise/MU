@@ -7,8 +7,18 @@ import { Button } from '@/components/ui/button';
 import { AssetFormDialog } from './AssetFormDialog';
 import { useState } from 'react';
 
+import { CheckCircle, AlertTriangle } from 'lucide-react';
+
 interface AssetCardProps {
-    asset: Asset & { project?: { name: string } | null };
+    asset: Asset & {
+        project?: { name: string } | null;
+        inspections?: {
+            id: string;
+            createdAt: Date;
+            passed: boolean;
+            type: string;
+        }[];
+    };
 }
 
 export function AssetCard({ asset }: AssetCardProps) {
@@ -53,6 +63,23 @@ export function AssetCard({ asset }: AssetCardProps) {
                             {asset.project?.name || asset.location || 'Unassigned'}
                         </span>
                     </div>
+
+                    {/* Last Inspection Info */}
+                    {asset.inspections && asset.inspections.length > 0 && (
+                        <div className="flex justify-between items-center pt-2 border-t mt-2">
+                            <span>Inspection:</span>
+                            <div className="flex items-center gap-1">
+                                {asset.inspections[0].passed ? (
+                                    <CheckCircle className="h-3 w-3 text-green-600" />
+                                ) : (
+                                    <AlertTriangle className="h-3 w-3 text-red-600" />
+                                )}
+                                <span className={`font-medium text-xs ${asset.inspections[0].passed ? 'text-green-700' : 'text-red-700'}`}>
+                                    {new Date(asset.inspections[0].createdAt).toLocaleDateString()}
+                                </span>
+                            </div>
+                        </div>
+                    )}
                 </div>
                 <div className="mt-4">
                     <AssetFormDialog

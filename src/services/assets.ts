@@ -12,6 +12,17 @@ export class AssetService {
                         name: true,
                     },
                 },
+                inspections: {
+                    orderBy: { createdAt: 'desc' },
+                    take: 1,
+                    select: {
+                        id: true,
+                        createdAt: true,
+                        passed: true,
+                        type: true,
+                        createdById: true
+                    }
+                }
             },
         });
     }
