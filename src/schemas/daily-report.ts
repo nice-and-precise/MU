@@ -3,26 +3,26 @@ import { z } from 'zod';
 // --- Sub-Schemas for Arrays ---
 
 export const CrewMemberSchema = z.object({
-    employeeId: z.string().min(1, "Employee is required"),
-    hours: z.coerce.number().min(0, "Hours cannot be negative"),
-    role: z.string().min(1, "Role is required"),
+    employeeId: z.string().min(1, "Select an employee"),
+    hours: z.coerce.number().min(0, "Enter hours"),
+    role: z.string().min(1, "Select a role"),
 });
 
 export const ProductionLogSchema = z.object({
-    activity: z.string().min(1, "Activity is required"),
-    lf: z.coerce.number().min(0, "Footage cannot be negative"),
+    activity: z.string().min(1, "Select activity"),
+    lf: z.coerce.number().min(0, "Enter footage"),
     pitch: z.coerce.number().optional(),
     azimuth: z.coerce.number().optional(),
 });
 
 export const MaterialUsageSchema = z.object({
-    inventoryItemId: z.string().min(1, "Item is required"),
-    quantity: z.coerce.number().min(0, "Quantity cannot be negative"),
+    inventoryItemId: z.string().min(1, "Select item"),
+    quantity: z.coerce.number().min(0, "Enter quantity"),
 });
 
 export const EquipmentUsageSchema = z.object({
-    assetId: z.string().min(1, "Asset is required"),
-    hours: z.coerce.number().min(0, "Hours cannot be negative"),
+    assetId: z.string().min(1, "Select asset"),
+    hours: z.coerce.number().min(0, "Enter hours"),
 });
 
 // --- Main Schemas ---

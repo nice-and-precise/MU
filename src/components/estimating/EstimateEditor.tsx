@@ -40,6 +40,8 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+import { FormLayout } from '@/components/ui/FormLayout';
+
 interface EstimateEditorProps {
     estimate: any;
 }
@@ -51,11 +53,11 @@ const headerSchema = z.object({
 });
 
 const lineItemSchema = z.object({
-    description: z.string().min(1, "Description is required"),
-    quantity: z.coerce.number().min(0, "Quantity must be positive"),
-    unit: z.string().min(1, "Unit is required"),
-    unitCost: z.coerce.number().min(0, "Cost must be positive"),
-    markup: z.coerce.number().min(0, "Markup must be positive"),
+    description: z.string().min(1, "Enter description"),
+    quantity: z.coerce.number().min(0, "Enter quantity"),
+    unit: z.string().min(1, "Enter unit"),
+    unitCost: z.coerce.number().min(0, "Enter unit cost"),
+    markup: z.coerce.number().min(0, "Enter markup"),
 });
 
 export default function EstimateEditor({ estimate }: EstimateEditorProps) {
@@ -389,55 +391,33 @@ export default function EstimateEditor({ estimate }: EstimateEditorProps) {
                         <CardContent className="p-6">
                             <Form {...headerForm}>
                                 <form className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <FormField
-                                        control={headerForm.control}
+                                    <FormLayout
                                         name="name"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel required>Estimate Name</FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
+                                        label="Estimate Name"
+                                        required
+                                        children={(field) => <Input {...field} />}
                                     />
-                                    <FormField
-                                        control={headerForm.control}
+                                    <FormLayout
                                         name="customerName"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel required>Customer</FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
+                                        label="Customer"
+                                        required
+                                        children={(field) => <Input {...field} />}
                                     />
-                                    <FormField
-                                        control={headerForm.control}
-                                        name="status"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel required>Status</FormLabel>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                    <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        <SelectItem value="DRAFT">Draft</SelectItem>
-                                                        <SelectItem value="SENT">Sent</SelectItem>
-                                                        <SelectItem value="WON">Won</SelectItem>
-                                                        <SelectItem value="LOST">Lost</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                                    <FormLayout name="status" label="Status" required children={(field) => (
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="DRAFT">Draft</SelectItem>
+                                                <SelectItem value="SENT">Sent</SelectItem>
+                                                <SelectItem value="WON">Won</SelectItem>
+                                                <SelectItem value="LOST">Lost</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    )} />
                                 </form>
                             </Form>
                         </CardContent>
@@ -527,74 +507,29 @@ export default function EstimateEditor({ estimate }: EstimateEditorProps) {
                                     <Form {...lineForm}>
                                         <TableRow className="bg-slate-50">
                                             <TableCell>
-                                                <FormField
-                                                    control={lineForm.control}
-                                                    name="description"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormControl>
-                                                                <Input placeholder="New Item Description" {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
+                                                <FormLayout name="description" className="mb-0" children={(field) => (
+                                                    <Input placeholder="New Item Description" {...field} />
+                                                )} />
                                             </TableCell>
                                             <TableCell>
-                                                <FormField
-                                                    control={lineForm.control}
-                                                    name="quantity"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormControl>
-                                                                <Input type="number" {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
+                                                <FormLayout name="quantity" className="mb-0" children={(field) => (
+                                                    <Input type="number" {...field} />
+                                                )} />
                                             </TableCell>
                                             <TableCell>
-                                                <FormField
-                                                    control={lineForm.control}
-                                                    name="unit"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormControl>
-                                                                <Input {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
+                                                <FormLayout name="unit" className="mb-0" children={(field) => (
+                                                    <Input {...field} />
+                                                )} />
                                             </TableCell>
                                             <TableCell>
-                                                <FormField
-                                                    control={lineForm.control}
-                                                    name="unitCost"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormControl>
-                                                                <Input type="number" placeholder="Cost" {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
+                                                <FormLayout name="unitCost" className="mb-0" children={(field) => (
+                                                    <Input type="number" placeholder="Cost" {...field} />
+                                                )} />
                                             </TableCell>
                                             <TableCell>
-                                                <FormField
-                                                    control={lineForm.control}
-                                                    name="markup"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormControl>
-                                                                <Input type="number" {...field} onChange={e => field.onChange(Number(e.target.value) / 100)} value={(field.value || 0) * 100} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
+                                                <FormLayout name="markup" className="mb-0" children={(field) => (
+                                                    <Input type="number" {...field} onChange={e => field.onChange(Number(e.target.value) / 100)} value={(field.value || 0) * 100} />
+                                                )} />
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <Button size="sm" onClick={lineForm.handleSubmit(onAddLineSubmit)} disabled={loading}>

@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Users, MapPin } from "lucide-react";
 
 interface Crew {
@@ -40,10 +40,7 @@ export function ActiveCrewsList({ crews }: ActiveCrewsListProps) {
                                     </div>
                                 </div>
                                 <div className="text-right space-y-1">
-                                    <Badge variant={crew.status.includes('Drill') || crew.status.includes('On Site') ? 'default' : 'secondary'}
-                                        className={crew.status.includes('Drill') ? 'bg-blue-600 hover:bg-blue-700' : (crew.status === 'On Site' ? 'bg-green-500 hover:bg-green-600' : '')}>
-                                        {crew.status}
-                                    </Badge>
+                                    <StatusBadge status={crew.status} />
                                     <div className="text-sm text-muted-foreground">{crew.foreman}</div>
                                 </div>
                             </div>

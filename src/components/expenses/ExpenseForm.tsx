@@ -13,12 +13,8 @@ import * as z from "zod";
 import { toast } from "sonner";
 import {
     Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
 } from "@/components/ui/form";
+import { FormLayout } from "@/components/ui/FormLayout";
 
 const expenseSchema = z.object({
     date: z.string().min(1, "Date is required"),
@@ -98,86 +94,56 @@ export default function ExpenseForm({ projectId, onSuccess }: ExpenseFormProps) 
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
-                            <FormField
-                                control={form.control}
+                            <FormLayout
                                 name="date"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Date</FormLabel>
-                                        <FormControl>
-                                            <Input type="date" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
+                                label="Date"
+                                children={(field) => (
+                                    <Input type="date" {...field} />
                                 )}
                             />
-                            <FormField
-                                control={form.control}
+                            <FormLayout
                                 name="amount"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Amount</FormLabel>
-                                        <FormControl>
-                                            <Input type="number" step="0.01" placeholder="0.00" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
+                                label="Amount"
+                                children={(field) => (
+                                    <Input type="number" step="0.01" placeholder="0.00" {...field} />
                                 )}
                             />
                         </div>
 
-                        <FormField
-                            control={form.control}
+                        <FormLayout
                             name="category"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Category</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select category" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="Material">Material</SelectItem>
-                                            <SelectItem value="Fuel">Fuel</SelectItem>
-                                            <SelectItem value="Equipment Rental">Equipment Rental</SelectItem>
-                                            <SelectItem value="Subcontractor">Subcontractor</SelectItem>
-                                            <SelectItem value="Per Diem">Per Diem</SelectItem>
-                                            <SelectItem value="Travel">Travel</SelectItem>
-                                            <SelectItem value="Other">Other</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
+                            label="Category"
+                            children={(field) => (
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select category" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Material">Material</SelectItem>
+                                        <SelectItem value="Fuel">Fuel</SelectItem>
+                                        <SelectItem value="Equipment Rental">Equipment Rental</SelectItem>
+                                        <SelectItem value="Subcontractor">Subcontractor</SelectItem>
+                                        <SelectItem value="Per Diem">Per Diem</SelectItem>
+                                        <SelectItem value="Travel">Travel</SelectItem>
+                                        <SelectItem value="Other">Other</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             )}
                         />
 
-                        <FormField
-                            control={form.control}
+                        <FormLayout
                             name="description"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Description</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="What was purchased?" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
+                            label="Description"
+                            children={(field) => (
+                                <Input placeholder="What was purchased?" {...field} />
                             )}
                         />
 
-                        <FormField
-                            control={form.control}
+                        <FormLayout
                             name="vendor"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Vendor (Optional)</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Store or Company Name" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
+                            label="Vendor (Optional)"
+                            children={(field) => (
+                                <Input placeholder="Store or Company Name" {...field} />
                             )}
                         />
 

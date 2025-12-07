@@ -12,12 +12,8 @@ import * as z from "zod";
 import { toast } from "sonner";
 import {
     Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
 } from "@/components/ui/form";
+import { FormLayout } from "@/components/ui/FormLayout";
 import { Loader2 } from "lucide-react";
 
 const damageSchema = z.object({
@@ -74,46 +70,34 @@ export function DamageForm({ projectId, ticketId, onClose }: DamageFormProps) {
                     <p className="text-sm text-red-600">Ensure emergency services are contacted if gas or hazardous.</p>
                 </div>
 
-                <FormField
-                    control={form.control}
+                <FormLayout
                     name="facilityType"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Facility Type</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    <SelectItem value="GAS">Gas</SelectItem>
-                                    <SelectItem value="ELECTRIC">Electric</SelectItem>
-                                    <SelectItem value="WATER">Water</SelectItem>
-                                    <SelectItem value="FIBER">Fiber/Comms</SelectItem>
-                                    <SelectItem value="SEWER">Sewer</SelectItem>
-                                    <SelectItem value="UNKNOWN">Unknown</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <FormMessage />
-                        </FormItem>
+                    label="Facility Type"
+                    children={(field) => (
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <SelectTrigger>
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="GAS">Gas</SelectItem>
+                                <SelectItem value="ELECTRIC">Electric</SelectItem>
+                                <SelectItem value="WATER">Water</SelectItem>
+                                <SelectItem value="FIBER">Fiber/Comms</SelectItem>
+                                <SelectItem value="SEWER">Sewer</SelectItem>
+                                <SelectItem value="UNKNOWN">Unknown</SelectItem>
+                            </SelectContent>
+                        </Select>
                     )}
                 />
 
-                <FormField
-                    control={form.control}
+                <FormLayout
                     name="description"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Description</FormLabel>
-                            <FormControl>
-                                <Textarea
-                                    placeholder="Describe the damage and location..."
-                                    {...field}
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
+                    label="Description"
+                    children={(field) => (
+                        <Textarea
+                            placeholder="Describe the damage and location..."
+                            {...field}
+                        />
                     )}
                 />
 

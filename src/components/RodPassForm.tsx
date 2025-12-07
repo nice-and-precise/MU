@@ -10,12 +10,8 @@ import * as z from "zod";
 import { toast } from "sonner";
 import {
     Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
 } from "@/components/ui/form";
+import { FormLayout } from '@/components/ui/FormLayout';
 import { Input } from "@/components/ui/input";
 import {
     Select,
@@ -166,56 +162,41 @@ export default function RodPassForm({ bores }: { bores: any[] }) {
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
 
-                        <FormField
-                            control={form.control}
+                        <FormLayout
                             name="boreId"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel required>Select Bore</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="-- Choose Active Bore --" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {bores.map((b) => (
-                                                <SelectItem key={b.id} value={b.id}>
-                                                    {b.name} ({b.project?.name || 'Unknown Project'})
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
+                            label="Select Bore"
+                            required
+                            children={(field) => (
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="-- Choose Active Bore --" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {bores.map((b) => (
+                                            <SelectItem key={b.id} value={b.id}>
+                                                {b.name} ({b.project?.name || 'Unknown Project'})
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             )}
                         />
 
                         <div className="grid grid-cols-2 gap-6">
-                            <FormField
-                                control={form.control}
+                            <FormLayout
                                 name="sequence"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel required>Rod Sequence #</FormLabel>
-                                        <FormControl>
-                                            <Input type="number" {...field} className="font-mono" />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
+                                label="Rod Sequence #"
+                                required
+                                children={(field) => (
+                                    <Input type="number" {...field} className="font-mono" />
                                 )}
                             />
-                            <FormField
-                                control={form.control}
+                            <FormLayout
                                 name="linearFeet"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel required>Length (LF)</FormLabel>
-                                        <FormControl>
-                                            <Input type="number" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
+                                label="Length (LF)"
+                                required
+                                children={(field) => (
+                                    <Input type="number" {...field} />
                                 )}
                             />
                         </div>
@@ -225,43 +206,25 @@ export default function RodPassForm({ bores }: { bores: any[] }) {
                                 Telemetry Data
                             </h3>
                             <div className="grid grid-cols-3 gap-4">
-                                <FormField
-                                    control={form.control}
+                                <FormLayout
                                     name="pitch"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-xs text-gray-500">Pitch (%)</FormLabel>
-                                            <FormControl>
-                                                <Input type="number" step="0.1" placeholder="0.0" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
+                                    label="Pitch (%)"
+                                    children={(field) => (
+                                        <Input type="number" step="0.1" placeholder="0.0" {...field} />
                                     )}
                                 />
-                                <FormField
-                                    control={form.control}
+                                <FormLayout
                                     name="azimuth"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-xs text-gray-500">Azimuth (°)</FormLabel>
-                                            <FormControl>
-                                                <Input type="number" step="0.1" placeholder="0.0" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
+                                    label="Azimuth (°)"
+                                    children={(field) => (
+                                        <Input type="number" step="0.1" placeholder="0.0" {...field} />
                                     )}
                                 />
-                                <FormField
-                                    control={form.control}
+                                <FormLayout
                                     name="depth"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-xs text-gray-500">Depth (ft)</FormLabel>
-                                            <FormControl>
-                                                <Input type="number" step="0.1" placeholder="0.0" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
+                                    label="Depth (ft)"
+                                    children={(field) => (
+                                        <Input type="number" step="0.1" placeholder="0.0" {...field} />
                                     )}
                                 />
                             </div>
@@ -272,72 +235,42 @@ export default function RodPassForm({ bores }: { bores: any[] }) {
                                 Detailed Reporting
                             </h3>
                             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                                <FormField
-                                    control={form.control}
+                                <FormLayout
                                     name="viscosity"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-xs text-gray-500">Viscosity (sec)</FormLabel>
-                                            <FormControl>
-                                                <Input type="number" step="1" placeholder="45" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
+                                    label="Viscosity (sec)"
+                                    children={(field) => (
+                                        <Input type="number" step="1" placeholder="45" {...field} />
                                     )}
                                 />
-                                <FormField
-                                    control={form.control}
+                                <FormLayout
                                     name="mudWeight"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-xs text-gray-500">Mud Wt (lb/gal)</FormLabel>
-                                            <FormControl>
-                                                <Input type="number" step="0.1" placeholder="8.4" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
+                                    label="Mud Wt (lb/gal)"
+                                    children={(field) => (
+                                        <Input type="number" step="0.1" placeholder="8.4" {...field} />
                                     )}
                                 />
-                                <FormField
-                                    control={form.control}
+                                <FormLayout
                                     name="steeringToolFace"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-xs text-gray-500">Tool Face (°)</FormLabel>
-                                            <FormControl>
-                                                <Input type="number" step="1" placeholder="0-360" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
+                                    label="Tool Face (°)"
+                                    children={(field) => (
+                                        <Input type="number" step="1" placeholder="0-360" {...field} />
                                     )}
                                 />
-                                <FormField
-                                    control={form.control}
+                                <FormLayout
                                     name="reamerDiameter"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-xs text-gray-500">Reamer (in)</FormLabel>
-                                            <FormControl>
-                                                <Input type="number" step="0.1" placeholder="Optional" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
+                                    label="Reamer (in)"
+                                    children={(field) => (
+                                        <Input type="number" step="0.1" placeholder="Optional" {...field} />
                                     )}
                                 />
                             </div>
                         </div>
 
-                        <FormField
-                            control={form.control}
+                        <FormLayout
                             name="notes"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Notes</FormLabel>
-                                    <FormControl>
-                                        <Textarea rows={3} placeholder="Soil conditions, steering adjustments..." {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
+                            label="Notes"
+                            children={(field) => (
+                                <Textarea rows={3} placeholder="Soil conditions, steering adjustments..." {...field} />
                             )}
                         />
 

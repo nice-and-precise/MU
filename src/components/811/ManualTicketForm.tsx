@@ -20,9 +20,9 @@ import {
     FormField,
     FormItem,
     FormLabel,
-    FormMessage,
     FormDescription,
 } from "@/components/ui/form";
+import { FormLayout } from "@/components/ui/FormLayout";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2 } from 'lucide-react';
 import { HelpTrigger } from "@/components/help/HelpTrigger";
@@ -233,94 +233,64 @@ export default function ManualTicketForm() {
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField
-                                control={form.control}
+                            <FormLayout
                                 name="projectId"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Project (Optional)</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select Project" />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                {projects.map((p) => (
-                                                    <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
+                                label="Project (Optional)"
+                                children={(field) => (
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select Project" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {projects.map((p) => (
+                                                <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 )}
                             />
-                            <FormField
-                                control={form.control}
+                            <FormLayout
                                 name="ticketNumber"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Ticket Number *</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="20251203-123456" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
+                                label="Ticket Number *"
+                                children={(field) => (
+                                    <Input placeholder="20251203-123456" {...field} />
                                 )}
                             />
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField
-                                control={form.control}
+                            <FormLayout
                                 name="type"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Ticket Type *</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select type" />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                <SelectItem value="NORMAL">Normal Locate</SelectItem>
-                                                <SelectItem value="EMERGENCY">Emergency</SelectItem>
-                                                <SelectItem value="MEET">Meet Request</SelectItem>
-                                                <SelectItem value="UPDATE">Update/Renewal</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
+                                label="Ticket Type *"
+                                children={(field) => (
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="NORMAL">Normal Locate</SelectItem>
+                                            <SelectItem value="EMERGENCY">Emergency</SelectItem>
+                                            <SelectItem value="MEET">Meet Request</SelectItem>
+                                            <SelectItem value="UPDATE">Update/Renewal</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                 )}
                             />
-                            <FormField
-                                control={form.control}
+                            <FormLayout
                                 name="workToBeginDate"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Work to Begin *</FormLabel>
-                                        <FormControl>
-                                            <Input type="datetime-local" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
+                                label="Work to Begin *"
+                                children={(field) => (
+                                    <Input type="datetime-local" {...field} />
                                 )}
                             />
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField
-                                control={form.control}
+                            <FormLayout
                                 name="duration"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Duration</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="e.g. 3 days" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
+                                label="Duration"
+                                children={(field) => (
+                                    <Input placeholder="e.g. 3 days" {...field} />
                                 )}
                             />
                         </div>
@@ -328,52 +298,32 @@ export default function ManualTicketForm() {
                         <div className="space-y-2">
                             <FormLabel>Contact Info</FormLabel>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <FormField
-                                    control={form.control}
+                                <FormLayout
                                     name="company"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormControl>
-                                                <Input placeholder="Company Name" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
+                                    label="Company"
+                                    children={(field) => (
+                                        <Input placeholder="Company Name" {...field} />
                                     )}
                                 />
-                                <FormField
-                                    control={form.control}
+                                <FormLayout
                                     name="caller"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormControl>
-                                                <Input placeholder="Caller Name" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
+                                    label="Caller"
+                                    children={(field) => (
+                                        <Input placeholder="Caller Name" {...field} />
                                     )}
                                 />
-                                <FormField
-                                    control={form.control}
+                                <FormLayout
                                     name="phone"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormControl>
-                                                <Input placeholder="Phone Number" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
+                                    label="Phone"
+                                    children={(field) => (
+                                        <Input placeholder="Phone Number" {...field} />
                                     )}
                                 />
-                                <FormField
-                                    control={form.control}
+                                <FormLayout
                                     name="email"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormControl>
-                                                <Input placeholder="Email Address" type="email" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
+                                    label="Email"
+                                    children={(field) => (
+                                        <Input placeholder="Email Address" type="email" {...field} />
                                     )}
                                 />
                             </div>
@@ -397,80 +347,49 @@ export default function ManualTicketForm() {
                             )}
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <FormField
-                                    control={form.control}
+                                <FormLayout
                                     name="workSiteAddress"
-                                    render={({ field }) => (
-                                        <FormItem className="md:col-span-2">
-                                            <FormControl>
-                                                <Input placeholder="Street Address" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
+                                    label="Work Site Address"
+                                    children={(field) => (
+                                        <Input placeholder="Street Address" {...field} />
                                     )}
                                 />
-                                <FormField
-                                    control={form.control}
+                                <FormLayout
                                     name="city"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormControl>
-                                                <Input placeholder="City" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
+                                    label="City"
+                                    children={(field) => (
+                                        <Input placeholder="City" {...field} />
                                     )}
                                 />
-                                <FormField
-                                    control={form.control}
+                                <FormLayout
                                     name="county"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormControl>
-                                                <Input placeholder="County" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
+                                    label="County"
+                                    children={(field) => (
+                                        <Input placeholder="County" {...field} />
                                     )}
                                 />
-                                <FormField
-                                    control={form.control}
+                                <FormLayout
                                     name="nearestIntersection"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormControl>
-                                                <Input placeholder="Nearest Intersection" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
+                                    label="Nearest Intersection"
+                                    children={(field) => (
+                                        <Input placeholder="Nearest Intersection" {...field} />
                                     )}
                                 />
-                                <FormField
-                                    control={form.control}
+                                <FormLayout
                                     name="gpsCoordinates"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormControl>
-                                                <Input placeholder="GPS Coordinates" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
+                                    label="GPS Coordinates"
+                                    children={(field) => (
+                                        <Input placeholder="GPS Coordinates" {...field} />
                                     )}
                                 />
                             </div>
                         </div>
 
-                        <FormField
-                            control={form.control}
+                        <FormLayout
                             name="markingInstructions"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Marking Instructions</FormLabel>
-                                    <FormControl>
-                                        <Textarea placeholder="Describe where to mark..." {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
+                            label="Marking Instructions"
+                            children={(field) => (
+                                <Textarea placeholder="Describe where to mark..." {...field} />
                             )}
                         />
 
@@ -556,17 +475,11 @@ export default function ManualTicketForm() {
                             />
                         </div>
 
-                        <FormField
-                            control={form.control}
+                        <FormLayout
                             name="mapLink"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Map Link (URL)</FormLabel>
-                                    <FormControl>
-                                        <Input type="url" placeholder="https://mn.itic.occinc.com/..." {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
+                            label="Map Link (URL)"
+                            children={(field) => (
+                                <Input type="url" placeholder="https://mn.itic.occinc.com/..." {...field} />
                             )}
                         />
 

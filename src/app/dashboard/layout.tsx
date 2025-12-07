@@ -35,6 +35,9 @@ export default async function DashboardLayout({
     return (
         <HelpProvider>
             <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col md:flex-row">
+                <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-background focus:text-foreground">
+                    Skip to main content
+                </a>
                 <InstallPrompt />
                 <UserOnboarding user={fullUser as any} />
 
@@ -72,7 +75,7 @@ export default async function DashboardLayout({
                 </aside>
 
                 {/* Main Content */}
-                <main className="flex-1 overflow-auto p-4 md:p-8">
+                <main id="main-content" className="flex-1 overflow-auto p-4 md:p-8">
                     {children}
                 </main>
 

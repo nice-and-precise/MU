@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Plus, Loader2, User, HardHat, Search, Filter, Phone, Mail, MapPin } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface EmployeeDirectoryProps {
@@ -169,9 +170,7 @@ export default function EmployeeDirectory({ employees }: EmployeeDirectoryProps)
                             </div>
 
                             <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-1 group-hover:text-blue-600 transition-colors">{emp.firstName} {emp.lastName}</h3>
-                            <Badge variant="secondary" className="bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 hover:bg-slate-200">
-                                {emp.role}
-                            </Badge>
+                            <StatusBadge status={emp.role} />
                         </div>
 
                         <div className="space-y-3 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">

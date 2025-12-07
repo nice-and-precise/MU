@@ -1,6 +1,7 @@
 import { getEmployee, getEmployeeUsage, getEmployeeTimeEntries } from "@/actions/employees";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, Phone, Mail, MapPin, Calendar, HardHat, FileText, Activity, Clock } from "lucide-react";
 import { format } from "date-fns";
@@ -41,9 +42,7 @@ export default async function EmployeeDetailPage({ params }: { params: Promise<{
                 <div className="flex-1 space-y-2">
                     <div className="flex items-center gap-3">
                         <h1 className="text-4xl font-bold text-slate-900 dark:text-white">{employee.firstName} {employee.lastName}</h1>
-                        <Badge className={`text-base px-3 py-1 ${employee.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                            {employee.status}
-                        </Badge>
+                        <StatusBadge status={employee.status} />
                     </div>
                     <p className="text-xl text-muted-foreground flex items-center gap-2">
                         {employee.role}

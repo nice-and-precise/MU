@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { getTMTickets, getChangeOrders, createChangeOrder, approveChangeOrder } from '@/actions/change_management';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, FileText, CheckCircle, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -73,7 +73,7 @@ export default function ChangeOrderDashboard({ projectId }: ChangeOrderDashboard
                                     <div className="flex items-center gap-2">
                                         <FileText className="w-4 h-4 text-blue-500" />
                                         <span className="font-medium">Ticket #{ticket.id.slice(-4)}</span>
-                                        <Badge variant="outline">{ticket.status}</Badge>
+                                        <StatusBadge status={ticket.status} />
                                     </div>
                                     <p className="text-sm text-muted-foreground mt-1">
                                         {new Date(ticket.createdAt).toLocaleDateString()} • {ticket.createdBy.name}
@@ -96,9 +96,7 @@ export default function ChangeOrderDashboard({ projectId }: ChangeOrderDashboard
                                     <div className="flex items-center gap-2">
                                         <CheckCircle className={`w-4 h-4 ${co.status === 'APPROVED' ? 'text-green-500' : 'text-gray-400'}`} />
                                         <span className="font-medium">{co.scope}</span>
-                                        <Badge className={co.status === 'APPROVED' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>
-                                            {co.status}
-                                        </Badge>
+                                        <StatusBadge status={co.status} />
                                     </div>
                                     <p className="text-sm text-muted-foreground mt-1">
                                         Impact: ${co.budgetImpact.toLocaleString()}

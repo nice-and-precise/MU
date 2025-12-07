@@ -9,7 +9,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { format } from 'date-fns';
@@ -79,9 +79,7 @@ export default function TicketList({ tickets }: TicketListProps) {
                                                 </div>
                                             </TableCell>
                                             <TableCell>
-                                                <Badge variant={ticket.status === 'ACTIVE' ? 'default' : 'secondary'}>
-                                                    {ticket.status}
-                                                </Badge>
+                                                <StatusBadge status={ticket.status} />
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-2">
@@ -123,9 +121,7 @@ export default function TicketList({ tickets }: TicketListProps) {
                                             <div className="font-bold text-lg text-blue-600">#{ticket.ticketNumber}</div>
                                             <div className="text-sm font-medium text-gray-700 dark:text-gray-300">{ticket.type}</div>
                                         </div>
-                                        <Badge variant={ticket.status === 'ACTIVE' ? 'default' : 'secondary'}>
-                                            {ticket.status}
-                                        </Badge>
+                                        <StatusBadge status={ticket.status} />
                                     </div>
                                     <div className="text-sm text-gray-600 dark:text-gray-400">
                                         <p className="line-clamp-2">{ticket.workSiteAddress}</p>

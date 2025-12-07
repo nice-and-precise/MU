@@ -13,12 +13,8 @@ import * as z from "zod";
 import { toast } from "sonner";
 import {
     Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
 } from "@/components/ui/form";
+import { FormLayout } from '@/components/ui/FormLayout';
 import { Loader2 } from 'lucide-react';
 
 const assetSchema = z.object({
@@ -95,108 +91,72 @@ export function AssetFormDialog({ asset, trigger, open, onOpenChange }: AssetFor
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                        <FormField
-                            control={form.control}
+                        <FormLayout
                             name="name"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Name</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="e.g. Vermeer D24x40" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
+                            label="Name"
+                            children={(field) => (
+                                <Input placeholder="e.g. Vermeer D24x40" {...field} />
                             )}
                         />
 
-                        <FormField
-                            control={form.control}
+                        <FormLayout
                             name="type"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Type</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select type" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="RIG">Drill Rig</SelectItem>
-                                            <SelectItem value="LOCATOR">Locator</SelectItem>
-                                            <SelectItem value="EXCAVATOR">Excavator</SelectItem>
-                                            <SelectItem value="TRUCK">Truck</SelectItem>
-                                            <SelectItem value="OTHER">Other</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
+                            label="Type"
+                            children={(field) => (
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select type" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="RIG">Drill Rig</SelectItem>
+                                        <SelectItem value="LOCATOR">Locator</SelectItem>
+                                        <SelectItem value="EXCAVATOR">Excavator</SelectItem>
+                                        <SelectItem value="TRUCK">Truck</SelectItem>
+                                        <SelectItem value="OTHER">Other</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             )}
                         />
 
-                        <FormField
-                            control={form.control}
+                        <FormLayout
                             name="model"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Model</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="e.g. D24x40 S3" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
+                            label="Model"
+                            children={(field) => (
+                                <Input placeholder="e.g. D24x40 S3" {...field} />
                             )}
                         />
 
-                        <FormField
-                            control={form.control}
+                        <FormLayout
                             name="serialNumber"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Serial Number</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Serial #" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
+                            label="Serial Number"
+                            children={(field) => (
+                                <Input placeholder="Serial #" {...field} />
                             )}
                         />
 
-                        <FormField
-                            control={form.control}
+                        <FormLayout
                             name="status"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Status</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select status" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="AVAILABLE">Available</SelectItem>
-                                            <SelectItem value="IN_USE">In Use</SelectItem>
-                                            <SelectItem value="MAINTENANCE">Maintenance</SelectItem>
-                                            <SelectItem value="RETIRED">Retired</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
+                            label="Status"
+                            children={(field) => (
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select status" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="AVAILABLE">Available</SelectItem>
+                                        <SelectItem value="IN_USE">In Use</SelectItem>
+                                        <SelectItem value="MAINTENANCE">Maintenance</SelectItem>
+                                        <SelectItem value="RETIRED">Retired</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             )}
                         />
 
-                        <FormField
-                            control={form.control}
+                        <FormLayout
                             name="location"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Location (Yard/General)</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="e.g. Main Yard" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
+                            label="Location (Yard/General)"
+                            children={(field) => (
+                                <Input placeholder="e.g. Main Yard" {...field} />
                             )}
                         />
 

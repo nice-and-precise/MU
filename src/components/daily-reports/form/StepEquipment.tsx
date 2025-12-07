@@ -1,7 +1,8 @@
 'use client';
 
 import { useFormContext, useFieldArray } from 'react-hook-form';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { FormControl } from '@/components/ui/form';
+import { FormLayout } from '@/components/ui/FormLayout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -40,49 +41,39 @@ export function StepEquipment({ assets }: StepEquipmentProps) {
                         <Card key={field.id} className="bg-slate-50">
                             <CardContent className="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                                 <div className="md:col-span-8">
-                                    <FormField
-                                        control={control}
+                                    <FormLayout
                                         name={`equipment.${index}.assetId`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Asset</FormLabel>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                    <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Select Asset" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        {assets.map(asset => (
-                                                            <SelectItem key={asset.id} value={asset.id}>
-                                                                {asset.name} ({asset.type})
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage />
-                                            </FormItem>
+                                        label="Asset"
+                                        children={(field) => (
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select Asset" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    {assets.map(asset => (
+                                                        <SelectItem key={asset.id} value={asset.id}>
+                                                            {asset.name} ({asset.type})
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
                                         )}
                                     />
                                 </div>
                                 <div className="md:col-span-3">
-                                    <FormField
-                                        control={control}
+                                    <FormLayout
                                         name={`equipment.${index}.hours`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Hours</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        type="number"
-                                                        min="0"
-                                                        step="0.5"
-                                                        {...field}
-                                                        onChange={e => field.onChange(parseFloat(e.target.value))}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
+                                        label="Hours"
+                                        children={(field) => (
+                                            <Input
+                                                type="number"
+                                                min="0"
+                                                step="0.5"
+                                                {...field}
+                                                onChange={e => field.onChange(parseFloat(e.target.value))}
+                                            />
                                         )}
                                     />
                                 </div>

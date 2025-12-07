@@ -8,15 +8,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Loader2, CheckSquare, Plus, User as UserIcon, MoreHorizontal, Pencil, Trash2, AlertCircle, Filter } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/ui/StatusBadge';
 import { toast } from 'sonner';
 import {
     Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
 } from '@/components/ui/form';
+import { FormLayout } from '@/components/ui/FormLayout';
 import {
     Select,
     SelectContent,
@@ -315,53 +312,43 @@ export default function PunchList({ projectId, items, users }: PunchListProps) {
                     <div className="mb-6 p-4 bg-muted/50 rounded-lg border border-border animate-in fade-in slide-in-from-top-2">
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                                <FormField
-                                    control={form.control}
+                                <FormLayout
                                     name="title"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel required>Description</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Describe the issue..." {...field} className="bg-background" />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
+                                    label="Description"
+                                    required
+                                    children={(field) => (
+                                        <Input placeholder="Describe the issue..." {...field} className="bg-background" />
                                     )}
                                 />
                                 <div className="flex gap-4">
-                                    <FormField
-                                        control={form.control}
-                                        name="priority"
-                                        render={({ field }) => (
-                                            <FormItem className="flex-1">
-                                                <FormLabel required>Priority</FormLabel>
+                                    <div className="flex-1">
+                                        <FormLayout
+                                            name="priority"
+                                            label="Priority"
+                                            required
+                                            children={(field) => (
                                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                    <FormControl>
-                                                        <SelectTrigger className="bg-background">
-                                                            <SelectValue placeholder="Priority" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
+                                                    <SelectTrigger className="bg-background">
+                                                        <SelectValue placeholder="Priority" />
+                                                    </SelectTrigger>
                                                     <SelectContent>
                                                         <SelectItem value="LOW">Low</SelectItem>
                                                         <SelectItem value="MEDIUM">Medium</SelectItem>
                                                         <SelectItem value="HIGH">High</SelectItem>
                                                     </SelectContent>
                                                 </Select>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="assigneeId"
-                                        render={({ field }) => (
-                                            <FormItem className="flex-1">
-                                                <FormLabel>Assign To</FormLabel>
+                                            )}
+                                        />
+                                    </div>
+                                    <div className="flex-1">
+                                        <FormLayout
+                                            name="assigneeId"
+                                            label="Assign To"
+                                            children={(field) => (
                                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                    <FormControl>
-                                                        <SelectTrigger className="bg-background">
-                                                            <SelectValue placeholder="Unassigned" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
+                                                    <SelectTrigger className="bg-background">
+                                                        <SelectValue placeholder="Unassigned" />
+                                                    </SelectTrigger>
                                                     <SelectContent>
                                                         <SelectItem value="Unassigned">Unassigned</SelectItem>
                                                         {users.map(u => (
@@ -369,9 +356,9 @@ export default function PunchList({ projectId, items, users }: PunchListProps) {
                                                         ))}
                                                     </SelectContent>
                                                 </Select>
-                                            </FormItem>
-                                        )}
-                                    />
+                                            )}
+                                        />
+                                    </div>
                                 </div>
                                 <Button type="submit" disabled={loading} className="w-full">
                                     {loading ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : 'Save Item'}
@@ -404,14 +391,7 @@ export default function PunchList({ projectId, items, users }: PunchListProps) {
                                     {item.title}
                                 </p>
                                 <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground pt-1">
-                                    <Badge variant="outline" className={cn(
-                                        "font-normal border",
-                                        item.priority === 'HIGH' ? 'text-red-600 bg-red-50 border-red-100 dark:bg-red-900/20 dark:border-red-900/50' :
-                                            item.priority === 'MEDIUM' ? 'text-orange-600 bg-orange-50 border-orange-100 dark:bg-orange-900/20 dark:border-orange-900/50' :
-                                                'text-green-600 bg-green-50 border-green-100 dark:bg-green-900/20 dark:border-green-900/50'
-                                    )}>
-                                        {item.priority}
-                                    </Badge>
+                                    <StatusBadge status={item.priority} />
                                     {item.assignee && (
                                         <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-muted/50 border border-border/50">
                                             <UserIcon className="w-3 h-3" />
@@ -474,53 +454,43 @@ export default function PunchList({ projectId, items, users }: PunchListProps) {
                     </DialogHeader>
                     <Form {...editForm}>
                         <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
-                            <FormField
-                                control={editForm.control}
+                            <FormLayout
                                 name="title"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel required>Description</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Describe the issue..." {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
+                                label="Description"
+                                required
+                                children={(field) => (
+                                    <Input placeholder="Describe the issue..." {...field} />
                                 )}
                             />
                             <div className="flex gap-4">
-                                <FormField
-                                    control={editForm.control}
-                                    name="priority"
-                                    render={({ field }) => (
-                                        <FormItem className="flex-1">
-                                            <FormLabel required>Priority</FormLabel>
+                                <div className="flex-1">
+                                    <FormLayout
+                                        name="priority"
+                                        label="Priority"
+                                        required
+                                        children={(field) => (
                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Priority" />
-                                                    </SelectTrigger>
-                                                </FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Priority" />
+                                                </SelectTrigger>
                                                 <SelectContent>
                                                     <SelectItem value="LOW">Low</SelectItem>
                                                     <SelectItem value="MEDIUM">Medium</SelectItem>
                                                     <SelectItem value="HIGH">High</SelectItem>
                                                 </SelectContent>
                                             </Select>
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={editForm.control}
-                                    name="assigneeId"
-                                    render={({ field }) => (
-                                        <FormItem className="flex-1">
-                                            <FormLabel>Assign To</FormLabel>
+                                        )}
+                                    />
+                                </div>
+                                <div className="flex-1">
+                                    <FormLayout
+                                        name="assigneeId"
+                                        label="Assign To"
+                                        children={(field) => (
                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Assign To" />
-                                                    </SelectTrigger>
-                                                </FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Assign To" />
+                                                </SelectTrigger>
                                                 <SelectContent>
                                                     <SelectItem value="Unassigned">Unassigned</SelectItem>
                                                     {users.map(u => (
@@ -528,9 +498,9 @@ export default function PunchList({ projectId, items, users }: PunchListProps) {
                                                     ))}
                                                 </SelectContent>
                                             </Select>
-                                        </FormItem>
-                                    )}
-                                />
+                                        )}
+                                    />
+                                </div>
                             </div>
                             <DialogFooter>
                                 <Button type="button" variant="outline" onClick={() => setEditingItem(null)}>Cancel</Button>

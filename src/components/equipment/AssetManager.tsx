@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Loader2, Truck, Wrench } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/ui/StatusBadge';
 
 interface AssetManagerProps {
     assets: any[];
@@ -93,9 +93,7 @@ export default function AssetManager({ assets }: AssetManagerProps) {
                             <div className="flex-1">
                                 <div className="flex justify-between items-start">
                                     <h3 className="font-bold">{asset.name}</h3>
-                                    <Badge variant={asset.status === 'AVAILABLE' ? 'default' : 'destructive'}>
-                                        {asset.status}
-                                    </Badge>
+                                    <StatusBadge status={asset.status} />
                                 </div>
                                 <p className="text-sm text-muted-foreground">{asset.type} • {asset.model}</p>
                                 <p className="text-xs text-gray-400">SN: {asset.serialNumber}</p>

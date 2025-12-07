@@ -2,7 +2,7 @@
 
 import { Asset } from '@prisma/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { AssetFormDialog } from './AssetFormDialog';
 import { useState } from 'react';
@@ -27,9 +27,7 @@ export function AssetCard({ asset }: AssetCardProps) {
                 <CardTitle className="text-sm font-medium">
                     {asset.name}
                 </CardTitle>
-                <Badge className={statusColors[asset.status] || 'bg-gray-500'}>
-                    {asset.status}
-                </Badge>
+                <StatusBadge status={asset.status} />
             </CardHeader>
             <CardContent>
                 <div className="grid gap-1 text-sm text-muted-foreground">

@@ -1,7 +1,8 @@
 'use client';
 
 import { useFormContext, useFieldArray } from 'react-hook-form';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { FormControl } from '@/components/ui/form';
+import { FormLayout } from '@/components/ui/FormLayout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -65,87 +66,65 @@ export function StepProduction() {
                         <Card key={field.id} className="bg-slate-50">
                             <CardContent className="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                                 <div className="md:col-span-3">
-                                    <FormField
-                                        control={control}
+                                    <FormLayout
                                         name={`production.${index}.activity`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Activity</FormLabel>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                    <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        <SelectItem value="Drill">Drill</SelectItem>
-                                                        <SelectItem value="Pilot">Pilot</SelectItem>
-                                                        <SelectItem value="Ream">Ream</SelectItem>
-                                                        <SelectItem value="Pull">Pull</SelectItem>
-                                                        <SelectItem value="Setup">Setup</SelectItem>
-                                                        <SelectItem value="Pothole">Pothole</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage />
-                                            </FormItem>
+                                        label="Activity"
+                                        children={(field) => (
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="Drill">Drill</SelectItem>
+                                                    <SelectItem value="Pilot">Pilot</SelectItem>
+                                                    <SelectItem value="Ream">Ream</SelectItem>
+                                                    <SelectItem value="Pull">Pull</SelectItem>
+                                                    <SelectItem value="Setup">Setup</SelectItem>
+                                                    <SelectItem value="Pothole">Pothole</SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                         )}
                                     />
                                 </div>
                                 <div className="md:col-span-2">
-                                    <FormField
-                                        control={control}
+                                    <FormLayout
                                         name={`production.${index}.lf`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Footage (LF)</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        type="number"
-                                                        min="0"
-                                                        {...field}
-                                                        onChange={e => field.onChange(parseFloat(e.target.value))}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
+                                        label="Footage (LF)"
+                                        children={(field) => (
+                                            <Input
+                                                type="number"
+                                                min="0"
+                                                {...field}
+                                                onChange={e => field.onChange(parseFloat(e.target.value))}
+                                            />
                                         )}
                                     />
                                 </div>
                                 <div className="md:col-span-2">
-                                    <FormField
-                                        control={control}
+                                    <FormLayout
                                         name={`production.${index}.pitch`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Pitch (%)</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        type="number"
-                                                        {...field}
-                                                        onChange={e => field.onChange(parseFloat(e.target.value))}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
+                                        label="Pitch (%)"
+                                        children={(field) => (
+                                            <Input
+                                                type="number"
+                                                {...field}
+                                                onChange={e => field.onChange(parseFloat(e.target.value))}
+                                            />
                                         )}
                                     />
                                 </div>
                                 <div className="md:col-span-2">
-                                    <FormField
-                                        control={control}
+                                    <FormLayout
                                         name={`production.${index}.azimuth`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Azimuth</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        type="number"
-                                                        {...field}
-                                                        onChange={e => field.onChange(parseFloat(e.target.value))}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
+                                        label="Azimuth"
+                                        children={(field) => (
+                                            <Input
+                                                type="number"
+                                                {...field}
+                                                onChange={e => field.onChange(parseFloat(e.target.value))}
+                                            />
                                         )}
                                     />
                                 </div>

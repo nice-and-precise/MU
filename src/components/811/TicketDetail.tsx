@@ -3,6 +3,7 @@
 import { Ticket811, Ticket811Response } from '@prisma/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { MapPin, Phone, Calendar, Clock, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
@@ -120,7 +121,7 @@ export default function TicketDetail({ ticket: rawTicket }: TicketDetailProps) {
                     <h1 className="text-3xl font-bold">{ticket.ticketNumber}</h1>
                     <div className="flex items-center gap-2 mt-2">
                         <Badge variant="outline">{ticket.type}</Badge>
-                        <Badge variant={ticket.status === 'ACTIVE' ? 'default' : 'secondary'}>{ticket.status}</Badge>
+                        <StatusBadge status={ticket.status} />
                         {ticket.status === 'ACTIVE' && (
                             <Badge variant={daysUntil <= 3 ? 'destructive' : 'outline'} className={daysUntil <= 3 ? '' : 'text-muted-foreground'}>
                                 {daysUntil < 0 ? 'Expired' : `Expires in ${daysUntil} days`}

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { getProjectTimeline } from '@/actions/projects';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Loader2, Calendar, FileText, Activity, AlertCircle, CheckCircle2, Circle } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -154,9 +154,7 @@ export default function ProjectTimeline({ projectId }: ProjectTimelineProps) {
                                     {event.description}
                                 </p>
                                 {event.status && (
-                                    <Badge variant="secondary" className="text-xs font-normal">
-                                        {event.status}
-                                    </Badge>
+                                    <StatusBadge status={event.status} />
                                 )}
                             </div>
                         </div>

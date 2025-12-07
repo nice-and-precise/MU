@@ -1,7 +1,8 @@
 'use client';
 
 import { useFormContext, useFieldArray } from 'react-hook-form';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { FormControl } from '@/components/ui/form';
+import { FormLayout } from '@/components/ui/FormLayout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -83,84 +84,70 @@ export function StepCrew({ employees, projectId }: StepCrewProps) {
                         <Card key={field.id} className="bg-slate-50">
                             <CardContent className="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                                 <div className="md:col-span-5">
-                                    <FormField
-                                        control={control}
+                                    <FormLayout
                                         name={`crew.${index}.employeeId`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Employee</FormLabel>
-                                                <Select
-                                                    onValueChange={(val) => {
-                                                        field.onChange(val);
-                                                        // Auto-set role
-                                                        const emp = employees.find(e => e.id === val);
-                                                        if (emp) {
-                                                            setValue(`crew.${index}.role`, emp.role || 'Labor');
-                                                        }
-                                                    }}
-                                                    defaultValue={field.value}
-                                                >
-                                                    <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Select Employee" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        {employees.map(emp => (
-                                                            <SelectItem key={emp.id} value={emp.id}>
-                                                                {emp.firstName} {emp.lastName}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                                <div className="md:col-span-3">
-                                    <FormField
-                                        control={control}
-                                        name={`crew.${index}.role`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Role</FormLabel>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                    <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Select Role" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        <SelectItem value="Foreman">Foreman</SelectItem>
-                                                        <SelectItem value="Operator">Operator</SelectItem>
-                                                        <SelectItem value="Labor">Labor</SelectItem>
-                                                        <SelectItem value="Driver">Driver</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                                <div className="md:col-span-3">
-                                    <FormField
-                                        control={control}
-                                        name={`crew.${index}.hours`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Hours</FormLabel>
+                                        label="Employee"
+                                        children={(field) => (
+                                            <Select
+                                                onValueChange={(val) => {
+                                                    field.onChange(val);
+                                                    // Auto-set role
+                                                    const emp = employees.find(e => e.id === val);
+                                                    if (emp) {
+                                                        setValue(`crew.${index}.role`, emp.role || 'Labor');
+                                                    }
+                                                }}
+                                                defaultValue={field.value}
+                                            >
                                                 <FormControl>
-                                                    <Input
-                                                        type="number"
-                                                        min="0"
-                                                        step="0.5"
-                                                        {...field}
-                                                        onChange={e => field.onChange(parseFloat(e.target.value))}
-                                                    />
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select Employee" />
+                                                    </SelectTrigger>
                                                 </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
+                                                <SelectContent>
+                                                    {employees.map(emp => (
+                                                        <SelectItem key={emp.id} value={emp.id}>
+                                                            {emp.firstName} {emp.lastName}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        )}
+                                    />
+                                </div>
+                                <div className="md:col-span-3">
+                                    <FormLayout
+                                        name={`crew.${index}.role`}
+                                        label="Role"
+                                        children={(field) => (
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select Role" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="Foreman">Foreman</SelectItem>
+                                                    <SelectItem value="Operator">Operator</SelectItem>
+                                                    <SelectItem value="Labor">Labor</SelectItem>
+                                                    <SelectItem value="Driver">Driver</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        )}
+                                    />
+                                </div>
+                                <div className="md:col-span-3">
+                                    <FormLayout
+                                        name={`crew.${index}.hours`}
+                                        label="Hours"
+                                        children={(field) => (
+                                            <Input
+                                                type="number"
+                                                min="0"
+                                                step="0.5"
+                                                {...field}
+                                                onChange={e => field.onChange(parseFloat(e.target.value))}
+                                            />
                                         )}
                                     />
                                 </div>

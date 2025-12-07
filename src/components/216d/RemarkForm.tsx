@@ -12,12 +12,8 @@ import * as z from "zod";
 import { toast } from "sonner";
 import {
     Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
 } from "@/components/ui/form";
+import { FormLayout } from "@/components/ui/FormLayout";
 import { Loader2 } from "lucide-react";
 
 const remarkSchema = z.object({
@@ -69,63 +65,45 @@ export function RemarkForm({ projectId, ticketId, onClose }: RemarkFormProps) {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField
-                    control={form.control}
+                <FormLayout
                     name="type"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Remark Type</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    <SelectItem value="REMARK_REQUESTED">Request Remark</SelectItem>
-                                    <SelectItem value="REMARK_COMPLETED">Record Completed Remark</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <FormMessage />
-                        </FormItem>
+                    label="Remark Type"
+                    children={(field) => (
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <SelectTrigger>
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="REMARK_REQUESTED">Request Remark</SelectItem>
+                                <SelectItem value="REMARK_COMPLETED">Record Completed Remark</SelectItem>
+                            </SelectContent>
+                        </Select>
                     )}
                 />
 
-                <FormField
-                    control={form.control}
+                <FormLayout
                     name="reason"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Reason</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    <SelectItem value="MARKS_OBLITERATED">Marks Obliterated</SelectItem>
-                                    <SelectItem value="WRONG_LOCATION">Wrong Location</SelectItem>
-                                    <SelectItem value="ADDITIONAL_AREA">Additional Area</SelectItem>
-                                    <SelectItem value="OTHER">Other</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <FormMessage />
-                        </FormItem>
+                    label="Reason"
+                    children={(field) => (
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <SelectTrigger>
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="MARKS_OBLITERATED">Marks Obliterated</SelectItem>
+                                <SelectItem value="WRONG_LOCATION">Wrong Location</SelectItem>
+                                <SelectItem value="ADDITIONAL_AREA">Additional Area</SelectItem>
+                                <SelectItem value="OTHER">Other</SelectItem>
+                            </SelectContent>
+                        </Select>
                     )}
                 />
 
-                <FormField
-                    control={form.control}
+                <FormLayout
                     name="notes"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Notes</FormLabel>
-                            <FormControl>
-                                <Textarea {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
+                    label="Notes"
+                    children={(field) => (
+                        <Textarea {...field} />
                     )}
                 />
 
