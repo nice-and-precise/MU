@@ -1,9 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import { LogOut, User, Menu, PenTool, FileText, PlusCircle } from "lucide-react";
-import { NAV_ITEMS } from "@/config/nav";
+import { User, Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "sonner";
@@ -11,13 +9,13 @@ import { UserService } from "@/services/user";
 import { UserOnboarding } from "@/components/onboarding/UserOnboarding";
 import { HelpProvider } from "@/components/help/HelpContext";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
+import { Sidebar } from "@/components/dashboard/Sidebar";
 
 export default async function DashboardLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    // ... existing session/user fetching ...
     const session = await getServerSession(authOptions);
 
     if (!session) {
@@ -25,79 +23,9 @@ export default async function DashboardLayout({
     }
 
     const userRole = session.user.role;
-
-    // ... existing NavContent ...
-    const NavContent = () => (
-        <div className="flex flex-col h-full">
-            <div className="p-6 border-b border-gray-700">
-                <h1 className="text-xl font-bold text-white tracking-wide">MIDWEST <span className="text-yellow-500">UNDERGROUND</span></h1>
-                <p className="text-xs text-gray-400 mt-1 uppercase tracking-wider">Operations Command</p>
-            </div>
-
-            <nav className="flex-1 px-4 space-y-6 mt-6 overflow-y-auto">
-                {/* Mobile Favorites */}
-                <div className="md:hidden mb-6">
-                    <p className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Favorites</p>
-                    <div className="grid grid-cols-3 gap-2 px-1">
-                        <Link href="/dashboard/rod-pass" className="flex flex-col items-center justify-center p-3 bg-gray-700/50 hover:bg-gray-700 rounded-lg text-center transition-colors">
-                            <PenTool className="h-5 w-5 mb-1 text-blue-400" />
-                            <span className="text-[10px] text-gray-300 font-medium">Log Rod</span>
-                        </Link>
-                        <Link href="/dashboard/reports/new" className="flex flex-col items-center justify-center p-3 bg-gray-700/50 hover:bg-gray-700 rounded-lg text-center transition-colors">
-                            <FileText className="h-5 w-5 mb-1 text-green-400" />
-                            <span className="text-[10px] text-gray-300 font-medium">Daily Rep</span>
-                        </Link>
-                        <Link href="/dashboard/qc" className="flex flex-col items-center justify-center p-3 bg-gray-700/50 hover:bg-gray-700 rounded-lg text-center transition-colors">
-                            <PlusCircle className="h-5 w-5 mb-1 text-orange-400" />
-                            <span className="text-[10px] text-gray-300 font-medium">Punch</span>
-                        </Link>
-                    </div>
-                </div>
-
-                {NAV_ITEMS.map((group, i) => {
-                    // Filter groups by role if defined
-                    if (group.roles && !group.roles.includes(userRole)) return null;
-
-                    return (
-                        <div key={i} className="space-y-1">
-                            <p className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{group.title}</p>
-                            {group.items.map((item, j) => {
-                                // Filter items by role if defined
-                                if (item.roles && !item.roles.includes(userRole)) return null;
-                                const Icon = item.icon;
-                                return (
-                                    <Link key={j} href={item.href} className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition-colors">
-                                        <Icon className="h-4 w-4" />
-                                        <span className="text-sm">{item.title}</span>
-                                    </Link>
-                                );
-                            })}
-                        </div>
-                    );
-                })}
-            </nav>
-
-            <div className="p-4 border-t border-gray-700 mt-auto">
-                <div className="flex items-center space-x-3 px-4 py-2">
-                    <div className="bg-blue-600 rounded-full p-2">
-                        <User className="h-4 w-4 text-white" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate text-white">{session.user.name}</p>
-                        <p className="text-xs text-gray-400 truncate">{session.user.role}</p>
-                    </div>
-                </div>
-                <Link href="/api/auth/signout" className="flex items-center space-x-3 px-4 py-2 mt-2 text-red-400 hover:text-red-300 text-sm">
-                    <LogOut className="h-4 w-4" />
-                    <span>Sign Out</span>
-                </Link>
-            </div>
-        </div>
-    );
-
-    // ... fetch user details ...
-
     const userDetails = await UserService.getUserPreferences(session.user.id);
+    const favorites = (userDetails as any).favorites || [];
+
     const fullUser = {
         ...session.user,
         phone: userDetails.phone,
@@ -112,7 +40,6 @@ export default async function DashboardLayout({
 
                 {/* Mobile Top Bar */}
                 <header className="md:hidden bg-gray-800 text-white p-4 flex items-center justify-between sticky top-0 z-40 shadow-md">
-                    {/* ... */}
                     <div className="flex items-center gap-2">
                         <Sheet>
                             <SheetTrigger asChild>
@@ -121,7 +48,11 @@ export default async function DashboardLayout({
                                 </Button>
                             </SheetTrigger>
                             <SheetContent side="left" className="p-0 bg-gray-800 text-white border-r-gray-700 w-80">
-                                <NavContent />
+                                <Sidebar
+                                    role={userRole}
+                                    favorites={favorites}
+                                    user={fullUser}
+                                />
                             </SheetContent>
                         </Sheet>
                         <span className="font-bold tracking-wide">MU <span className="text-yellow-500">OPS</span></span>
@@ -133,7 +64,11 @@ export default async function DashboardLayout({
 
                 {/* Desktop Sidebar */}
                 <aside className="w-64 bg-gray-800 text-white hidden md:flex flex-col h-screen sticky top-0">
-                    <NavContent />
+                    <Sidebar
+                        role={userRole}
+                        favorites={favorites}
+                        user={fullUser}
+                    />
                 </aside>
 
                 {/* Main Content */}
@@ -146,4 +81,3 @@ export default async function DashboardLayout({
         </HelpProvider>
     );
 }
-

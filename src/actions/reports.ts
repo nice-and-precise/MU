@@ -41,3 +41,10 @@ export const approveDailyReport = authenticatedAction(
         return await DailyReportService.approveDailyReport(id, userId);
     }
 );
+
+export const getRecentProjectReport = authenticatedAction(
+    z.string(),
+    async (projectId) => {
+        return await DailyReportService.getRecentProjectReport(projectId);
+    }
+);

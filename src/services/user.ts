@@ -24,4 +24,33 @@ export class UserService {
             select: { preferences: true, phone: true }
         });
     }
+
+    static async getFavorites(userId: string): Promise<string[]> {
+        const prefs = await this.getUserPreferences(userId);
+        return prefs.favorites || [];
+    }
+
+    static async toggleFavorite(userId: string, href: string): Promise<string[]> {
+        const currentFavorites = await this.getFavorites(userId);
+        let newFavorites = [...currentFavorites];
+
+        if (newFavorites.includes(href)) {
+            newFavorites = newFavorites.filter(f => f !== href);
+        } else {
+            // Limit to 5 favorites
+            if (newFavorites.length >= 5) {
+                throw new Error("Maximum of 5 favorites allowed");
+            }
+            newFavorites.push(href);
+        }
+
+        await this.updateUserPreferences(userId, {
+            preferences: {
+                ...(await this.getUserPreferences(userId)),
+                favorites: newFavorites
+            }
+        });
+
+        return newFavorites;
+    }
 }

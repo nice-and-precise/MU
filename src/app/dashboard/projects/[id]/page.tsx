@@ -2,19 +2,11 @@ import { getProject } from "@/actions/projects";
 import { getProjectSummary } from "@/actions/closeout";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { MapPin, Calendar, DollarSign, Activity, FileText, AlertCircle, ShieldCheck, CheckSquare, HardHat } from "lucide-react";
+import { DollarSign, FileText, ShieldCheck, CheckSquare, HardHat } from "lucide-react";
 import { LinearProgressBar } from "@/components/projects/LinearProgressBar";
 import DataImportDropzone from "@/components/import/DataImportDropzone";
 import CloseoutModal from "@/components/closeout/CloseoutModal";
 import { TicketManager } from "@/components/safety/TicketManager";
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 
 export default async function ProjectDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -30,115 +22,7 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
     }
 
     return (
-        <div className="p-8">
-            {/* Header */}
-            <div className="mb-8">
-                <Breadcrumb className="mb-2">
-                    <BreadcrumbList>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink href="/dashboard/projects">Projects</BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbPage>{project.name}</BreadcrumbPage>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
-
-                <div className="flex justify-between items-start">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{project.name}</h1>
-                        <p className="text-gray-500 mt-1 max-w-2xl">{project.description}</p>
-                    </div>
-                    <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${project.status === "IN_PROGRESS"
-                            ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                            : project.status === "ARCHIVED"
-                                ? "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400"
-                                : "bg-blue-100 text-blue-700"
-                            }`}
-                    >
-                        {project.status.replace("_", " ")}
-                    </span>
-                </div>
-            </div>
-
-            {/* Navigation Tabs */}
-            <div className="flex space-x-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg mb-8 w-fit overflow-x-auto">
-                <Link
-                    href={`/dashboard/projects/${project.id}`}
-                    className="px-4 py-2 text-sm font-medium rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm whitespace-nowrap"
-                >
-                    Overview
-                </Link>
-                <Link
-                    href={`/dashboard/projects/${project.id}/production`}
-                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors whitespace-nowrap"
-                >
-                    Production
-                </Link>
-                <Link
-                    href={`/dashboard/projects/${project.id}/financials`}
-                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors whitespace-nowrap"
-                >
-                    Financials
-                </Link>
-                <Link
-                    href={`/dashboard/projects/${project.id}/safety`}
-                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors whitespace-nowrap"
-                >
-                    Safety
-                </Link>
-                <Link
-                    href={`/dashboard/projects/${project.id}/qc`}
-                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors whitespace-nowrap"
-                >
-                    QC
-                </Link>
-                <Link
-                    href={`/dashboard/projects/${project.id}/changes`}
-                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors whitespace-nowrap"
-                >
-                    Changes
-                </Link>
-                <Link
-                    href={`/dashboard/projects/${project.id}/invoicing`}
-                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors whitespace-nowrap"
-                >
-                    Invoicing
-                </Link>
-                <Link
-                    href={`/dashboard/projects/${project.id}/3d`}
-                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors whitespace-nowrap"
-                >
-                    3D View
-                </Link>
-                <Link
-                    href={`/dashboard/projects/${project.id}/216d`}
-                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors whitespace-nowrap"
-                >
-                    216D Compliance
-                </Link>
-                <Link
-                    href={`/dashboard/projects/${project.id}/live`}
-                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors whitespace-nowrap"
-                >
-                    Live Ops
-                </Link>
-                <Link
-                    href={`/dashboard/projects/${project.id}/timeline`}
-                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors whitespace-nowrap"
-                >
-                    Timeline
-                </Link>
-                <Link
-                    href={`/dashboard/projects/${project.id}/216d`}
-                    className="px-4 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors whitespace-nowrap"
-                >
-                    216D / GSOC
-                </Link>
-            </div>
-
+        <div className="space-y-8">
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">

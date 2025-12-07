@@ -25,16 +25,20 @@ export const updateUserPreferences = authenticatedAction(
         // Fetch existing to merge preferences
         const existingUser = await UserService.getUserPreferences(userId); // returns user with preferences
 
-        // Parse existing preferences if they are stored as string (UserService usually parses)
-        // Assume service returns parsed or we handle it in service?
-        // UserService.getUserPreferences returns { preferences: JsonValue, ... }
-        // Let's rely on UserService.updateUserPreferences handling the merge or do it here.
-        // Actually UserService.updateUserPreferences takes (userId, data). 
-        // Let's look at the Service.
-
         // Simpler approach: Pass everything to service and let it handle splitting.
         await UserService.updateUserPreferences(userId, { phone, preferences: prefs });
         revalidatePath('/dashboard/settings');
         return { success: true };
+    }
+);
+
+export const toggleFavoriteAction = authenticatedAction(
+    z.object({
+        href: z.string(),
+    }),
+    async ({ href }, userId) => {
+        const newFavorites = await UserService.toggleFavorite(userId, href);
+        revalidatePath('/dashboard');
+        return { favorites: newFavorites };
     }
 );

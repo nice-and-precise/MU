@@ -60,13 +60,26 @@ export class DailyReportService {
         return await prisma.dailyReport.update({
             where: { id },
             data: {
-                crew: data.crew,
-                production: data.production,
-                materials: data.materials,
-                equipment: data.equipment,
+                crew: data.crew ? JSON.stringify(data.crew) : undefined,
+                production: data.production ? JSON.stringify(data.production) : undefined,
+                materials: data.materials ? JSON.stringify(data.materials) : undefined,
+                equipment: data.equipment ? JSON.stringify(data.equipment) : undefined,
                 weather: data.weather,
                 notes: data.notes,
             },
+        });
+    }
+
+    static async getRecentProjectReport(projectId: string) {
+        return await prisma.dailyReport.findFirst({
+            where: {
+                projectId,
+                status: 'APPROVED'
+            },
+            orderBy: {
+                reportDate: 'desc'
+            },
+            take: 1
         });
     }
 

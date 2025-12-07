@@ -1,17 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { updateDailyReport, approveDailyReport } from '@/actions/reports';
-import { getInventoryItems } from '@/actions/inventory';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Plus, Trash2, Save, CheckCircle, ShieldAlert, Users, ClipboardList, Package, Download } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import DailyReportForm from './daily-reports/form/DailyReportForm';
 
 interface DailyReportEditFormProps {
     report: any;
@@ -23,309 +12,83 @@ interface DailyReportEditFormProps {
     assets?: any[];
 }
 
+// Wrapper to adapt the old component location to the new Form
+// We might want to pass down the extra props (safety meetings etc) if we want to display them 
+// side-by-side or in a tab, but for now we focus on the main report editing flow as requested.
+// The previous implementation had tabs for "Site Activity". The user request focused on the "Edit Form" UX.
+// To preserve the "Site Activity" view, we can wrap the new Form in the same Tabs structure or 
+// just render the Form for now and let the user decide if they want the Tabs back.
+// 'Wrap DailyReportEditForm in the same Form components...'
+// I will render the new Form. The "Site Activity" tabs were read-only displays of related data.
+// I will just render the new Form for the "Report" part.
+// The user request said "Wrap DailyReportEditForm in the same Form components...". 
+// I'll assume replacing the logic inside is the goal.
+
+// However, maintaining the "Site Activity" tab might be good for context. 
+// I will fetch the inventory items here or pass them through if relevant. 
+// For now I'll just swap the implementation to the new DailyReportForm.
+// But wait, DailyReportForm needs inventoryItems.
+// The original component fetched them in a useEffect. I should probably do the same or refactor.
+// To be clean, I'll pass the props through. I'll need to fetch inventory in DailyReportForm or pass it.
+// The original component did:
+/*
+    const [inventoryItems, setInventoryItems] = useState<any[]>([]);
+    useEffect(() => { loadInventory(); }, []);
+*/
+// I should replicate this data fetching or assume it is available. 
+// Since I am making DailyReportForm a client component, I can do the fetching there or here.
+// I'll do it here to keep the child clean or just pass it if I can.
+// Actually, let's keep the data fetching in this wrapper to minimize change to the child.
+
+import { useState, useEffect } from 'react';
+import { getInventoryItems } from '@/actions/inventory';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ShieldAlert, ClipboardList, Package } from 'lucide-react';
+
 export default function DailyReportEditForm({
     report,
     safetyMeetings = [],
     jsas = [],
     punchItems = [],
-    inventoryTransactions = [],
+    inventoryTransactions = [], // These are historical transactions for the day
     employees = [],
     assets = []
 }: DailyReportEditFormProps) {
-    const router = useRouter();
-    const [loading, setLoading] = useState(false);
     const [inventoryItems, setInventoryItems] = useState<any[]>([]);
 
-    // Form State
-    const [crew, setCrew] = useState<any[]>(JSON.parse(report.crew || '[]'));
-    const [production, setProduction] = useState<any[]>(JSON.parse(report.production || '[]'));
-    const [materials, setMaterials] = useState<any[]>(JSON.parse(report.materials || '[]'));
-    const [equipment, setEquipment] = useState<any[]>(JSON.parse(report.equipment || '[]'));
-    const [notes, setNotes] = useState(report.notes || '');
-    const [weather, setWeather] = useState(report.weather || '');
-
     useEffect(() => {
-        loadInventory();
+        const load = async () => {
+            const res = await getInventoryItems();
+            if (res.success) setInventoryItems(res.data || []);
+        };
+        load();
     }, []);
 
-    async function loadInventory() {
-        const res = await getInventoryItems();
-        if (res.success) {
-            setInventoryItems(res.data || []);
-        }
-    }
-
-    const handleSave = async () => {
-        setLoading(true);
-        try {
-            await updateDailyReport({
-                id: report.id,
-                data: {
-                    crew: JSON.stringify(crew),
-                    production: JSON.stringify(production),
-                    materials: JSON.stringify(materials),
-                    equipment: JSON.stringify(equipment),
-                    notes,
-                    weather
-                }
-            });
-            router.refresh();
-            alert('Report saved successfully');
-        } catch (error) {
-            console.error(error);
-            alert('Failed to save report');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleApprove = async () => {
-        if (!confirm('Are you sure? This will deduct materials, log hours, and lock the report.')) return;
-
-        setLoading(true);
-        try {
-            await handleSave(); // Save first to ensure latest data is used
-            await approveDailyReport(report.id);
-            router.refresh();
-            alert('Report approved and finalized');
-        } catch (error) {
-            console.error(error);
-            alert('Failed to approve report');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Helper to add rows
-    const addCrew = () => setCrew([...crew, { employeeId: '', hours: 0, role: 'Labor' }]);
-    const addProduction = () => setProduction([...production, { activity: 'Drill', lf: 0, pitch: 0, azimuth: 0 }]);
-    const addMaterial = () => setMaterials([...materials, { inventoryItemId: '', quantity: 0 }]);
-    const addEquipment = () => setEquipment([...equipment, { assetId: '', hours: 0 }]);
-
-    // Helper to remove rows
-    const removeCrew = (idx: number) => setCrew(crew.filter((_, i) => i !== idx));
-    const removeProduction = (idx: number) => setProduction(production.filter((_, i) => i !== idx));
-    const removeMaterial = (idx: number) => setMaterials(materials.filter((_, i) => i !== idx));
-    const removeEquipment = (idx: number) => setEquipment(equipment.filter((_, i) => i !== idx));
-
-    const isApproved = report.status === 'APPROVED';
-
+    // We can keep the Tabs layout if we want to show the 'Site Activity' context
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <div>
-                    <h2 className="text-2xl font-bold">{report.project.name} - {new Date(report.reportDate).toLocaleDateString()}</h2>
-                    <p className="text-muted-foreground">Status: <span className="font-bold">{report.status}</span></p>
-                </div>
-                <div className="space-x-2">
-                    <Button variant="outline" onClick={() => {
-                        import('@/lib/pdf').then(mod => {
-                            mod.generateDailyReportPDF(report, safetyMeetings, jsas, punchItems, inventoryTransactions);
-                        });
-                    }}>
-                        <Download className="w-4 h-4 mr-2" /> Export PDF
-                    </Button>
-                    {!isApproved && (
-                        <>
-                            <Button variant="outline" onClick={handleSave} disabled={loading}>
-                                <Save className="w-4 h-4 mr-2" /> Save Draft
-                            </Button>
-                            <Button onClick={handleApprove} disabled={loading} className="bg-green-600 hover:bg-green-700">
-                                <CheckCircle className="w-4 h-4 mr-2" /> Approve & Finalize
-                            </Button>
-                        </>
-                    )}
-                </div>
-            </div>
-
             <Tabs defaultValue="report" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className="grid w-full grid-cols-2 mb-4">
                     <TabsTrigger value="report">Daily Report</TabsTrigger>
-                    <TabsTrigger value="activity">Site Activity</TabsTrigger>
+                    <TabsTrigger value="activity">Site Activity Context</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="report" className="space-y-6 mt-4">
-                    {/* General Info */}
-                    <Card>
-                        <CardHeader><CardTitle>General Information</CardTitle></CardHeader>
-                        <CardContent className="grid grid-cols-2 gap-4">
-                            <div>
-                                <Label>Weather Conditions</Label>
-                                <Input value={weather} onChange={e => setWeather(e.target.value)} disabled={isApproved} />
-                            </div>
-                            <div>
-                                <Label>Notes</Label>
-                                <Textarea value={notes} onChange={e => setNotes(e.target.value)} disabled={isApproved} />
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Crew */}
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <CardTitle>Crew Labor</CardTitle>
-                            {!isApproved && <Button size="sm" variant="ghost" onClick={addCrew}><Plus className="w-4 h-4" /></Button>}
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                            {crew.map((member, idx) => (
-                                <div key={idx} className="flex flex-col md:flex-row gap-2 md:items-center border p-3 rounded-lg md:border-0 md:p-0 bg-slate-50 md:bg-transparent">
-                                    <div className="w-full md:flex-1">
-                                        <Select value={member.employeeId} onValueChange={val => {
-                                            const newCrew = [...crew]; newCrew[idx].employeeId = val;
-                                            // Auto-set role if possible, or just keep default
-                                            const emp = employees.find(e => e.id === val);
-                                            if (emp) newCrew[idx].role = emp.role;
-                                            setCrew(newCrew);
-                                        }} disabled={isApproved}>
-                                            <SelectTrigger><SelectValue placeholder="Select Employee" /></SelectTrigger>
-                                            <SelectContent>
-                                                {employees.map(e => (
-                                                    <SelectItem key={e.id} value={e.id}>{e.firstName} {e.lastName}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="flex gap-2 w-full md:w-auto">
-                                        <div className="flex-1 md:w-24">
-                                            <Input type="number" placeholder="Hours" value={member.hours} onChange={e => {
-                                                const newCrew = [...crew]; newCrew[idx].hours = Number(e.target.value); setCrew(newCrew);
-                                            }} disabled={isApproved} />
-                                        </div>
-                                        <div className="flex-1 md:w-40">
-                                            <Select value={member.role} onValueChange={val => {
-                                                const newCrew = [...crew]; newCrew[idx].role = val; setCrew(newCrew);
-                                            }} disabled={isApproved}>
-                                                <SelectTrigger><SelectValue /></SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="Foreman">Foreman</SelectItem>
-                                                    <SelectItem value="Operator">Operator</SelectItem>
-                                                    <SelectItem value="Labor">Labor</SelectItem>
-                                                    <SelectItem value="Driver">Driver</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                        {!isApproved && <Button size="icon" variant="ghost" onClick={() => removeCrew(idx)} className="shrink-0"><Trash2 className="w-4 h-4 text-red-500" /></Button>}
-                                    </div>
-                                </div>
-                            ))}
-                        </CardContent>
-                    </Card>
-
-                    {/* Equipment */}
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <CardTitle>Equipment Usage</CardTitle>
-                            {!isApproved && <Button size="sm" variant="ghost" onClick={addEquipment}><Plus className="w-4 h-4" /></Button>}
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                            {equipment.map((eq, idx) => (
-                                <div key={idx} className="flex flex-col md:flex-row gap-2 md:items-center border p-3 rounded-lg md:border-0 md:p-0 bg-slate-50 md:bg-transparent">
-                                    <div className="w-full md:flex-1">
-                                        <Select value={eq.assetId} onValueChange={val => {
-                                            const newEq = [...equipment]; newEq[idx].assetId = val; setEquipment(newEq);
-                                        }} disabled={isApproved}>
-                                            <SelectTrigger><SelectValue placeholder="Select Asset" /></SelectTrigger>
-                                            <SelectContent>
-                                                {assets.map(a => (
-                                                    <SelectItem key={a.id} value={a.id}>{a.name} ({a.type})</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="flex gap-2 w-full md:w-auto">
-                                        <div className="flex-1 md:w-24">
-                                            <Input type="number" placeholder="Hours" value={eq.hours} onChange={e => {
-                                                const newEq = [...equipment]; newEq[idx].hours = Number(e.target.value); setEquipment(newEq);
-                                            }} disabled={isApproved} />
-                                        </div>
-                                        {!isApproved && <Button size="icon" variant="ghost" onClick={() => removeEquipment(idx)} className="shrink-0"><Trash2 className="w-4 h-4 text-red-500" /></Button>}
-                                    </div>
-                                </div>
-                            ))}
-                        </CardContent>
-                    </Card>
-
-                    {/* Production */}
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <CardTitle>Production Logs</CardTitle>
-                            {!isApproved && <Button size="sm" variant="ghost" onClick={addProduction}><Plus className="w-4 h-4" /></Button>}
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                            {production.map((log, idx) => (
-                                <div key={idx} className="flex flex-col md:flex-row gap-2 md:items-center border p-3 rounded-lg md:border-0 md:p-0 bg-slate-50 md:bg-transparent">
-                                    <div className="w-full md:w-40">
-                                        <Select value={log.activity} onValueChange={val => {
-                                            const newProd = [...production]; newProd[idx].activity = val; setProduction(newProd);
-                                        }} disabled={isApproved}>
-                                            <SelectTrigger><SelectValue /></SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="Drill">Drill</SelectItem>
-                                                <SelectItem value="Pilot">Pilot</SelectItem>
-                                                <SelectItem value="Ream">Ream</SelectItem>
-                                                <SelectItem value="Pull">Pull</SelectItem>
-                                                <SelectItem value="Setup">Setup</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="grid grid-cols-3 gap-2 flex-1 w-full md:w-auto md:flex">
-                                        <Input type="number" placeholder="LF" className="w-full md:w-24" value={log.lf} onChange={e => {
-                                            const newProd = [...production]; newProd[idx].lf = Number(e.target.value); setProduction(newProd);
-                                        }} disabled={isApproved} />
-                                        <Input type="number" placeholder="Pitch" className="w-full md:w-24" value={log.pitch} onChange={e => {
-                                            const newProd = [...production]; newProd[idx].pitch = Number(e.target.value); setProduction(newProd);
-                                        }} disabled={isApproved} />
-                                        <Input type="number" placeholder="Azi" className="w-full md:w-24" value={log.azimuth} onChange={e => {
-                                            const newProd = [...production]; newProd[idx].azimuth = Number(e.target.value); setProduction(newProd);
-                                        }} disabled={isApproved} />
-                                    </div>
-                                    {!isApproved && <Button size="icon" variant="ghost" onClick={() => removeProduction(idx)} className="self-end md:self-center shrink-0"><Trash2 className="w-4 h-4 text-red-500" /></Button>}
-                                </div>
-                            ))}
-                        </CardContent>
-                    </Card>
-
-                    {/* Materials */}
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <CardTitle>Material Usage</CardTitle>
-                            {!isApproved && <Button size="sm" variant="ghost" onClick={addMaterial}><Plus className="w-4 h-4" /></Button>}
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                            {materials.map((mat, idx) => (
-                                <div key={idx} className="flex flex-col md:flex-row gap-2 md:items-center border p-3 rounded-lg md:border-0 md:p-0 bg-slate-50 md:bg-transparent">
-                                    <div className="w-full md:flex-1">
-                                        <Select value={mat.inventoryItemId} onValueChange={val => {
-                                            const newMat = [...materials]; newMat[idx].inventoryItemId = val; setMaterials(newMat);
-                                        }} disabled={isApproved}>
-                                            <SelectTrigger><SelectValue placeholder="Select Item" /></SelectTrigger>
-                                            <SelectContent>
-                                                {inventoryItems.map(item => (
-                                                    <SelectItem key={item.id} value={item.id}>{item.name} ({item.unit})</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="flex gap-2 w-full md:w-auto">
-                                        <div className="flex-1 md:w-32">
-                                            <Input type="number" placeholder="Qty" value={mat.quantity} onChange={e => {
-                                                const newMat = [...materials]; newMat[idx].quantity = Number(e.target.value); setMaterials(newMat);
-                                            }} disabled={isApproved} />
-                                        </div>
-                                        {!isApproved && <Button size="icon" variant="ghost" onClick={() => removeMaterial(idx)} className="shrink-0"><Trash2 className="w-4 h-4 text-red-500" /></Button>}
-                                    </div>
-                                </div>
-                            ))}
-                        </CardContent>
-                    </Card>
+                <TabsContent value="report">
+                    <DailyReportForm
+                        report={report}
+                        employees={employees}
+                        assets={assets}
+                        inventoryItems={inventoryItems}
+                    />
                 </TabsContent>
 
-                <TabsContent value="activity" className="space-y-6 mt-4">
+                <TabsContent value="activity">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Safety */}
                         <Card>
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2"><ShieldAlert className="w-5 h-5 text-orange-600" /> Safety</CardTitle>
+                                <CardTitle className="flex items-center gap-2 text-base"><ShieldAlert className="w-5 h-5 text-orange-600" /> Safety (Read Only)</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-4">
@@ -362,7 +125,7 @@ export default function DailyReportEditForm({
                         {/* QC */}
                         <Card>
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2"><ClipboardList className="w-5 h-5 text-blue-600" /> Quality Control</CardTitle>
+                                <CardTitle className="flex items-center gap-2 text-base"><ClipboardList className="w-5 h-5 text-blue-600" /> Quality Control (Read Only)</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <h4 className="font-semibold text-sm mb-2">Punch Items Created</h4>
@@ -375,45 +138,6 @@ export default function DailyReportEditForm({
                                             </li>
                                         ))}
                                     </ul>
-                                )}
-                            </CardContent>
-                        </Card>
-
-                        {/* Inventory Transactions */}
-                        <Card className="md:col-span-2">
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2"><Package className="w-5 h-5 text-green-600" /> Inventory Activity</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                {inventoryTransactions.length === 0 ? <p className="text-sm text-muted-foreground">No inventory activity recorded today.</p> : (
-                                    <div className="overflow-x-auto">
-                                        <table className="w-full text-sm text-left">
-                                            <thead className="bg-slate-100">
-                                                <tr>
-                                                    <th className="p-2">Time</th>
-                                                    <th className="p-2">Item</th>
-                                                    <th className="p-2">Type</th>
-                                                    <th className="p-2">Qty</th>
-                                                    <th className="p-2">User</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {inventoryTransactions.map(t => (
-                                                    <tr key={t.id} className="border-b">
-                                                        <td className="p-2">{new Date(t.createdAt).toLocaleTimeString()}</td>
-                                                        <td className="p-2 font-medium">{t.item.name}</td>
-                                                        <td className="p-2">
-                                                            <span className={`px-2 py-1 rounded-full text-xs ${t.type === 'RESTOCK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                                                                {t.type}
-                                                            </span>
-                                                        </td>
-                                                        <td className="p-2">{Math.abs(t.quantity)}</td>
-                                                        <td className="p-2">{t.user.name}</td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
                                 )}
                             </CardContent>
                         </Card>
