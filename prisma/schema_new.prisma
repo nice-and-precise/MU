@@ -1029,6 +1029,7 @@ model Employee {
   overtimeRule              String? // "OVER_40_WEEK", "OVER_8_DAY", "UNION_X"
   defaultOvertimeMultiplier Float   @default(1.5)
   doubleTimeMultiplier      Float   @default(2.0)
+  burdenRate                Float   @default(0)
 
   taxStatus        String? // W-4 Single, etc.
   primaryState     String? // MN, ND, etc.

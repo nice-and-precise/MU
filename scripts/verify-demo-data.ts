@@ -1,5 +1,5 @@
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, AssetState } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -15,7 +15,7 @@ async function main() {
     const inventoryValue = inventoryItems.reduce((acc, item) => acc + (item.quantityOnHand * (item.costPerUnit || 0)), 0);
     console.log(`Inventory Value: $${inventoryValue.toLocaleString()}`);
 
-    const activeFleet = await prisma.asset.count({ where: { status: 'AVAILABLE' } });
+    const activeFleet = await prisma.asset.count({ where: { status: AssetState.ACTIVE } });
     console.log(`Active Fleet: ${activeFleet}`);
 
     const openSafetyIssues = await prisma.correctiveAction.count({ where: { status: 'OPEN' } });

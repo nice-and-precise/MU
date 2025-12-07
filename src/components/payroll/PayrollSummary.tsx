@@ -9,6 +9,11 @@ interface PayrollEntry {
     overtimeHours: number;
     doubleTimeHours: number;
     totalHours: number;
+    qboEmployeeId?: string | null;
+    defaultEarningCode?: string | null;
+    defaultDept?: string | null;
+    regPayCode?: string;
+    otPayCode?: string;
 }
 
 interface PayrollSummaryProps {
@@ -17,14 +22,18 @@ interface PayrollSummaryProps {
 
 export function PayrollSummary({ data }: PayrollSummaryProps) {
     const handleDownloadCSV = () => {
-        // Simple CSV generation
-        const headers = ["Employee Name", "Regular Hours", "Overtime Hours", "Double Time Hours", "Total Hours"];
+        // Updated CSV generation with QBO fields
+        const headers = ["Employee Name", "QB Employee ID", "Regular Hours", "Reg Pay Code", "Overtime Hours", "OT Pay Code", "Double Time Hours", "Total Hours", "Department"];
         const rows = data.map(entry => [
             entry.employeeName,
+            entry.qboEmployeeId || '',
             entry.regularHours.toString(),
+            entry.regPayCode || 'Regular',
             entry.overtimeHours.toString(),
+            entry.otPayCode || 'Overtime',
             entry.doubleTimeHours.toString(),
-            entry.totalHours.toString()
+            entry.totalHours.toString(),
+            entry.defaultDept || ''
         ]);
 
         const csvContent = "data:text/csv;charset=utf-8,"
