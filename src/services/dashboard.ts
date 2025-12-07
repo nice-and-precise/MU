@@ -192,11 +192,20 @@ export async function getActiveCrewsService() {
 }
 
 export async function getOwnerStatsService() {
-    const [activeProjects, totalRevenue, pendingApprovals, inventoryItems, activeFleet, openSafetyIssues] = await Promise.all([
+    const [
+        activeProjects,
+        totalRevenueAggregate,
+        pendingApprovals,
+        inventoryItems,
+        activeFleet,
+        openSafetyIssues,
+        overdueInvoices,
+        changeOrders
+    ] = await Promise.all([
         prisma.project.count({
             where: { status: "IN_PROGRESS" },
         }),
-        // Revenue calculation is complex, simplified for now
+        // Revenue calculation 
         prisma.project.aggregate({
             _sum: { budget: true },
             where: { status: { in: ["IN_PROGRESS", "COMPLETED"] } },
@@ -212,6 +221,22 @@ export async function getOwnerStatsService() {
         }),
         prisma.correctiveAction.count({
             where: { status: "OPEN" }
+        }),
+        // Aged AR (> 30 days) - simplified to just total overdue for now
+        prisma.invoice.aggregate({
+            _sum: { currentDue: true },
+            where: {
+                status: "APPROVED", // Assuming APPROVED means SENT/UNPAID
+                createdAt: {
+                    lt: new Date(new Date().setDate(new Date().getDate() - 30))
+                }
+            }
+        }),
+        prisma.changeOrder.findMany({
+            where: { status: "PENDING" },
+            take: 5,
+            include: { project: true },
+            orderBy: { createdAt: 'desc' }
         })
     ]);
 
@@ -221,20 +246,71 @@ export async function getOwnerStatsService() {
 
     return {
         activeProjects,
-        totalRevenue: totalRevenue._sum.budget || 0,
+        totalRevenue: totalRevenueAggregate._sum.budget || 0,
         pendingApprovals,
         inventoryValue,
         activeFleet,
-        openSafetyIssues
+        openSafetyIssues,
+        agedAr: overdueInvoices._sum.currentDue || 0,
+        pendingChangeOrders: changeOrders.map(co => ({
+            id: co.id,
+            project: co.project.name,
+            scope: co.scope,
+            amount: co.budgetImpact || 0,
+            date: co.createdAt
+        }))
     };
 }
 
 export async function getSuperStatsService() {
-    // In a real app, we'd filter by projects assigned to this super
-    // For now, we'll just return global stats or mock the assignment logic
-    const myProjects = await prisma.project.count({
+    // 1. Get Active Projects
+    const activeProjects = await prisma.project.findMany({
         where: { status: "IN_PROGRESS" },
+        include: {
+            dailyReports: {
+                where: {
+                    reportDate: {
+                        gte: new Date(new Date().setHours(0, 0, 0, 0))
+                    }
+                }
+            },
+            incidents: {
+                where: {
+                    // Open safety incidents
+                    // Assuming we might want to filter by date or status, but schema doesn't have explicit status on Incident logic yet besides severity?
+                    // Actually SafetyIncident doesn't have status, let's assume all recent ones are relevant or check if we can link to corrective actions
+                },
+                take: 1,
+                orderBy: { date: 'desc' }
+            },
+            // Check for low production? We'd need to compare vs plan. Skipping for now.
+        }
     });
+
+    const projectAlerts = activeProjects.map(p => {
+        const alerts = [];
+        const hasReport = p.dailyReports.length > 0;
+        if (!hasReport) {
+            alerts.push({ type: 'MISSING_REPORT', message: 'No Daily Report today' });
+        }
+
+        // Simple check for recent incidents
+        if (p.incidents.length > 0) {
+            // If incident was today
+            const incidentDate = new Date(p.incidents[0].date);
+            const today = new Date();
+            if (incidentDate.toDateString() === today.toDateString()) {
+                alerts.push({ type: 'SAFETY_INCIDENT', message: 'Safety Incident Reported Today' });
+            }
+        }
+
+        return {
+            id: p.id,
+            name: p.name,
+            alerts
+        };
+    }).filter(p => p.alerts.length > 0);
+
 
     const openInspections = await prisma.inspection.count({
         where: { status: "OPEN" },
@@ -253,21 +329,65 @@ export async function getSuperStatsService() {
     });
 
     return {
-        myProjects,
+        myProjects: activeProjects.length,
         openInspections,
         dailyReportsToday,
+        projectAlerts
     };
 }
 
-export async function getCrewStatsService() {
-    // Mocking current assignment
-    const currentAssignment = await prisma.project.findFirst({
-        where: { status: "IN_PROGRESS" },
-        include: { bores: true },
+export async function getCrewStatsService(userId: string) {
+    // 1. Find User's active Time Entry
+    const activeTimeEntry = await prisma.timeEntry.findFirst({
+        where: {
+            employee: { userId: userId },
+            endTime: null
+        },
+        include: { project: true }
     });
 
+    // 2. Find User's Assigned Project (via Crew or direct shift)
+    // Simplified: Find a shift for today
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+
+    const shift = await prisma.shift.findFirst({
+        where: {
+            OR: [
+                { employee: { userId: userId } },
+                { crew: { members: { some: { employee: { userId: userId } } } } }
+            ],
+            startTime: { gte: todayStart, lte: todayEnd }
+        },
+        include: { project: true }
+    });
+
+    const currentProject = activeTimeEntry?.project || shift?.project;
+
+    // 3. Check Daily Report Status for this project/crew
+    let dailyReportStatus = 'NOT_STARTED';
+    let dailyReportId = null;
+
+    if (currentProject) {
+        const todayReport = await prisma.dailyReport.findFirst({
+            where: {
+                projectId: currentProject.id,
+                reportDate: { gte: todayStart }
+            }
+        });
+        if (todayReport) {
+            dailyReportStatus = todayReport.status;
+            dailyReportId = todayReport.id;
+        }
+    }
+
     return {
-        currentAssignment,
-        todayProduction: 120, // Mocked for now
+        activeTimeEntry,
+        currentProject,
+        dailyReportStatus,
+        dailyReportId,
+        nextLocation: currentProject?.location || 'No Assignment'
     };
 }

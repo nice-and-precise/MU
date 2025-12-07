@@ -30,6 +30,6 @@ export const getSuperStats = authenticatedActionNoInput(async () => {
     return await getSuperStatsService();
 });
 
-export const getCrewStats = authenticatedActionNoInput(async () => {
-    return await getCrewStatsService();
+export const getCrewStats = authenticatedActionNoInput(async (userId) => {
+    return await getCrewStatsService(userId);
 });

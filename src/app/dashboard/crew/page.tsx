@@ -1,14 +1,18 @@
-
 import { FieldDashboard } from "@/components/field/FieldDashboard";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { getAvailableCrewMembers } from "@/actions/employees";
 import { getAssets } from "@/actions/assets";
 import { getActiveProjects } from "@/actions/projects";
 import { getTickets } from "@/actions/tickets";
+import { getCrewStats } from "@/actions/dashboard"; // Import new action
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { DashboardOnboarding } from "@/components/dashboard/DashboardOnboarding";
+import { Card, CardContent } from "@/components/ui/card";
+import { Clock, FileText, MapPin, AlertTriangle, Plus, HardHat } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default async function CrewDashboard() {
     const session = await getServerSession(authOptions);
@@ -19,9 +23,9 @@ export default async function CrewDashboard() {
     const res = await getAssets();
     const assets = res.success && res.data ? res.data : [];
     const { data: projects } = await getActiveProjects();
+    const { data: crewStats } = await getCrewStats(); // Fetch tailored stats
 
     // Assuming the crew is assigned to a specific project, or we pick the first active one for now
-    // In a real app, we'd get the user's assigned project.
     const currentProject = projects?.[0] || {
         id: "demo-project",
         name: "Demo Project",
@@ -41,26 +45,133 @@ export default async function CrewDashboard() {
     });
 
     return (
-        <div className="p-4 md:p-8">
+        <div className="p-4 md:p-8 space-y-6">
             <DashboardOnboarding
                 role={userRole.toUpperCase()}
                 hasCompletedOnboarding={currentUser?.hasCompletedOnboarding ?? false}
                 userName={currentUser?.name || ""}
             />
+
+            {/* UX Promise Header */}
+            <div className="bg-gradient-to-r from-blue-900 to-slate-800 p-6 rounded-lg text-white shadow-lg">
+                <h1 className="text-2xl font-bold mb-2">Crew Dashboard</h1>
+                <p className="text-lg opacity-90 font-medium">
+                    "Clock in, log production, and stay out of trouble with minimum taps."
+                </p>
+            </div>
+
+            {/* My Work Panel */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="border-t-4 border-blue-600 shadow-md">
+                    <CardContent className="p-6">
+                        <h2 className="text-xl font-bold mb-4 flex items-center text-gray-800 dark:text-gray-100">
+                            <HardHat className="mr-2 h-6 w-6 text-blue-600" />
+                            My Work: Today
+                        </h2>
+
+                        <div className="space-y-4">
+                            {/* Active Time Entry */}
+                            <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
+                                <div className="flex items-center">
+                                    <Clock className={`h-5 w-5 mr-3 ${crewStats?.activeTimeEntry ? 'text-green-500' : 'text-gray-400'}`} />
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Time Status</p>
+                                        <p className="font-bold text-gray-900 dark:text-white">
+                                            {crewStats?.activeTimeEntry ? 'Clocked In' : 'Not Clocked In'}
+                                        </p>
+                                    </div>
+                                </div>
+                                <Button variant={crewStats?.activeTimeEntry ? "destructive" : "default"} size="sm" asChild>
+                                    <Link href="/dashboard/time">
+                                        {crewStats?.activeTimeEntry ? 'Clock Out' : 'Clock In'}
+                                    </Link>
+                                </Button>
+                            </div>
+
+                            {/* Daily Report Status */}
+                            <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
+                                <div className="flex items-center">
+                                    <FileText className={`h-5 w-5 mr-3 ${crewStats?.dailyReportStatus !== 'NOT_STARTED' ? 'text-blue-500' : 'text-gray-400'}`} />
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Daily Report</p>
+                                        <p className="font-bold text-gray-900 dark:text-white">
+                                            {crewStats?.dailyReportStatus === 'NOT_STARTED' ? 'Not Started' : crewStats?.dailyReportStatus}
+                                        </p>
+                                    </div>
+                                </div>
+                                <Button variant="outline" size="sm" asChild>
+                                    <Link href={`/dashboard/reports/${crewStats?.dailyReportId ?? 'new'}`}>
+                                        {crewStats?.dailyReportStatus === 'NOT_STARTED' ? 'Create' : 'Edit'}
+                                    </Link>
+                                </Button>
+                            </div>
+
+                            {/* Next Work Location */}
+                            <div className="flex items-center p-4 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
+                                <MapPin className="h-5 w-5 mr-3 text-red-500" />
+                                <div>
+                                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Next Location</p>
+                                    <p className="font-bold text-gray-900 dark:text-white truncate max-w-[200px] md:max-w-xs">
+                                        {crewStats?.nextLocation}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Quick Links */}
+                        <div className="grid grid-cols-2 gap-4 mt-6">
+                            <Button className="w-full bg-indigo-600 hover:bg-indigo-700" asChild>
+                                <Link href="/dashboard/rod-pass">
+                                    <Plus className="mr-2 h-4 w-4" /> Log Rod
+                                </Link>
+                            </Button>
+                            <Button className="w-full" variant="secondary" asChild>
+                                <Link href="/dashboard/tickets">
+                                    <AlertTriangle className="mr-2 h-4 w-4" /> Report Issue
+                                </Link>
+                            </Button>
+                        </div>
+
+                    </CardContent>
+                </Card>
+
+                {/* Secondary Panels (Optional or keep FieldDashboard) */}
+                <div className="hidden lg:block">
+                    <p className="text-gray-500 italic mb-2">Live Field view...</p>
+                    <FieldDashboard
+                        userRole={userRole}
+                        projectId={currentProject.id}
+                        projectName={currentProject.name}
+                        projectAddress={currentProject.location || "Unknown Location"}
+                        projectLat={currentProject.latitude || 0}
+                        projectLong={currentProject.longitude || 0}
+                        currentUserId={session?.user?.id || ""}
+                        employees={employees || []}
+                        assets={assets || []}
+                        projects={projects || []}
+                        activeTicketId={activeTicketId}
+                    />
+                </div>
+            </div>
+
+            {/* Mobile Field Dashboard fallback */}
+            <div className="lg:hidden">
+                <FieldDashboard
+                    userRole={userRole}
+                    projectId={currentProject.id}
+                    projectName={currentProject.name}
+                    projectAddress={currentProject.location || "Unknown Location"}
+                    projectLat={currentProject.latitude || 0}
+                    projectLong={currentProject.longitude || 0}
+                    currentUserId={session?.user?.id || ""}
+                    employees={employees || []}
+                    assets={assets || []}
+                    projects={projects || []}
+                    activeTicketId={activeTicketId}
+                />
+            </div>
+
             <QuickActions role={userRole} />
-            <FieldDashboard
-                userRole={userRole}
-                projectId={currentProject.id}
-                projectName={currentProject.name}
-                projectAddress={currentProject.location || "Unknown Location"}
-                projectLat={currentProject.latitude || 0}
-                projectLong={currentProject.longitude || 0}
-                currentUserId={session?.user?.id || ""}
-                employees={employees || []}
-                assets={assets || []}
-                projects={projects || []}
-                activeTicketId={activeTicketId}
-            />
         </div>
     );
 }
