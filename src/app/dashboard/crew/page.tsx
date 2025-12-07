@@ -204,6 +204,7 @@ export default async function CrewDashboard() {
                         assets={assets || []}
                         projects={projects || []}
                         activeTicketId={activeTicketId}
+                        hideTimeControls={true}
                     />
                 </div>
             </div>
@@ -222,6 +223,7 @@ export default async function CrewDashboard() {
                     assets={assets || []}
                     projects={projects || []}
                     activeTicketId={activeTicketId}
+                    hideTimeControls={true}
                 />
             </div>
 

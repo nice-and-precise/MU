@@ -27,6 +27,7 @@ interface FieldDashboardProps {
     assets?: any[];
     projects?: any[];
     activeTicketId?: string;
+    hideTimeControls?: boolean;
 }
 
 export function FieldDashboard({
@@ -40,7 +41,8 @@ export function FieldDashboard({
     employees = [],
     assets = [],
     projects = [],
-    activeTicketId
+    activeTicketId,
+    hideTimeControls = false
 }: FieldDashboardProps) {
     const [activeTab, setActiveTab] = useState("today");
     const [selectedAssetForInspection, setSelectedAssetForInspection] = useState<any>(null);
@@ -111,27 +113,30 @@ export function FieldDashboard({
                                 <CardDescription>Complete these steps daily</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                {/* 1. Clock In */}
-                                <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/50">
-                                    <div className="flex items-center gap-3">
-                                        {checklist.clockIn ? <CheckCircle2 className="text-green-500 h-6 w-6" /> : <Circle className="text-muted-foreground h-6 w-6" />}
-                                        <span className={checklist.clockIn ? "line-through text-muted-foreground" : "font-medium"}>1. Clock In</span>
+
+                                {/* 1. Clock In - Conditionally Rendered */}
+                                {!hideTimeControls && (
+                                    <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/50">
+                                        <div className="flex items-center gap-3">
+                                            {checklist.clockIn ? <CheckCircle2 className="text-green-500 h-6 w-6" /> : <Circle className="text-muted-foreground h-6 w-6" />}
+                                            <span className={checklist.clockIn ? "line-through text-muted-foreground" : "font-medium"}>1. Clock In</span>
+                                        </div>
+                                        <GeoClockIn
+                                            projectId={projectId}
+                                            projectLat={projectLat}
+                                            projectLong={projectLong}
+                                            geofenceRadius={500}
+                                            employeeId={currentUserId}
+                                            minimal={true}
+                                        />
                                     </div>
-                                    <GeoClockIn
-                                        projectId={projectId}
-                                        projectLat={projectLat}
-                                        projectLong={projectLong}
-                                        geofenceRadius={500}
-                                        employeeId={currentUserId}
-                                        minimal={true} // Assuming GeoClockIn can support a minimal mode, or we just wrap it
-                                    />
-                                </div>
+                                )}
 
                                 {/* 2. Pre-Trip */}
                                 <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/50">
                                     <div className="flex items-center gap-3">
                                         {checklist.preTrip ? <CheckCircle2 className="text-green-500 h-6 w-6" /> : <Circle className="text-muted-foreground h-6 w-6" />}
-                                        <span className={checklist.preTrip ? "line-through text-muted-foreground" : "font-medium"}>2. Pre-Trip Inspection</span>
+                                        <span className={checklist.preTrip ? "line-through text-muted-foreground" : "font-medium"}>{hideTimeControls ? "1." : "2."} Pre-Trip Inspection</span>
                                     </div>
                                     <Button size="sm" variant="outline" onClick={() => { setActiveTab("gear"); toast.info("Select an asset to inspect"); }}>Go to Gear</Button>
                                 </div>
@@ -140,7 +145,7 @@ export function FieldDashboard({
                                 <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/50">
                                     <div className="flex items-center gap-3">
                                         {checklist.safetyMeeting ? <CheckCircle2 className="text-green-500 h-6 w-6" /> : <Circle className="text-muted-foreground h-6 w-6" />}
-                                        <span className={checklist.safetyMeeting ? "line-through text-muted-foreground" : "font-medium"}>3. Safety Meeting</span>
+                                        <span className={checklist.safetyMeeting ? "line-through text-muted-foreground" : "font-medium"}>{hideTimeControls ? "2." : "3."} Safety Meeting</span>
                                     </div>
                                     <Button size="sm" variant="outline" onClick={() => { setActiveTab("safety"); toast.info("Complete JSA in Safety tab"); }}>Go to Safety</Button>
                                 </div>
@@ -149,19 +154,21 @@ export function FieldDashboard({
                                 <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/50">
                                     <div className="flex items-center gap-3">
                                         {checklist.production ? <CheckCircle2 className="text-green-500 h-6 w-6" /> : <Circle className="text-muted-foreground h-6 w-6" />}
-                                        <span className={checklist.production ? "line-through text-muted-foreground" : "font-medium"}>4. Production Logs</span>
+                                        <span className={checklist.production ? "line-through text-muted-foreground" : "font-medium"}>{hideTimeControls ? "3." : "4."} Production Logs</span>
                                     </div>
                                     <Button size="sm" variant="outline" onClick={() => toast.info("Navigate to Drilling Ops to log production")}>Log</Button>
                                 </div>
 
-                                {/* 5. Clock Out */}
-                                <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/50">
-                                    <div className="flex items-center gap-3">
-                                        {checklist.clockOut ? <CheckCircle2 className="text-green-500 h-6 w-6" /> : <Circle className="text-muted-foreground h-6 w-6" />}
-                                        <span className={checklist.clockOut ? "line-through text-muted-foreground" : "font-medium"}>5. Clock Out</span>
+                                {/* 5. Clock Out - Conditionally Rendered */}
+                                {!hideTimeControls && (
+                                    <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/50">
+                                        <div className="flex items-center gap-3">
+                                            {checklist.clockOut ? <CheckCircle2 className="text-green-500 h-6 w-6" /> : <Circle className="text-muted-foreground h-6 w-6" />}
+                                            <span className={checklist.clockOut ? "line-through text-muted-foreground" : "font-medium"}>5. Clock Out</span>
+                                        </div>
+                                        <Button size="sm" variant="destructive" onClick={() => handleChecklistAction('clockOut')}>Clock Out</Button>
                                     </div>
-                                    <Button size="sm" variant="destructive" onClick={() => handleChecklistAction('clockOut')}>Clock Out</Button>
-                                </div>
+                                )}
                             </CardContent>
                         </Card>
 
