@@ -6,10 +6,10 @@
     "dev": "next dev --turbo",
     "dev:turbo": "next dev --turbo",
     "build:wasm": "wasm-pack build subterra --target web --out-dir ../src/subterra-wasm",
-    "build": "prisma generate && next build --webpack",
+    "build": "prisma generate --schema=prisma/schema_new.prisma && next build --webpack",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate",
+    "postinstall": "prisma generate --schema=prisma/schema_new.prisma",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"

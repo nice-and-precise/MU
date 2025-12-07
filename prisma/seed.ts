@@ -1,5 +1,5 @@
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, AssetState, ReportStatus, TicketStatus } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
 const prisma = new PrismaClient();
@@ -149,7 +149,7 @@ async function main() {
         type: asset.type,
         model: asset.model,
         serialNumber: asset.serial,
-        status: asset.status,
+        status: asset.status as AssetState,
         hours: asset.hours,
         purchaseDate: faker.date.past({ years: 3 }),
       }
@@ -278,7 +278,7 @@ async function main() {
         reportDate: date,
         createdById: foreman.id,
         signedById: isToday ? null : superint.id,
-        status: status,
+        status: status as ReportStatus,
         weather: random(['Sunny', 'Cloudy', 'Rain', 'Windy']),
         notes: faker.lorem.sentence(),
         crew: JSON.stringify([
@@ -470,7 +470,7 @@ async function main() {
     data: {
       ticketNumber: '240101-001',
       type: 'NORMAL',
-      status: 'ACTIVE',
+      status: 'ACTIVE' as TicketStatus,
       submittedAt: faker.date.recent({ days: 10 }),
       workToBeginDate: faker.date.recent({ days: 2 }),
       expirationDate: faker.date.soon({ days: 2 }), // Expiring in 2 days
@@ -499,7 +499,7 @@ async function main() {
     data: {
       ticketNumber: '240101-002',
       type: 'NORMAL',
-      status: 'ACTIVE',
+      status: 'ACTIVE' as TicketStatus,
       submittedAt: faker.date.recent({ days: 12 }),
       workToBeginDate: faker.date.recent({ days: 5 }),
       expirationDate: faker.date.soon({ days: 5 }),
@@ -526,7 +526,7 @@ async function main() {
     data: {
       ticketNumber: '231201-999',
       type: 'EMERGENCY',
-      status: 'EXPIRED',
+      status: 'EXPIRED' as TicketStatus,
       submittedAt: faker.date.past({ years: 0.1 }),
       workToBeginDate: faker.date.past({ years: 0.1 }),
       expirationDate: faker.date.recent({ days: 5 }), // Already expired

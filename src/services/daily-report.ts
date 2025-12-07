@@ -1,5 +1,8 @@
+
 import { prisma } from '@/lib/prisma';
 import { CreateDailyReportInput, UpdateDailyReportInput } from '@/schemas/daily-report';
+import { AuditService } from './audit';
+import { AuditAction } from '@prisma/client';
 
 export class DailyReportService {
     static async getReports() {
@@ -23,6 +26,11 @@ export class DailyReportService {
                 project: { select: { name: true } },
                 createdBy: { select: { name: true } },
                 signedBy: { select: { name: true } },
+                // Include relations for verification if needed, but UI uses JSON fields for now
+                laborEntries: { include: { employee: true } },
+                equipmentEntries: { include: { asset: true } },
+                materialEntries: true,
+                productionEntries: true,
             },
         });
     }
@@ -51,22 +59,96 @@ export class DailyReportService {
                 notes,
                 createdById: userId,
                 status: "DRAFT",
-                crew: "[]", // Initialize empty JSON
+                crew: "[]", // Initialize empty JSON for legacy compatibility
+                production: "[]",
+                materials: "[]",
+                equipment: "[]",
             },
         });
     }
 
     static async updateDailyReport(id: string, data: UpdateDailyReportInput) {
-        return await prisma.dailyReport.update({
-            where: { id },
-            data: {
-                crew: data.crew ? JSON.stringify(data.crew) : undefined,
-                production: data.production ? JSON.stringify(data.production) : undefined,
-                materials: data.materials ? JSON.stringify(data.materials) : undefined,
-                equipment: data.equipment ? JSON.stringify(data.equipment) : undefined,
-                weather: data.weather,
-                notes: data.notes,
-            },
+        return await prisma.$transaction(async (tx) => {
+            // 1. Update Relations (Delete All + Create All)
+
+            // Labor
+            if (data.crew) {
+                await tx.dailyReportLabor.deleteMany({ where: { dailyReportId: id } });
+                for (const member of data.crew) {
+                    await tx.dailyReportLabor.create({
+                        data: {
+                            dailyReportId: id,
+                            employeeId: member.employeeId,
+                            hours: member.hours,
+                            costCode: member.role, // Storing role in costCode as per migration strategy
+                        }
+                    });
+                }
+            }
+
+            // Equipment
+            if (data.equipment) {
+                await tx.dailyReportEquipment.deleteMany({ where: { dailyReportId: id } });
+                for (const eq of data.equipment) {
+                    await tx.dailyReportEquipment.create({
+                        data: {
+                            dailyReportId: id,
+                            assetId: eq.assetId,
+                            hours: eq.hours,
+                        }
+                    });
+                }
+            }
+
+            // Materials
+            if (data.materials) {
+                await tx.dailyReportMaterial.deleteMany({ where: { dailyReportId: id } });
+                for (const mat of data.materials) {
+                    // Fetch details for name/unit
+                    const item = await tx.inventoryItem.findUnique({ where: { id: mat.inventoryItemId } });
+                    await tx.dailyReportMaterial.create({
+                        data: {
+                            dailyReportId: id,
+                            inventoryItemId: mat.inventoryItemId,
+                            quantity: mat.quantity,
+                            name: item?.name || "Unknown",
+                            unit: item?.unit || "EA"
+                        }
+                    });
+                }
+            }
+
+            // Production
+            if (data.production) {
+                await tx.dailyReportProduction.deleteMany({ where: { dailyReportId: id } });
+                for (const prod of data.production) {
+                    const descParts = [prod.activity];
+                    if (prod.pitch) descParts.push(`Pitch: ${prod.pitch}`);
+                    if (prod.azimuth) descParts.push(`Az: ${prod.azimuth}`);
+
+                    await tx.dailyReportProduction.create({
+                        data: {
+                            dailyReportId: id,
+                            quantity: prod.lf,
+                            unit: 'FT',
+                            description: descParts.join(', '),
+                        }
+                    });
+                }
+            }
+
+            // 2. Update DailyReport (including JSON sync)
+            return await tx.dailyReport.update({
+                where: { id },
+                data: {
+                    crew: data.crew ? JSON.stringify(data.crew) : undefined,
+                    production: data.production ? JSON.stringify(data.production) : undefined,
+                    materials: data.materials ? JSON.stringify(data.materials) : undefined,
+                    equipment: data.equipment ? JSON.stringify(data.equipment) : undefined,
+                    weather: data.weather,
+                    notes: data.notes,
+                },
+            });
         });
     }
 
@@ -84,21 +166,26 @@ export class DailyReportService {
     }
 
     static async approveDailyReport(id: string, userId: string) {
-        const report = await prisma.dailyReport.findUnique({ where: { id } });
+        // Fetch report with relations
+        const report = await prisma.dailyReport.findUnique({
+            where: { id },
+            include: {
+                laborEntries: true,
+                equipmentEntries: true,
+                materialEntries: true,
+                productionEntries: true
+            }
+        });
+
         if (!report) throw new Error("Report not found");
 
         if (report.status === 'APPROVED') {
             throw new Error("Report is already approved");
         }
 
-        // Parse data
-        const materials = JSON.parse(report.materials || '[]');
-        const crew = JSON.parse(report.crew || '[]');
-        const equipment = JSON.parse(report.equipment || '[]');
-
         await prisma.$transaction(async (tx) => {
-            // 1. Deduct Inventory
-            for (const mat of materials) {
+            // 1. Deduct Inventory (Use materialEntries)
+            for (const mat of report.materialEntries) {
                 if (mat.inventoryItemId && mat.quantity > 0) {
                     const item = await tx.inventoryItem.findUnique({ where: { id: mat.inventoryItemId } });
                     if (item) {
@@ -121,8 +208,8 @@ export class DailyReportService {
                 }
             }
 
-            // 2. Create Time Entries
-            for (const member of crew) {
+            // 2. Create Time Entries (Use laborEntries)
+            for (const member of report.laborEntries) {
                 if (member.employeeId && member.hours > 0) {
                     await tx.timeEntry.create({
                         data: {
@@ -132,14 +219,14 @@ export class DailyReportService {
                             endTime: new Date(report.reportDate.getTime() + member.hours * 60 * 60 * 1000),
                             type: 'WORK',
                             status: 'APPROVED',
-                            description: `Daily Report: ${member.role}`
+                            description: `Daily Report: ${member.costCode || 'Worker'}` // Use costCode as Role
                         }
                     });
                 }
             }
 
-            // 3. Create Equipment Usage
-            for (const eq of equipment) {
+            // 3. Create Equipment Usage (Use equipmentEntries)
+            for (const eq of report.equipmentEntries) {
                 if (eq.assetId && eq.hours > 0) {
                     await tx.equipmentUsage.create({
                         data: {
@@ -153,22 +240,20 @@ export class DailyReportService {
                 }
             }
 
-            // 4. Update Project Progress (Production)
-            const productionLogs = JSON.parse(report.production || '[]');
+            // 4. Update Project Progress (Use productionEntries)
             let dailyFootage = 0;
-
-            for (const log of productionLogs) {
-                if (log.lf && Number(log.lf) > 0) {
-                    dailyFootage += Number(log.lf);
+            for (const prod of report.productionEntries) {
+                if (prod.quantity > 0 && prod.unit === 'FT') {
+                    dailyFootage += prod.quantity;
 
                     await tx.stationProgress.create({
                         data: {
                             projectId: report.projectId,
                             date: report.reportDate,
-                            startStation: 0,
-                            endStation: Number(log.lf),
+                            startStation: 0, // Logic for stationing needs context, defaulting to 0 or manual is limitation of current logic
+                            endStation: prod.quantity,
                             status: 'COMPLETED',
-                            notes: `Daily Report Production: ${log.activity}`
+                            notes: `Daily Report Production: ${prod.description}`
                         }
                     });
                 }
@@ -184,16 +269,21 @@ export class DailyReportService {
                 }
             });
 
-            // 6. Create Compliance Event for "Daily Report Approved" (Milestone)
-            await tx.complianceEvent.create({
-                data: {
-                    projectId: report.projectId,
-                    eventType: 'DAILY_REPORT_APPROVED',
-                    details: `Report approved. Total Footage: ${dailyFootage}ft.`,
-                    createdById: userId
-                }
-            });
+            // 6. Create Compliance Event
+            if (dailyFootage > 0) {
+                await tx.complianceEvent.create({
+                    data: {
+                        projectId: report.projectId,
+                        eventType: 'DAILY_REPORT_APPROVED',
+                        details: `Report approved. Total Footage: ${dailyFootage}ft.`,
+                        createdById: userId
+                    }
+                });
+            }
         });
+
+        // Log Audit Event (Outside transaction, best effort)
+        await AuditService.log(AuditAction.APPROVE, 'DailyReport', id, userId);
 
         return { success: true };
     }

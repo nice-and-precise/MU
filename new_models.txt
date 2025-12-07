@@ -1,0 +1,95 @@
+
+// --- New ERP Models ---
+
+model DailyReportLabor {
+  id            String      @id @default(cuid())
+  dailyReportId String
+  dailyReport   DailyReport @relation(fields: [dailyReportId], references: [id], onDelete: Cascade)
+  employeeId    String
+  employee      Employee    @relation(fields: [employeeId], references: [id])
+  hours         Float
+  type          String      @default("REGULAR") // REGULAR, OVERTIME, DOUBLETIME
+  costCode      String?
+  notes         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([dailyReportId])
+  @@index([employeeId])
+}
+
+model DailyReportEquipment {
+  id            String      @id @default(cuid())
+  dailyReportId String
+  dailyReport   DailyReport @relation(fields: [dailyReportId], references: [id], onDelete: Cascade)
+  assetId       String
+  asset         Asset       @relation(fields: [assetId], references: [id])
+  hours         Float
+  costCode      String?
+  curReading    Float?      // Odometer/Hours reading
+  notes         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([dailyReportId])
+  @@index([assetId])
+}
+
+model DailyReportProduction {
+  id            String      @id @default(cuid())
+  dailyReportId String
+  dailyReport   DailyReport @relation(fields: [dailyReportId], references: [id], onDelete: Cascade)
+  boreId        String?
+  bore          Bore?       @relation(fields: [boreId], references: [id])
+  
+  quantity      Float
+  unit          String      // FT, EA, HR
+  description   String      // e.g. "Installed 4in duct"
+  
+  costCode      String?
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([dailyReportId])
+  @@index([boreId])
+}
+
+model DailyReportMaterial {
+  id            String      @id @default(cuid())
+  dailyReportId String
+  dailyReport   DailyReport @relation(fields: [dailyReportId], references: [id], onDelete: Cascade)
+  
+  name          String
+  quantity      Float
+  unit          String
+  
+  inventoryItemId String?
+  inventoryItem InventoryItem? @relation(fields: [inventoryItemId], references: [id])
+  
+  cost          Float?
+  notes         String?
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([dailyReportId])
+  @@index([inventoryItemId])
+}
+
+model AuditEvent {
+  id          String   @id @default(cuid())
+  action      AuditAction
+  entityType  String   // DailyReport, TimeEntry, etc.
+  entityId    String
+  actorId     String
+  actor       User     @relation(fields: [actorId], references: [id])
+  
+  metadata    String?  // JSON details of diff/changes
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([entityType, entityId])
+  @@index([actorId])
+  @@index([createdAt])
+}
