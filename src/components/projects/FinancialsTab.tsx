@@ -45,7 +45,8 @@ export default function FinancialsTab({ projectId }: FinancialsTabProps) {
         { name: 'Labor', Estimated: estimated.labor, Actual: actuals.labor },
         { name: 'Equipment', Estimated: estimated.equipment, Actual: actuals.equipment },
         { name: 'Materials', Estimated: estimated.materials, Actual: actuals.materials },
-        { name: 'Expenses', Estimated: 0, Actual: actuals.expenses || 0 }, // Expenses usually don't have a direct estimate line unless we add it
+        { name: 'Subcontract', Estimated: estimated.subcontract || 0, Actual: actuals.subcontract || 0 },
+        { name: 'Other/Exp', Estimated: estimated.other || 0, Actual: actuals.expenses || 0 },
     ];
 
     const formatCurrency = (val: number) => `$${val.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
@@ -71,7 +72,7 @@ export default function FinancialsTab({ projectId }: FinancialsTabProps) {
                     </Card>
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Cost (Act)</CardTitle>
+                            <CardTitle className="text-sm font-medium">Total Cost {estimated.totalCost > 0 ? '(Est/Act)' : '(Act)'}</CardTitle>
                             <DollarSign className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>

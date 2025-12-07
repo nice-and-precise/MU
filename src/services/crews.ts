@@ -91,7 +91,7 @@ export const CrewService = {
             await prisma.asset.updateMany({
                 where: { id: { in: data.assets } },
                 data: {
-                    status: 'IN_USE',
+                    status: 'ACTIVE',
                     location: 'On Site',
                 }
             });

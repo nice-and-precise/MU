@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { getInvoices, createInvoice } from '@/actions/invoicing';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ResponsiveDataTable } from '@/components/ui/responsive-data-table';
+import { useReactTable, getCoreRowModel, ColumnDef } from '@tanstack/react-table';
 import { Plus, FileText, Loader2, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -41,6 +42,61 @@ export default function InvoiceList({ projectId }: InvoiceListProps) {
         }
     };
 
+    // Define columns
+    const columns: ColumnDef<any>[] = [
+        {
+            accessorKey: "applicationNo",
+            header: "App #",
+            cell: ({ row }) => `#${row.original.applicationNo}`,
+        },
+        {
+            accessorKey: "periodEnd",
+            header: "Period Ending",
+            cell: ({ row }) => new Date(row.original.periodEnd).toLocaleDateString(),
+        },
+        {
+            accessorKey: "status",
+            header: "Status",
+            cell: ({ row }) => (
+                <span className={`px-2 py-1 rounded text-xs font-medium ${row.original.status === 'PAID' ? 'bg-green-100 text-green-800' :
+                    row.original.status === 'SUBMITTED' ? 'bg-blue-100 text-blue-800' :
+                        'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100'
+                    }`}>
+                    {row.original.status}
+                </span>
+            ),
+        },
+        {
+            accessorKey: "totalCompleted",
+            header: () => <div className="text-right">Total Completed</div>,
+            cell: ({ row }) => <div className="text-right">${row.original.totalCompleted.toLocaleString()}</div>,
+        },
+        {
+            accessorKey: "currentDue",
+            header: () => <div className="text-right">Current Due</div>,
+            cell: ({ row }) => <div className="text-right font-bold">${row.original.currentDue.toLocaleString()}</div>,
+        },
+        {
+            id: "actions",
+            header: () => null,
+            cell: ({ row }) => (
+                <div className="text-right">
+                    <Link href={`/dashboard/invoices/${row.original.id}`}>
+                        <Button variant="ghost" size="sm">
+                            View <ArrowRight className="w-4 h-4 ml-2" />
+                        </Button>
+                    </Link>
+                </div>
+            ),
+        }
+    ];
+
+    const table = useReactTable({
+        data: invoices,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+    });
+
     if (loading) return <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>;
 
     return (
@@ -53,93 +109,41 @@ export default function InvoiceList({ projectId }: InvoiceListProps) {
                 </Button>
             </CardHeader>
             <CardContent>
-                <div className="hidden md:block">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>App #</TableHead>
-                                <TableHead>Period Ending</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead className="text-right">Total Completed</TableHead>
-                                <TableHead className="text-right">Current Due</TableHead>
-                                <TableHead></TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {invoices.map((inv) => (
-                                <TableRow key={inv.id}>
-                                    <TableCell>#{inv.applicationNo}</TableCell>
-                                    <TableCell>{new Date(inv.periodEnd).toLocaleDateString()}</TableCell>
-                                    <TableCell>
-                                        <span className={`px-2 py-1 rounded text-xs font-medium ${inv.status === 'PAID' ? 'bg-green-100 text-green-800' :
-                                            inv.status === 'SUBMITTED' ? 'bg-blue-100 text-blue-800' :
-                                                'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100'
-                                            }`}>
-                                            {inv.status}
-                                        </span>
-                                    </TableCell>
-                                    <TableCell className="text-right">${inv.totalCompleted.toLocaleString()}</TableCell>
-                                    <TableCell className="text-right font-bold">${inv.currentDue.toLocaleString()}</TableCell>
-                                    <TableCell className="text-right">
-                                        <Link href={`/dashboard/invoices/${inv.id}`}>
-                                            <Button variant="ghost" size="sm">
-                                                View <ArrowRight className="w-4 h-4 ml-2" />
-                                            </Button>
-                                        </Link>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                            {invoices.length === 0 && (
-                                <TableRow>
-                                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                                        No invoices created yet.
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                </div>
-
-                {/* Mobile Card View */}
-                <div className="md:hidden space-y-4">
-                    {invoices.length === 0 ? (
-                        <div className="text-center py-8 text-muted-foreground">
-                            No invoices created yet.
-                        </div>
-                    ) : (
-                        invoices.map((inv) => (
-                            <div key={inv.id} className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm space-y-3">
-                                <div className="flex justify-between items-center">
-                                    <span className="font-bold text-lg text-gray-900 dark:text-gray-100">App #{inv.applicationNo}</span>
-                                    <span className={`px-2 py-1 rounded text-xs font-medium ${inv.status === 'PAID' ? 'bg-green-100 text-green-800' :
-                                        inv.status === 'SUBMITTED' ? 'bg-blue-100 text-blue-800' :
-                                            'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100'
-                                        }`}>
-                                        {inv.status}
-                                    </span>
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                    Period Ending: {new Date(inv.periodEnd).toLocaleDateString()}
-                                </div>
-                                <div className="flex justify-between items-center py-2 border-y border-gray-100 dark:border-gray-700">
-                                    <div>
-                                        <p className="text-xs text-gray-500 uppercase">Completed</p>
-                                        <p className="font-medium">${inv.totalCompleted.toLocaleString()}</p>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-xs text-gray-500 uppercase">Current Due</p>
-                                        <p className="font-bold text-green-600">${inv.currentDue.toLocaleString()}</p>
-                                    </div>
-                                </div>
-                                <Link href={`/dashboard/invoices/${inv.id}`} className="block">
-                                    <Button className="w-full" variant="outline">
-                                        View Details <ArrowRight className="w-4 h-4 ml-2" />
-                                    </Button>
-                                </Link>
+                <ResponsiveDataTable
+                    table={table}
+                    columns={columns}
+                    renderMobileCard={(inv) => (
+                        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm space-y-3">
+                            <div className="flex justify-between items-center">
+                                <span className="font-bold text-lg text-gray-900 dark:text-gray-100">App #{inv.applicationNo}</span>
+                                <span className={`px-2 py-1 rounded text-xs font-medium ${inv.status === 'PAID' ? 'bg-green-100 text-green-800' :
+                                    inv.status === 'SUBMITTED' ? 'bg-blue-100 text-blue-800' :
+                                        'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100'
+                                    }`}>
+                                    {inv.status}
+                                </span>
                             </div>
-                        ))
+                            <div className="text-sm text-gray-500">
+                                Period Ending: {new Date(inv.periodEnd).toLocaleDateString()}
+                            </div>
+                            <div className="flex justify-between items-center py-2 border-y border-gray-100 dark:border-gray-700">
+                                <div>
+                                    <p className="text-xs text-gray-500 uppercase">Completed</p>
+                                    <p className="font-medium">${inv.totalCompleted.toLocaleString()}</p>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-xs text-gray-500 uppercase">Current Due</p>
+                                    <p className="font-bold text-green-600">${inv.currentDue.toLocaleString()}</p>
+                                </div>
+                            </div>
+                            <Link href={`/dashboard/invoices/${inv.id}`} className="block">
+                                <Button className="w-full" variant="outline">
+                                    View Details <ArrowRight className="w-4 h-4 ml-2" />
+                                </Button>
+                            </Link>
+                        </div>
                     )}
-                </div>
+                />
             </CardContent>
         </Card>
     );

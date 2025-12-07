@@ -1,9 +1,11 @@
 import { prisma } from '@/lib/prisma';
 import { ClockInSchema, ClockOutSchema } from '@/schemas/time';
 import { z } from 'zod';
+import { AuditService } from './audit';
+import { AuditAction } from '@prisma/client';
 
 export const TimeService = {
-    clockIn: async (data: z.infer<typeof ClockInSchema>) => {
+    clockIn: async (data: z.infer<typeof ClockInSchema>, userId: string) => {
         // Check if already clocked in
         const activeEntry = await prisma.timeEntry.findFirst({
             where: {
@@ -16,7 +18,7 @@ export const TimeService = {
             throw new Error("Already clocked in");
         }
 
-        return await prisma.timeEntry.create({
+        const entry = await prisma.timeEntry.create({
             data: {
                 employeeId: data.employeeId,
                 projectId: data.projectId,
@@ -27,9 +29,13 @@ export const TimeService = {
                 status: "PENDING"
             }
         });
+
+        await AuditService.log(AuditAction.CREATE, 'TimeEntry', entry.id, userId);
+
+        return entry;
     },
 
-    clockOut: async (data: z.infer<typeof ClockOutSchema>) => {
+    clockOut: async (data: z.infer<typeof ClockOutSchema>, userId: string) => {
         const activeEntry = await prisma.timeEntry.findFirst({
             where: {
                 employeeId: data.employeeId,
@@ -41,7 +47,7 @@ export const TimeService = {
             throw new Error("Not clocked in");
         }
 
-        return await prisma.timeEntry.update({
+        const entry = await prisma.timeEntry.update({
             where: { id: activeEntry.id },
             data: {
                 endTime: new Date(),
@@ -49,6 +55,10 @@ export const TimeService = {
                 endLong: data.long,
             }
         });
+
+        await AuditService.log(AuditAction.UPDATE, 'TimeEntry', entry.id, userId);
+
+        return entry;
     },
 
     getClockStatus: async (employeeId: string) => {

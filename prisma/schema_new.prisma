@@ -1468,6 +1468,22 @@ model ScheduleTemplate {
   updatedAt DateTime @updatedAt
 }
 
+
+// --- Enums for Normalization ---
+
+enum LaborType {
+  REGULAR
+  OVERTIME
+  DOUBLETIME
+}
+
+enum MeasurementUnit {
+  FT
+  EA
+  HR
+  LS
+}
+
 // --- New ERP Models ---
 
 model DailyReportLabor {
@@ -1477,7 +1493,7 @@ model DailyReportLabor {
   employeeId    String
   employee      Employee    @relation(fields: [employeeId], references: [id])
   hours         Float
-  type          String      @default("REGULAR") // REGULAR, OVERTIME, DOUBLETIME
+  type          LaborType   @default(REGULAR)
   costCode      String?
   notes         String?
   createdAt     DateTime    @default(now())
@@ -1512,7 +1528,7 @@ model DailyReportProduction {
   bore          Bore?       @relation(fields: [boreId], references: [id])
 
   quantity    Float
-  unit        String // FT, EA, HR
+  unit        MeasurementUnit
   description String // e.g. "Installed 4in duct"
 
   costCode String?
@@ -1531,7 +1547,7 @@ model DailyReportMaterial {
 
   name     String
   quantity Float
-  unit     String
+  unit     MeasurementUnit
 
   inventoryItemId String?
   inventoryItem   InventoryItem? @relation(fields: [inventoryItemId], references: [id])

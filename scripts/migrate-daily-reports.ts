@@ -1,5 +1,5 @@
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, LaborType, MeasurementUnit } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -39,7 +39,7 @@ async function main() {
                             dailyReportId: report.id,
                             employeeId: item.employeeId,
                             hours: Number(item.hours) || 0,
-                            type: 'REGULAR',
+                            type: LaborType.REGULAR,
                             costCode: item.role || undefined, // Capture Role here
                         }
                     });
@@ -77,7 +77,15 @@ async function main() {
 
                     const invItem = itemMap.get(item.inventoryItemId);
                     const name = invItem ? invItem.name : "Unknown Item";
-                    const unit = invItem ? invItem.unit : "EA";
+                    const itemUnit = invItem ? invItem.unit : "EA";
+
+                    let unit: MeasurementUnit = MeasurementUnit.EA;
+                    if (itemUnit) {
+                        const upperUnit = itemUnit.toUpperCase();
+                        if (upperUnit in MeasurementUnit) {
+                            unit = upperUnit as MeasurementUnit;
+                        }
+                    }
 
                     await prisma.dailyReportMaterial.create({
                         data: {
@@ -110,7 +118,7 @@ async function main() {
                         data: {
                             dailyReportId: report.id,
                             quantity: Number(item.lf) || 0,
-                            unit: 'FT',
+                            unit: MeasurementUnit.FT,
                             description: descriptionParts.join(', '),
                             // boreId? If we can link it. But JSON doesn't seem to have boreId usually in this simple schema.
                         }

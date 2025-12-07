@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import { useMediaQuery } from '@/hooks/use-media-query';
+import { Button } from '@/components/ui/button';
+import { Box, Play } from 'lucide-react';
 import BoreholeControls from '@/components/drilling/BoreholeControls';
 import StripLog from '@/components/drilling/StripLog';
 import SteeringGauge from '@/components/drilling/SteeringGauge';
@@ -20,10 +23,15 @@ interface Project3DViewerProps {
 }
 
 export default function Project3DViewer({ initialStations, obstacles = [], targets = [] }: Project3DViewerProps) {
+    const isDesktop = useMediaQuery("(min-width: 768px)");
+    const [is3DLoaded, setIs3DLoaded] = useState(false);
     const [trajectory, setTrajectory] = useState<SurveyStation[]>(initialStations);
     const [viewMode, setViewMode] = useState<'iso' | 'top' | 'side'>('iso');
     const [flyThrough, setFlyThrough] = useState(false);
     const [calculatedPath, setCalculatedPath] = useState<any[]>([]);
+
+    // Auto-load on desktop, manual on mobile
+    const shouldLoad3D = isDesktop;
 
     // On mount or when stations change, calculate path using Rust engine
     useEffect(() => {
@@ -104,13 +112,33 @@ export default function Project3DViewer({ initialStations, obstacles = [], targe
                         onFlyThroughToggle={() => setFlyThrough(!flyThrough)}
                     />
 
-                    <Borehole3D
-                        stations={trajectory}
-                        obstacles={obstacles}
-                        targets={targets}
-                        viewMode={viewMode}
-                        flyThrough={flyThrough}
-                    />
+                    {(!shouldLoad3D && !is3DLoaded) ? (
+                        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-900/90 backdrop-blur text-white p-6 text-center">
+                            <div className="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center mb-4 border border-slate-700 shadow-lg">
+                                <Box className="w-8 h-8 text-blue-400" />
+                            </div>
+                            <h3 className="text-xl font-bold mb-2">3D Model Ready</h3>
+                            <p className="text-slate-400 max-w-sm mb-6 text-sm">
+                                The 3D view is hidden to save data and battery. Tap below to load the full drilling simulation.
+                            </p>
+                            <Button
+                                onClick={() => setIs3DLoaded(true)}
+                                size="lg"
+                                className="font-bold bg-blue-600 hover:bg-blue-500 shadow-lg hover:shadow-blue-500/20 transition-all"
+                            >
+                                <Play className="w-5 h-5 mr-2 fill-current" />
+                                Load 3D View
+                            </Button>
+                        </div>
+                    ) : (
+                        <Borehole3D
+                            stations={trajectory}
+                            obstacles={obstacles}
+                            targets={targets}
+                            viewMode={viewMode}
+                            flyThrough={flyThrough}
+                        />
+                    )}
                 </div>
 
                 <div className="flex-1 flex flex-col gap-4">

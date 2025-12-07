@@ -10,6 +10,13 @@ import { useRouter } from 'next/navigation';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { EmptyState } from '@/components/ui/empty-state';
 
+import {
+    getCoreRowModel,
+    useReactTable,
+    ColumnDef,
+} from "@tanstack/react-table";
+import { ResponsiveDataTable } from "@/components/ui/responsive-data-table";
+
 interface AssetManagerProps {
     assets: any[];
 }
@@ -24,6 +31,45 @@ export default function AssetManager({ assets }: AssetManagerProps) {
         model: '',
         serialNumber: '',
         status: 'AVAILABLE'
+    });
+
+    const columns: ColumnDef<any>[] = [
+        {
+            accessorKey: "name",
+            header: "Asset Name",
+            cell: ({ row }) => (
+                <div className="flex items-center gap-2">
+                    <div className="p-1.5 bg-orange-100 text-orange-600 rounded-full">
+                        <Truck className="w-4 h-4" />
+                    </div>
+                    <span className="font-bold">{row.original.name}</span>
+                </div>
+            ),
+        },
+        {
+            accessorKey: "type",
+            header: "Type",
+        },
+        {
+            accessorKey: "model",
+            header: "Model",
+        },
+        {
+            accessorKey: "serialNumber",
+            header: "Serial #",
+            cell: ({ row }) => <span className="font-mono text-xs">{row.original.serialNumber}</span>
+        },
+        {
+            accessorKey: "status",
+            header: "Status",
+            cell: ({ row }) => <StatusBadge status={row.original.status} />,
+        },
+    ];
+
+    const table = useReactTable({
+        data: assets,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
     });
 
     const handleSubmit = async () => {
@@ -85,31 +131,34 @@ export default function AssetManager({ assets }: AssetManagerProps) {
                     </div>
                 )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {assets.map(asset => (
-                        <div key={asset.id} className="flex items-center gap-3 p-4 border rounded-lg hover:bg-slate-50 transition-colors">
-                            <div className="p-2 bg-orange-100 text-orange-600 rounded-full">
-                                <Truck className="w-5 h-5" />
-                            </div>
-                            <div className="flex-1">
-                                <div className="flex justify-between items-start">
-                                    <h3 className="font-bold">{asset.name}</h3>
-                                    <StatusBadge status={asset.status} />
+                <div className="space-y-4">
+                    {assets.length === 0 && !showForm ? (
+                        <EmptyState
+                            title="No assets found"
+                            description="Get started by adding your first piece of equipment."
+                            actionLabel="Add Asset"
+                            onAction={() => setShowForm(true)}
+                        />
+                    ) : (
+                        <ResponsiveDataTable
+                            table={table}
+                            columns={columns}
+                            renderMobileCard={(asset) => (
+                                <div className="flex items-center gap-3 p-4 border rounded-lg hover:bg-slate-50 transition-colors">
+                                    <div className="p-2 bg-orange-100 text-orange-600 rounded-full">
+                                        <Truck className="w-5 h-5" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="flex justify-between items-start">
+                                            <h3 className="font-bold">{asset.name}</h3>
+                                            <StatusBadge status={asset.status} />
+                                        </div>
+                                        <p className="text-sm text-muted-foreground">{asset.type} • {asset.model}</p>
+                                        <p className="text-xs text-gray-400">SN: {asset.serialNumber}</p>
+                                    </div>
                                 </div>
-                                <p className="text-sm text-muted-foreground">{asset.type} • {asset.model}</p>
-                                <p className="text-xs text-gray-400">SN: {asset.serialNumber}</p>
-                            </div>
-                        </div>
-                    ))}
-                    {assets.length === 0 && !showForm && (
-                        <div className="col-span-full">
-                            <EmptyState
-                                title="No assets found"
-                                description="Get started by adding your first piece of equipment."
-                                actionLabel="Add Asset"
-                                onAction={() => setShowForm(true)}
-                            />
-                        </div>
+                            )}
+                        />
                     )}
                 </div>
             </CardContent>

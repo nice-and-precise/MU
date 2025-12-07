@@ -1,4 +1,6 @@
 import { prisma } from '@/lib/prisma';
+import { AuditService } from './audit';
+import { AuditAction } from '@prisma/client';
 
 export const InvoicingService = {
     createInvoice: async (projectId: string, userId: string) => {
@@ -82,6 +84,9 @@ export const InvoicingService = {
         }
 
         await prisma.invoiceItem.createMany({ data: invoiceItems });
+
+        await AuditService.log(AuditAction.CREATE, 'Invoice', invoice.id, userId);
+
         return invoice;
     },
 
@@ -100,7 +105,7 @@ export const InvoicingService = {
         });
     },
 
-    updateInvoice: async (id: string, data: { items: any[], periodStart: Date, periodEnd: Date }) => {
+    updateInvoice: async (id: string, data: { items: any[], periodStart: Date, periodEnd: Date }, userId: string) => {
         // Update Invoice Header
         await prisma.invoice.update({
             where: { id },
@@ -144,12 +149,16 @@ export const InvoicingService = {
                 currentDue: (totalCompleted - totalRetainage) - 0,
             }
         });
+
+        await AuditService.log(AuditAction.UPDATE, 'Invoice', id, userId);
     },
 
-    finalizeInvoice: async (id: string) => {
+    finalizeInvoice: async (id: string, userId: string) => {
         await prisma.invoice.update({
             where: { id },
             data: { status: 'SUBMITTED' }
         });
+
+        await AuditService.log(AuditAction.SUBMIT_INVOICE, 'Invoice', id, userId);
     }
 };

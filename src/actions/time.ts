@@ -8,8 +8,8 @@ import { z } from "zod"
 
 export const clockIn = authenticatedAction(
     ClockInSchema,
-    async (data) => {
-        const entry = await TimeService.clockIn(data);
+    async (data, userId) => {
+        const entry = await TimeService.clockIn(data, userId);
         revalidatePath('/dashboard');
         revalidatePath('/dashboard/time');
         return entry;
@@ -18,8 +18,8 @@ export const clockIn = authenticatedAction(
 
 export const clockOut = authenticatedAction(
     ClockOutSchema,
-    async (data) => {
-        const entry = await TimeService.clockOut(data);
+    async (data, userId) => {
+        const entry = await TimeService.clockOut(data, userId);
         revalidatePath('/dashboard');
         revalidatePath('/dashboard/time');
         return entry;

@@ -30,20 +30,31 @@ export function StepCrew({ employees, projectId }: StepCrewProps) {
         setLoadingRecent(true);
         try {
             const res = await getRecentProjectReport(projectId);
-            if (res.success && res.data && res.data.crew) {
-                // Parse if it's a string (old format) or use directly if object (though DB is string)
-                // The service returns the DB object where crew is a string.
-                const previousCrew = typeof res.data.crew === 'string' ? JSON.parse(res.data.crew) : res.data.crew;
-
-                if (Array.isArray(previousCrew) && previousCrew.length > 0) {
-                    // Clean up the data to match expected schema (remove potentially extra fields)
-                    const cleanCrew = previousCrew.map((c: any) => ({
-                        employeeId: c.employeeId,
-                        hours: c.hours || 0,
-                        role: c.role || 'Labor'
+            if (res.success && res.data) {
+                // Check relational data first
+                if (res.data.laborEntries && res.data.laborEntries.length > 0) {
+                    const cleanCrew = res.data.laborEntries.map((l: any) => ({
+                        employeeId: l.employeeId,
+                        hours: l.hours || 0,
+                        role: l.costCode || 'Labor'
                     }));
                     replace(cleanCrew);
                     toast.success("Copied crew from last approved report");
+                }
+                // Fallback to legacy JSON
+                else if (res.data.crew) {
+                    const previousCrew = typeof res.data.crew === 'string' ? JSON.parse(res.data.crew) : res.data.crew;
+                    if (Array.isArray(previousCrew) && previousCrew.length > 0) {
+                        const cleanCrew = previousCrew.map((c: any) => ({
+                            employeeId: c.employeeId,
+                            hours: c.hours || 0,
+                            role: c.role || 'Labor'
+                        }));
+                        replace(cleanCrew);
+                        toast.success("Copied crew from last approved report");
+                    } else {
+                        toast.info("Previous report had no crew data");
+                    }
                 } else {
                     toast.info("Previous report had no crew data");
                 }

@@ -1,8 +1,7 @@
-
 import { prisma } from '@/lib/prisma';
 import { CreateDailyReportInput, UpdateDailyReportInput } from '@/schemas/daily-report';
 import { AuditService } from './audit';
-import { AuditAction } from '@prisma/client';
+import { AuditAction, LaborType, MeasurementUnit } from '@prisma/client';
 
 export class DailyReportService {
     static async getReports() {
@@ -52,7 +51,7 @@ export class DailyReportService {
             throw new Error("A report for this project and date already exists.");
         }
 
-        return await prisma.dailyReport.create({
+        const report = await prisma.dailyReport.create({
             data: {
                 projectId,
                 reportDate: new Date(reportDate),
@@ -65,9 +64,13 @@ export class DailyReportService {
                 equipment: "[]",
             },
         });
+
+        await AuditService.log(AuditAction.CREATE, 'DailyReport', report.id, userId);
+
+        return report;
     }
 
-    static async updateDailyReport(id: string, data: UpdateDailyReportInput) {
+    static async updateDailyReport(id: string, data: UpdateDailyReportInput, userId: string) {
         return await prisma.$transaction(async (tx) => {
             // 1. Update Relations (Delete All + Create All)
 
@@ -80,6 +83,7 @@ export class DailyReportService {
                             dailyReportId: id,
                             employeeId: member.employeeId,
                             hours: member.hours,
+                            type: LaborType.REGULAR, // Defaulting to REGULAR for now
                             costCode: member.role, // Storing role in costCode as per migration strategy
                         }
                     });
@@ -106,13 +110,23 @@ export class DailyReportService {
                 for (const mat of data.materials) {
                     // Fetch details for name/unit
                     const item = await tx.inventoryItem.findUnique({ where: { id: mat.inventoryItemId } });
+
+                    // Safe cast or default for unit
+                    let unit: MeasurementUnit = MeasurementUnit.EA;
+                    if (item?.unit) {
+                        const upperUnit = item.unit.toUpperCase();
+                        if (upperUnit in MeasurementUnit) {
+                            unit = upperUnit as MeasurementUnit;
+                        }
+                    }
+
                     await tx.dailyReportMaterial.create({
                         data: {
                             dailyReportId: id,
                             inventoryItemId: mat.inventoryItemId,
                             quantity: mat.quantity,
                             name: item?.name || "Unknown",
-                            unit: item?.unit || "EA"
+                            unit: unit
                         }
                     });
                 }
@@ -130,7 +144,7 @@ export class DailyReportService {
                         data: {
                             dailyReportId: id,
                             quantity: prod.lf,
-                            unit: 'FT',
+                            unit: MeasurementUnit.FT,
                             description: descParts.join(', '),
                         }
                     });
@@ -138,7 +152,7 @@ export class DailyReportService {
             }
 
             // 2. Update DailyReport (including JSON sync)
-            return await tx.dailyReport.update({
+            const updated = await tx.dailyReport.update({
                 where: { id },
                 data: {
                     crew: data.crew ? JSON.stringify(data.crew) : undefined,
@@ -149,6 +163,11 @@ export class DailyReportService {
                     notes: data.notes,
                 },
             });
+
+            // Log Audit Event
+            await AuditService.log(AuditAction.UPDATE, 'DailyReport', id, userId);
+
+            return updated;
         });
     }
 
@@ -161,7 +180,10 @@ export class DailyReportService {
             orderBy: {
                 reportDate: 'desc'
             },
-            take: 1
+            take: 1,
+            include: {
+                laborEntries: true
+            }
         });
     }
 
@@ -241,17 +263,29 @@ export class DailyReportService {
             }
 
             // 4. Update Project Progress (Use productionEntries)
+            // Fetch latest station progress to determine start point
+            const lastProgress = await tx.stationProgress.findFirst({
+                where: { projectId: report.projectId },
+                orderBy: { endStation: 'desc' },
+            });
+
+            let currentStation = lastProgress?.endStation || 0;
             let dailyFootage = 0;
+
             for (const prod of report.productionEntries) {
                 if (prod.quantity > 0 && prod.unit === 'FT') {
+                    const startStation = currentStation;
+                    const endStation = currentStation + prod.quantity;
+
                     dailyFootage += prod.quantity;
+                    currentStation = endStation;
 
                     await tx.stationProgress.create({
                         data: {
                             projectId: report.projectId,
                             date: report.reportDate,
-                            startStation: 0, // Logic for stationing needs context, defaulting to 0 or manual is limitation of current logic
-                            endStation: prod.quantity,
+                            startStation,
+                            endStation,
                             status: 'COMPLETED',
                             notes: `Daily Report Production: ${prod.description}`
                         }

@@ -69,6 +69,7 @@ interface Employee {
     defaultOvertimeMultiplier?: number | null;
     doubleTimeMultiplier?: number | null;
     qboEmployeeId?: string | null;
+    defaultEarningCode?: string | null;
     adpEmployeeId?: string | null;
     user?: {
         name?: string | null;
@@ -395,6 +396,20 @@ function InnerForm({ isEditing, initialData, onSubmit, isPending }: any) {
                             <div className="space-y-2">
                                 <Label>Rate ($)</Label>
                                 <Input type="number" step="0.01" value={data.hourlyRate || ''} onChange={e => handleChange('hourlyRate', e.target.value)} />
+                            </div>
+                        </div>
+
+                        <div className="pt-4 border-t">
+                            <h4 className="font-semibold mb-3 flex items-center gap-2 text-sm text-muted-foreground"><DollarSign className="h-4 w-4" /> QuickBooks Integration</h4>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label>QBO Employee ID</Label>
+                                    <Input value={data.qboEmployeeId || ''} onChange={e => handleChange('qboEmployeeId', e.target.value)} placeholder="e.g. 55" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Default Earning Code</Label>
+                                    <Input value={data.defaultEarningCode || ''} onChange={e => handleChange('defaultEarningCode', e.target.value)} placeholder="e.g. Regular Pay" />
+                                </div>
                             </div>
                         </div>
                     </TabsContent>

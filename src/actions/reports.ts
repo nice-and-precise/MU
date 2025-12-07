@@ -30,8 +30,8 @@ export const updateDailyReport = authenticatedAction(
         id: z.string(),
         data: UpdateDailyReportSchema
     }),
-    async ({ id, data }) => {
-        return await DailyReportService.updateDailyReport(id, data);
+    async ({ id, data }, userId) => {
+        return await DailyReportService.updateDailyReport(id, data, userId);
     }
 );
 

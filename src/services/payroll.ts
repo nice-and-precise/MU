@@ -47,42 +47,80 @@ export class PayrollService {
 
             const employee = employeeEntries[0].employee;
             const employeeName = `${employee.firstName} ${employee.lastName}`;
-            let regularMinutes = 0;
-            let overtimeMinutes = 0;
 
+            let totalRegularMinutes = 0;
+            let totalOvertimeMinutes = 0;
+            const weeklyRegularMinutes = new Map<string, number>();
+
+            // Sort entries chronologically
             employeeEntries.sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
 
-            const minutesByWeek = new Map<string, number>();
-
+            // 1. Group by Day for Daily OT Calculation
+            const entriesByDay = new Map<string, typeof employeeEntries>();
             employeeEntries.forEach(entry => {
-                if (!entry.endTime) return;
-                const minutes = differenceInMinutes(entry.endTime, entry.startTime);
-                const weekStart = startOfWeek(entry.startTime).toISOString();
-                const currentWeekMinutes = minutesByWeek.get(weekStart) || 0;
-                minutesByWeek.set(weekStart, currentWeekMinutes + minutes);
+                const dayKey = startOfDay(entry.startTime).toISOString();
+                if (!entriesByDay.has(dayKey)) {
+                    entriesByDay.set(dayKey, []);
+                }
+                entriesByDay.get(dayKey)?.push(entry);
             });
 
-            for (const [_, totalWeeklyMinutes] of minutesByWeek) {
-                if (totalWeeklyMinutes > 2400) { // 40 hours
-                    regularMinutes += 2400;
-                    overtimeMinutes += (totalWeeklyMinutes - 2400);
+            // 2. Calculate Daily Hours
+            for (const [dayKey, dayEntries] of entriesByDay) {
+                let dailyMinutes = 0;
+                dayEntries.forEach(entry => {
+                    if (!entry.endTime) return;
+                    dailyMinutes += differenceInMinutes(entry.endTime, entry.startTime);
+                });
+
+                let dailyRegular = 0;
+                let dailyOT = 0;
+
+                // Check Overtime Rule
+                if (employee.overtimeRule === 'OVER_8_DAY' || employee.overtimeRule === 'UNION_X') {
+                    if (dailyMinutes > 480) { // 8 hours
+                        dailyRegular = 480;
+                        dailyOT = dailyMinutes - 480;
+                    } else {
+                        dailyRegular = dailyMinutes;
+                    }
                 } else {
-                    regularMinutes += totalWeeklyMinutes;
+                    // Default / OVER_40_WEEK only: All goes to regular bucket initially
+                    dailyRegular = dailyMinutes;
+                }
+
+                // Add to totals
+                totalOvertimeMinutes += dailyOT;
+
+                // Track weekly regular for 40h rule
+                // Note: The dayKey is ISO string, we need week key
+                const weekKey = startOfWeek(new Date(dayKey)).toISOString();
+                const currentWeekRegular = weeklyRegularMinutes.get(weekKey) || 0;
+                weeklyRegularMinutes.set(weekKey, currentWeekRegular + dailyRegular);
+            }
+
+            // 3. Apply Weekly 40h Cap to Regular Hours
+            for (const [_, weekMinutes] of weeklyRegularMinutes) {
+                if (weekMinutes > 2400) { // 40 hours
+                    totalRegularMinutes += 2400;
+                    totalOvertimeMinutes += (weekMinutes - 2400);
+                } else {
+                    totalRegularMinutes += weekMinutes;
                 }
             }
 
             summary.push({
                 employeeId,
                 employeeName,
-                regularHours: parseFloat((regularMinutes / 60).toFixed(2)),
-                overtimeHours: parseFloat((overtimeMinutes / 60).toFixed(2)),
+                regularHours: parseFloat((totalRegularMinutes / 60).toFixed(2)),
+                overtimeHours: parseFloat((totalOvertimeMinutes / 60).toFixed(2)),
                 doubleTimeHours: 0,
-                totalHours: parseFloat(((regularMinutes + overtimeMinutes) / 60).toFixed(2)),
+                totalHours: parseFloat(((totalRegularMinutes + totalOvertimeMinutes) / 60).toFixed(2)),
                 qboEmployeeId: employee.qboEmployeeId,
                 defaultEarningCode: employee.defaultEarningCode,
                 defaultDept: employee.defaultDept,
                 regPayCode: employee.defaultEarningCode || 'Regular',
-                otPayCode: 'Overtime', // Could be configurable in Employee if needed
+                otPayCode: 'Overtime',
             });
         }
 

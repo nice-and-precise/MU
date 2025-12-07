@@ -77,17 +77,17 @@ async function seedProjects() {
 
 async function seedAssets() {
     const assets = [
-        { name: 'Drill #1 (D24x40)', type: 'Drill', status: 'Active', hourlyRate: 150 },
-        { name: 'Drill #2 (D20x22)', type: 'Drill', status: 'Maintenance', hourlyRate: 120 },
-        { name: 'Truck #101', type: 'Vehicle', status: 'Active', hourlyRate: 85 },
-        { name: 'Excavator E35', type: 'Equipment', status: 'Active', hourlyRate: 110 },
-        { name: 'Vac Trailer V1', type: 'Trailer', status: 'Active', hourlyRate: 95 },
+        { name: 'Drill #1 (D24x40)', type: 'Drill', status: 'ACTIVE', hourlyRate: 150 },
+        { name: 'Drill #2 (D20x22)', type: 'Drill', status: 'MAINTENANCE', hourlyRate: 120 },
+        { name: 'Truck #101', type: 'Vehicle', status: 'ACTIVE', hourlyRate: 85 },
+        { name: 'Excavator E35', type: 'Equipment', status: 'ACTIVE', hourlyRate: 110 },
+        { name: 'Vac Trailer V1', type: 'Trailer', status: 'ACTIVE', hourlyRate: 95 },
     ];
 
     for (const a of assets) {
         const existing = await prisma.asset.findFirst({ where: { name: a.name } });
         if (!existing) {
-            await prisma.asset.create({ data: a });
+            await prisma.asset.create({ data: a as any });
         }
     }
 }

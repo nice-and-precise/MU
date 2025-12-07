@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 interface ProjectTabsProps {
     projectId: string;
@@ -27,27 +28,32 @@ export function ProjectTabs({ projectId }: ProjectTabsProps) {
     ];
 
     return (
-        <div className="flex space-x-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg mb-8 w-fit overflow-x-auto">
-            {tabs.map((tab) => {
-                const isActive = tab.href === basePath
-                    ? pathname === basePath
-                    : pathname.startsWith(tab.href);
+        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 -mx-4 px-4 py-2 md:static md:mx-0 md:p-0 mb-6 border-b md:border-none">
+            <ScrollArea className="w-full whitespace-nowrap">
+                <div className="flex w-max space-x-1 p-1">
+                    {tabs.map((tab) => {
+                        const isActive = tab.href === basePath
+                            ? pathname === basePath
+                            : pathname.startsWith(tab.href);
 
-                return (
-                    <Link
-                        key={tab.href}
-                        href={tab.href}
-                        className={cn(
-                            "px-4 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap",
-                            isActive
-                                ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
-                                : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50"
-                        )}
-                    >
-                        {tab.name}
-                    </Link>
-                );
-            })}
+                        return (
+                            <Link
+                                key={tab.href}
+                                href={tab.href}
+                                className={cn(
+                                    "px-4 py-2 text-sm font-medium rounded-md transition-colors",
+                                    isActive
+                                        ? "bg-primary text-primary-foreground shadow-sm"
+                                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                                )}
+                            >
+                                {tab.name}
+                            </Link>
+                        );
+                    })}
+                </div>
+                <ScrollBar orientation="horizontal" className="invisible" />
+            </ScrollArea>
         </div>
     );
 }

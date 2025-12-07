@@ -122,8 +122,8 @@ export async function seed811Data() {
         for (const ticket of tickets) {
             await prisma.ticket811.upsert({
                 where: { ticketNumber: ticket.ticketNumber },
-                update: ticket,
-                create: ticket,
+                update: { ...ticket, status: ticket.status as any },
+                create: { ...ticket, status: ticket.status as any },
             });
         }
 

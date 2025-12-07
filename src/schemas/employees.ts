@@ -32,6 +32,7 @@ export const CreateEmployeeSchema = z.object({
 
     defaultPayrollItems: z.string().default("[]"),
     qboEmployeeId: z.string().optional().nullable(),
+    defaultEarningCode: z.string().optional().nullable(),
     adpEmployeeId: z.string().optional().nullable(),
 
     userId: z.string().optional().nullable(), // Link to existing user

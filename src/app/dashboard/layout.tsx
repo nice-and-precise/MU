@@ -10,6 +10,7 @@ import { UserOnboarding } from "@/components/onboarding/UserOnboarding";
 import { HelpProvider } from "@/components/help/HelpContext";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { Sidebar } from "@/components/dashboard/Sidebar";
+import { MobileNav } from "@/components/dashboard/MobileNav";
 
 export default async function DashboardLayout({
     children,

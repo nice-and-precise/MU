@@ -127,7 +127,8 @@ export async function getActiveCrewsService() {
         },
         include: {
             project: true,
-            createdBy: true
+            createdBy: true,
+            productionEntries: true
         },
         orderBy: { updatedAt: 'desc' }
     });
@@ -139,13 +140,24 @@ export async function getActiveCrewsService() {
         return todaysReports.map(report => {
             // Try to parse production to see what they are doing
             let currentActivity = 'On Site';
-            try {
-                const prod = JSON.parse(report.production || '[]');
-                if (prod.length > 0) {
-                    const lastLog = prod[prod.length - 1];
-                    currentActivity = `${lastLog.activity} ${lastLog.lf ? `@ ${lastLog.lf}ft` : ''}`;
-                }
-            } catch (e) { }
+
+            // Relational Check
+            if (report.productionEntries && report.productionEntries.length > 0) {
+                const lastLog = report.productionEntries[report.productionEntries.length - 1];
+                // Parse description if needed or just use it. Description is "Activity, Pitch: X, ..."
+                // Simple split to get activity name
+                const activityName = lastLog.description.split(',')[0];
+                currentActivity = `${activityName} ${lastLog.quantity ? `@ ${lastLog.quantity}ft` : ''}`;
+            } else {
+                // Legacy JSON Fallback
+                try {
+                    const prod = JSON.parse(report.production || '[]');
+                    if (prod.length > 0) {
+                        const lastLog = prod[prod.length - 1];
+                        currentActivity = `${lastLog.activity} ${lastLog.lf ? `@ ${lastLog.lf}ft` : ''}`;
+                    }
+                } catch (e) { }
+            }
 
             return {
                 id: report.project.id,
@@ -217,7 +229,7 @@ export async function getOwnerStatsService() {
             select: { quantityOnHand: true, costPerUnit: true }
         }),
         prisma.asset.count({
-            where: { status: "AVAILABLE" }
+            where: { status: "ACTIVE" }
         }),
         prisma.correctiveAction.count({
             where: { status: "OPEN" }

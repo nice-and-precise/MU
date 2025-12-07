@@ -35,8 +35,8 @@ export const getInvoice = authenticatedAction(
 
 export const updateInvoice = authenticatedAction(
     UpdateInvoiceSchema,
-    async ({ id, data }) => {
-        await InvoicingService.updateInvoice(id, data);
+    async ({ id, data }, userId) => {
+        await InvoicingService.updateInvoice(id, data, userId);
         revalidatePath(`/dashboard/invoices/${id}`);
         return { success: true };
     }
@@ -44,8 +44,8 @@ export const updateInvoice = authenticatedAction(
 
 export const finalizeInvoice = authenticatedAction(
     FinalizeInvoiceSchema,
-    async ({ id }) => {
-        await InvoicingService.finalizeInvoice(id);
+    async ({ id }, userId) => {
+        await InvoicingService.finalizeInvoice(id, userId);
         revalidatePath(`/dashboard/invoices/${id}`);
         return { success: true };
     }

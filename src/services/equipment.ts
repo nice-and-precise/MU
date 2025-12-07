@@ -8,7 +8,7 @@ export const EquipmentService = {
                 type: data.type,
                 model: data.model,
                 serialNumber: data.serialNumber,
-                status: data.status || 'AVAILABLE',
+                status: (data.status || 'ACTIVE') as any,
             }
         });
     },

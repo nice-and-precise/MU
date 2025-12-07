@@ -11,6 +11,7 @@ import { EmployeeManager } from "@/components/financials/EmployeeManager";
 import { Employee, Crew, CrewMember, User as PrismaUser } from "@prisma/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { AuditLogViewer } from "@/components/settings/AuditLogViewer";
 
 type EmployeeWithRelations = Employee & {
     crews: (CrewMember & { crew: Crew })[];
@@ -21,9 +22,10 @@ type EmployeeWithRelations = Employee & {
 interface SettingsViewProps {
     initialEmployees: EmployeeWithRelations[];
     preferences: { notifications: boolean };
+    initialAuditLogs: any[];
 }
 
-export function SettingsView({ initialEmployees, preferences }: SettingsViewProps) {
+export function SettingsView({ initialEmployees, preferences, initialAuditLogs }: SettingsViewProps) {
     const [integrationKeys, setIntegrationKeys] = useState({ qbClientId: "", qbClientSecret: "" });
 
     return (
@@ -151,11 +153,7 @@ export function SettingsView({ initialEmployees, preferences }: SettingsViewProp
                             <CardDescription>Recent system access and configuration changes.</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-center py-12 text-muted-foreground border-2 border-dashed rounded-lg">
-                                <Lock className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                                <p>Audit Log Viewer coming soon.</p>
-                                <p className="text-sm">Logs are currently being captured in the database.</p>
-                            </div>
+                            <AuditLogViewer initialLogs={initialAuditLogs} />
                         </CardContent>
                     </Card>
                 </TabsContent>
