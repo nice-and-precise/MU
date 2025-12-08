@@ -281,15 +281,7 @@ async function main() {
         status: status as ReportStatus,
         weather: random(['Sunny', 'Cloudy', 'Rain', 'Windy']),
         notes: faker.lorem.sentence(),
-        crew: JSON.stringify([
-          { name: foreman.name!, role: 'Foreman', hours: 10 },
-          { name: operator.name!, role: 'Operator', hours: 10 },
-          { name: laborer.name!, role: 'Laborer', hours: 10 },
-        ]),
-        production: JSON.stringify([
-          { boreId: bore1.id, activity: 'Drill', lf: 40, pitch: randomInt(-5, 5), azimuth: 90, startTime: '08:00', endTime: '12:00' },
-          { boreId: bore1.id, activity: 'Backream', lf: 0, pitch: 0, azimuth: 0, startTime: '13:00', endTime: '15:00' },
-        ]),
+
       }
     });
 

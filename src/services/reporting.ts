@@ -12,7 +12,8 @@ export class ReportingService {
                     include: {
                         dailyReports: {
                             where: { status: 'APPROVED' },
-                            orderBy: { reportDate: 'asc' }
+                            orderBy: { reportDate: 'asc' },
+                            include: { productionEntries: true }
                         }
                     }
                 }
@@ -31,32 +32,42 @@ export class ReportingService {
         stations.push({ measuredDepth: 0, inclination: 0, azimuth: 0 });
 
         bore.project.dailyReports.forEach(report => {
-            try {
-                const logs = typeof report.production === 'string'
-                    ? JSON.parse(report.production)
-                    : report.production;
+            const logs = report.productionEntries || [];
 
-                if (Array.isArray(logs)) {
-                    logs.forEach((log: any) => {
-                        if (log.boreId === boreId && (log.activity === 'Drill' || log.activity === 'Pilot')) {
-                            const lf = parseFloat(log.lf) || 0;
-                            const pitch = parseFloat(log.pitch) || 0;
-                            const azimuth = parseFloat(log.azimuth) || 0;
+            logs.forEach((log: any) => {
+                // If the log is linked to a cost item or just general, we assume it's relevant if it has footage
+                // We might need to check if it's Drill/Pilot/Ream based on description or separate field if we added one (we did not, just description/quantity)
+                // For now, assume all footage entries contribute to depth if they are drilling
+                if (log.quantity > 0) {
+                    const lf = Number(log.quantity);
+                    // Parse pitch/az from description or separate fields?
+                    // We removed pitch/az from schema? NO, we keep them in 'description' or added them?
+                    // Wait, schema check: DailyReportProduction has `quantity`, `unit`, `hours`, `description`, `costCode`.
+                    // It does NOT have explicit pitch/az columns in the new schema?
+                    // Let's check schema. if missing, we parse description.
 
-                            if (lf > 0) {
-                                currentDepth += lf;
-                                stations.push({
-                                    measuredDepth: currentDepth,
-                                    inclination: pitch,
-                                    azimuth: azimuth
-                                });
-                            }
-                        }
-                    });
+                    // Actually, let's look at how we seed/save it.
+                    // We save "Activity, Pitch: X, Az: Y" in description.
+                    let pitch = 0;
+                    let azimuth = 0;
+                    if (log.description) {
+                        const parts = log.description.split(',');
+                        parts.forEach((p: string) => {
+                            if (p.trim().startsWith('Pitch:')) pitch = parseFloat(p.split(':')[1]);
+                            if (p.trim().startsWith('Az:')) azimuth = parseFloat(p.split(':')[1]);
+                        });
+                    }
+
+                    if (lf > 0) {
+                        currentDepth += lf;
+                        stations.push({
+                            measuredDepth: currentDepth,
+                            inclination: pitch,
+                            azimuth: azimuth
+                        });
+                    }
                 }
-            } catch (e) {
-                console.warn('Failed to parse production log for report:', report.id);
-            }
+            });
         });
 
         if (stations.length < 2) {

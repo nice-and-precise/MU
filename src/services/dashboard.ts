@@ -149,14 +149,7 @@ export async function getActiveCrewsService() {
                 const activityName = lastLog.description.split(',')[0];
                 currentActivity = `${activityName} ${lastLog.quantity ? `@ ${lastLog.quantity}ft` : ''}`;
             } else {
-                // Legacy JSON Fallback
-                try {
-                    const prod = JSON.parse(report.production || '[]');
-                    if (prod.length > 0) {
-                        const lastLog = prod[prod.length - 1];
-                        currentActivity = `${lastLog.activity} ${lastLog.lf ? `@ ${lastLog.lf}ft` : ''}`;
-                    }
-                } catch (e) { }
+                currentActivity = 'No Activity Logged';
             }
 
             return {

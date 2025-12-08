@@ -57,7 +57,7 @@ export class DailyReportService {
                 reportDate: new Date(reportDate),
                 notes,
                 createdById: userId,
-                createdById: userId,
+
                 status: "DRAFT",
             },
         });

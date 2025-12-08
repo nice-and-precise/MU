@@ -15,7 +15,7 @@ export const AnalyticsService = {
         // 1. Fetch all Daily Reports with production logs
         const reports = await prisma.dailyReport.findMany({
             where: { status: 'APPROVED' }, // Only use approved data
-            select: { production: true, projectId: true }
+            select: { projectId: true }
         });
 
         // 2. Aggregate data
@@ -42,35 +42,8 @@ export const AnalyticsService = {
 
         const rates = new Map<string, { totalFt: number, totalHours: number }>();
 
-        reports.forEach(report => {
-            const soil = projectSoilMap.get(report.projectId) || 'Clay';
-
-            try {
-                const logs = JSON.parse(report.production as string);
-                if (Array.isArray(logs)) {
-                    logs.forEach((log: any) => {
-                        // log: { boreId, activity, lf, startTime, endTime }
-                        if (log.activity === 'Drill' || log.activity === 'Pilot') {
-                            const lf = parseFloat(log.lf) || 0;
-                            // Calculate hours
-                            const start = new Date(`1970-01-01T${log.startTime}`);
-                            const end = new Date(`1970-01-01T${log.endTime}`);
-                            const hours = (end.getTime() - start.getTime()) / 3600000;
-
-                            if (lf > 0 && hours > 0) {
-                                const current = rates.get(soil) || { totalFt: 0, totalHours: 0 };
-                                rates.set(soil, {
-                                    totalFt: current.totalFt + lf,
-                                    totalHours: current.totalHours + hours
-                                });
-                            }
-                        }
-                    });
-                }
-            } catch (e) {
-                // Invalid JSON, skip
-            }
-        });
+        // Legacy JSON mining removed.
+        // TODO: Implement analytics using ProductionItem and LaborEntry relations.
 
         // 3. Calculate Averages
         const results: ProductionRate[] = [];

@@ -170,13 +170,8 @@ async function main() {
                 createdById: superIntendent.id,
                 signedById: owner.id,
                 signedAt: new Date(reportDate.getTime() + 86400000), // Signed next day
-                crew: JSON.stringify([
-                    { name: superIntendent.name, role: 'Superintendent', hours: 10 },
-                    { name: crew.name, role: 'Laborer', hours: 10 },
-                ]),
-                production: JSON.stringify([
-                    { boreId: bore1.id, activity: 'Pilot Bore', lf: 50, startTime: '07:00', endTime: '17:00' }
-                ]),
+
+
                 notes: faker.lorem.sentence(),
             },
         });
@@ -203,10 +198,7 @@ async function main() {
             reportDate: new Date(),
             status: 'DRAFT',
             createdById: superIntendent.id,
-            crew: JSON.stringify([
-                { name: superIntendent.name, role: 'Superintendent', hours: 8 },
-                { name: crew.name, role: 'Laborer', hours: 8 },
-            ]),
+
             notes: 'Mobilization complete. Setup drill rig.',
         },
     });

@@ -129,8 +129,7 @@ async function seedDailyReports() {
                     data: {
                         projectId: project.id,
                         reportDate: date,
-                        crew: 'Crew A',
-                        production: JSON.stringify([{ item: 'Bore', quantity: 100 + d * 50, unit: 'ft' }]),
+
                         createdById: user.id,
                         status: 'SUBMITTED'
                     }

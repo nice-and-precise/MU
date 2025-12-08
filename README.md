@@ -19,7 +19,7 @@ Midwest Underground (MU) is a comprehensive, offline-first digital platform desi
 
 ### 💼 Financial Intelligence
 - **Job Costing**: Real-time tracking of estimated vs. actual costs for labor, materials, and equipment.
-- **Payroll Integration**: Automated time card generation based on daily field reports.
+- **Accurate Payroll**: Automated time card generation with Double Time logic and RBAC protection for sensitive rates.
 - **Asset Management**: GPS tracking and maintenance logs for yellow iron and fleet vehicles.
 
 ### 🛡️ Quality & Compliance
@@ -30,6 +30,7 @@ Midwest Underground (MU) is a comprehensive, offline-first digital platform desi
 ### 📊 Executive Analytics
 - **Live Command Center**: Real-time map view of all active crews and rigs.
 - **Production Metrics**: Drill rates per rig, utility strike frequency, and bid accuracy analysis.
+- **Cost Coding**: Granular tracking of labor and equipment usage against specific cost codes for precise P&L.
 
 ---
 

@@ -225,7 +225,12 @@ export function generateDailyReportPDF(report: any, safetyMeetings: any[] = [], 
     }
 
     // --- Crew ---
-    const crew = JSON.parse(report.crew || '[]');
+    // Map laborEntries to simple crew structure if needed, or just list
+    const crew = report.laborEntries?.map((l: any) => ({
+        name: l.employee?.name || l.employeeId, // Ideally we assume employee relation is loaded
+        role: l.costCode || 'Labor',
+        hours: l.hours
+    })) || [];
     if (crew.length > 0) {
         doc.setFontSize(12);
         doc.setTextColor(0, 51, 102);
@@ -246,7 +251,7 @@ export function generateDailyReportPDF(report: any, safetyMeetings: any[] = [], 
     }
 
     // --- Production ---
-    const production = JSON.parse(report.production || '[]');
+    const production = report.productionEntries || [];
     if (production.length > 0) {
         doc.setFontSize(12);
         doc.setTextColor(0, 51, 102);
@@ -267,7 +272,7 @@ export function generateDailyReportPDF(report: any, safetyMeetings: any[] = [], 
     }
 
     // --- Materials ---
-    const materials = JSON.parse(report.materials || '[]');
+    const materials = report.materialEntries || [];
     if (materials.length > 0) {
         doc.setFontSize(12);
         doc.setTextColor(0, 51, 102);

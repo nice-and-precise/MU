@@ -24,26 +24,16 @@ export async function GET(req: NextRequest) {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        const report = await prisma.dailyReport.findUnique({
+        const logs = await prisma.telemetryLog.findMany({
             where: {
-                projectId_reportDate: {
-                    projectId: bore.projectId,
-                    reportDate: today
+                boreId: boreId,
+                timestamp: {
+                    gte: today,
+                    lt: new Date(today.getTime() + 24 * 60 * 60 * 1000)
                 }
             },
-            select: { production: true }
+            orderBy: { timestamp: 'asc' }
         });
-
-        let logs = [];
-        if (report && report.production) {
-            try {
-                logs = JSON.parse(report.production as string);
-                // Filter for this bore just in case
-                logs = logs.filter((l: any) => l.boreId === boreId);
-            } catch (e) {
-                // ignore
-            }
-        }
 
         return NextResponse.json({ success: true, logs });
 

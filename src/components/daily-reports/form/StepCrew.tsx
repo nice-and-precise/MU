@@ -43,20 +43,7 @@ export function StepCrew({ employees, projectId }: StepCrewProps) {
                     toast.success("Copied crew from last approved report");
                 }
                 // Fallback to legacy JSON
-                else if (res.data.crew) {
-                    const previousCrew = typeof res.data.crew === 'string' ? JSON.parse(res.data.crew) : res.data.crew;
-                    if (Array.isArray(previousCrew) && previousCrew.length > 0) {
-                        const cleanCrew = previousCrew.map((c: any) => ({
-                            employeeId: c.employeeId,
-                            hours: c.hours || 0,
-                            role: c.role || 'Labor'
-                        }));
-                        replace(cleanCrew);
-                        toast.success("Copied crew from last approved report");
-                    } else {
-                        toast.info("Previous report had no crew data");
-                    }
-                } else {
+                else {
                     toast.info("Previous report had no crew data");
                 }
             } else {
