@@ -35,9 +35,14 @@ describe('ReportingService', () => {
                             id: 'report-1',
                             status: 'APPROVED',
                             reportDate: new Date(),
-                            production: JSON.stringify([
-                                { boreId, activity: 'Drill', lf: 10, pitch: 2, azimuth: 90 }
-                            ])
+                            status: 'APPROVED',
+                            reportDate: new Date(),
+                            productionEntries: [
+                                {
+                                    quantity: 10,
+                                    description: 'Drilling, Pitch: 2, Az: 90' // Description key for parsing
+                                }
+                            ]
                         }
                     ]
                 }
