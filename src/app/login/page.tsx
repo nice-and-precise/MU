@@ -66,9 +66,8 @@ export default function LoginPage() {
                                 type="email"
                                 placeholder="name@midwestunderground.com"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
                                 required
-                                className="border-gray-300 focus:border-orange focus:ring-orange"
+                                className="border-gray-300 bg-white text-black focus:border-orange focus:ring-orange"
                             />
                         </div>
                         <div className="space-y-2">
@@ -77,9 +76,8 @@ export default function LoginPage() {
                                 id="password"
                                 type="password"
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
                                 required
-                                className="border-gray-300 focus:border-orange focus:ring-orange"
+                                className="border-gray-300 bg-white text-black focus:border-orange focus:ring-orange"
                             />
                         </div>
 

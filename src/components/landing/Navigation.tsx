@@ -25,7 +25,7 @@ export default function Navigation() {
     ];
 
     const portalLink = session ? "/dashboard" : "/login";
-    const portalText = session ? "Dashboard" : "Client Portal";
+    const portalText = session ? "Dashboard" : "Log In";
     const PortalIcon = session ? LayoutDashboard : Lock;
 
     return (

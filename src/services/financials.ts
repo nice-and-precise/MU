@@ -74,21 +74,8 @@ export class FinancialsService {
 
         // --- 1. Operations Actuals ---
 
-        // Labor: (hourlyRate + burdenRate) * hours
-        let actualLabor = 0;
-        project.timeEntries.forEach(entry => {
-            if (entry.endTime && entry.employee) {
-                const durationHours = (new Date(entry.endTime).getTime() - new Date(entry.startTime).getTime()) / (1000 * 60 * 60);
-                // Fallback to $50/hr if no rate set, to avoid $0 costs hiding usage
-                // Cost = (Hourly Rate + Burden Rate) * Hours
-                // TODO: For more accurate OT costing, we'd need to apply payroll rules here or store calculated cost on the entry.
-                const hourlyRate = entry.employee.hourlyRate || 0;
-                const burdenRate = entry.employee.burdenRate || 0;
-                const effectiveRate = hourlyRate + burdenRate;
-
-                actualLabor += durationHours * effectiveRate;
-            }
-        });
+        // Labor: Calculated via helper below
+        // let actualLabor = 0;
 
         // Materials: Inventory Transactions (negative is usage)
         let actualMaterials = 0;
@@ -106,7 +93,126 @@ export class FinancialsService {
             actualEquipment += (usage.hours || 0) * rate;
         });
 
-        // Expenses: Direct categorization
+        // --- 1. Operations Actuals ---
+
+        // Helper to calculate labor cost with burden and OT
+        const calculateLaborCost = async (entries: any[]) => {
+            // Group by employee to apply OT rules
+            const entriesByEmployee = new Map<string, any[]>();
+            entries.forEach(e => {
+                if (!entriesByEmployee.has(e.employeeId)) entriesByEmployee.set(e.employeeId, []);
+                entriesByEmployee.get(e.employeeId)?.push(e);
+            });
+
+            let totalLaborCost = 0;
+
+            for (const [empId, empEntries] of entriesByEmployee) {
+                // Determine rules from employee record
+                const employee = empEntries[0].employee;
+                if (!employee) continue;
+
+                const baseRate = employee.hourlyRate || 0;
+                const burdenRate = employee.burdenRate || 0;
+                const otMult = employee.defaultOvertimeMultiplier || 1.5;
+                const dtMult = employee.doubleTimeMultiplier || 2.0;
+                const otRule = employee.overtimeRule || 'OVER_40_WEEK'; // Default to standard
+
+                // Simple bucket tracking
+                let weeklyRegularMins = 0;
+                let cost = 0;
+
+                // Sort by time to process correctly
+                empEntries.sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+
+                // We need to reset weekly counter on week boundaries
+                // Check if entries span multiple weeks (simple logic: process sequentially)
+                let currentWeekStart = -1;
+
+                for (const entry of empEntries) {
+                    if (!entry.endTime) continue;
+                    const dayStart = new Date(entry.startTime);
+                    const weekStart = new Date(dayStart);
+                    weekStart.setHours(0, 0, 0, 0);
+                    weekStart.setDate(weekStart.getDate() - weekStart.getDay()); // Start of week (Sunday)
+
+                    if (weekStart.getTime() !== currentWeekStart) {
+                        weeklyRegularMins = 0; // New week, reset counter
+                        currentWeekStart = weekStart.getTime();
+                    }
+
+                    const durationMins = (new Date(entry.endTime).getTime() - new Date(entry.startTime).getTime()) / (1000 * 60);
+                    let regularMins = 0;
+                    let otMins = 0;
+                    let dtMins = 0;
+
+                    // Daily Rules
+                    if (otRule === 'OVER_8_DAY' || otRule === 'UNION_X') {
+                        const dtThresholdMins = (employee.doubleTimeDailyThreshold || 12) * 60;
+                        const otThresholdMins = 8 * 60;
+
+                        if (durationMins > dtThresholdMins) {
+                            dtMins = durationMins - dtThresholdMins;
+                            otMins = dtThresholdMins - otThresholdMins;
+                            regularMins = otThresholdMins;
+                        } else if (durationMins > otThresholdMins) {
+                            otMins = durationMins - otThresholdMins;
+                            regularMins = otThresholdMins;
+                        } else {
+                            regularMins = durationMins;
+                        }
+                    } else {
+                        // Standard: everything counts towards weekly bucket first
+                        regularMins = durationMins;
+                    }
+
+                    // Apply Weekly Rule (Retroactive OT)
+                    // If adding these regular mins pushes us over 40h (2400 mins)
+                    if (weeklyRegularMins + regularMins > 2400) {
+                        const availableRegular = Math.max(0, 2400 - weeklyRegularMins);
+                        const overflow = (weeklyRegularMins + regularMins) - 2400;
+
+                        // If we are using standard rule, the overflow becomes OT
+                        // If we are using DAILY rule, we've already paid OT for daily excess, 
+                        // but 40h rule usually catches "6th day" scenarios where daily didn't trigger.
+                        // For simplicity in this v1: 
+                        // - Standard: overflow is OT
+                        // - Daily: overflow is OT (if not already accounted for? Complicated. 
+                        //   Let's assume standard "whichever is greater" logic, but summing cost is tricky line-by-line).
+                        //   SIMPLIFICATION: Just add overflow to OT if it wasn't already OT.
+
+                        if (otRule === 'OVER_40_WEEK') {
+                            regularMins = availableRegular;
+                            otMins += overflow;
+                        }
+                    }
+
+                    weeklyRegularMins += regularMins;
+
+                    // Calculate Cost for this Entry
+                    // Burden is usually applied to ALL hours equally, or just straight time? 
+                    // Usually Burden (FICA, Ins) is on the wages paid.
+                    // Let's assume Burden is a flat $/hr add-on to Base Rate for internal costing (simpler).
+                    // Or is Burden a multiplier? "burdenRate" field is Float. Assuming $/hr.
+
+                    // Cost = (Hours * (Base * Multiplier)) + (Hours * Burden)
+                    // Actually, Burden applies to the hour worked regardless of OT usually (e.g. truck cost, insurance).
+                    // But payroll taxes scale with pay. 
+                    // Let's use: Total Pay + (Total Hours * Burden Payment)
+
+                    const pay = (regularMins / 60 * baseRate) +
+                        (otMins / 60 * baseRate * otMult) +
+                        (dtMins / 60 * baseRate * dtMult);
+
+                    const burden = (durationMins / 60 * burdenRate);
+
+                    cost += (pay + burden);
+                }
+                totalLaborCost += cost;
+            }
+            return totalLaborCost;
+        };
+
+        const actualLabor = await calculateLaborCost(project.timeEntries);
         let actualExpenses = 0;
         let actualSubcontract = 0;
 

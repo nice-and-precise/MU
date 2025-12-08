@@ -1,102 +1,110 @@
 
-/**
- * Mock Edge Device Script (J1939 Simulation)
- * 
- * Simulates a drilling rig sending telemetry data to the MU API.
- * Usage: npx ts-node scripts/mock-rig-edge.ts --boreId <ID> --apiUrl http://localhost:3000
- */
+import { PrismaClient } from '@prisma/client';
+import { v4 as uuidv4 } from 'uuid';
 
-import fetch from 'node-fetch';
+const prisma = new PrismaClient();
 
-const args = process.argv.slice(2);
-const boreIdArg = args.find(a => a.startsWith('--boreId='));
-const apiUrlArg = args.find(a => a.startsWith('--apiUrl='));
+// J1939-ish PGNs (Parameter Group Numbers) - roughly mapped for realism
+const PGNS = {
+    ENGINE_SPEED: 61444, // EEC1 - Engine Speed (RPM)
+    TORQUE: 61444,       // EEC1 - Actual Torque
+    THRUST: 65280,       // Proprietary - Thrust/Pullback
+    PRESSURE: 65281,     // Proprietary - Mud Pressure
+    FLOW: 65282,         // Proprietary - Mud Flow
+};
 
-const BORE_ID = boreIdArg ? boreIdArg.split('=')[1] : null;
-const API_URL = apiUrlArg ? apiUrlArg.split('=')[1] : 'http://localhost:3000';
-const INGEST_ENDPOINT = `${API_URL}/api/telemetry/ingest`;
-
-if (!BORE_ID) {
-    console.error('Please provide a boreId: --boreId=<ID>');
-    process.exit(1);
-}
-
-console.log(`Starting Virtual Rig Simulation for Bore: ${BORE_ID}`);
-console.log(`Target API: ${INGEST_ENDPOINT}`);
-
-// Simulation State
-let depth = 0;
-let pitch = 0;
-let azimuth = 0;
-let isDrilling = true;
-
-// Physics Constants
-const DRILL_RATE_FPM = 2.0; // Feet per minute
-const UPDATE_HZ = 1; // 1 update per second
-const BATCH_SIZE = 1; // Send every X updates
-
-// Current Buffer
-let batch: any[] = [];
-
-setInterval(async () => {
-    // 1. Update Physics
-    if (isDrilling) {
-        depth += (DRILL_RATE_FPM / 60) * (1 / UPDATE_HZ);
-
-        // Random walk
-        pitch += (Math.random() - 0.5) * 0.1;
-        azimuth += (Math.random() - 0.5) * 0.1;
+async function main() {
+    const boreId = process.argv[2];
+    if (!boreId) {
+        console.error("Please provide a boreId (e.g. ts-node mock-rig-edge.ts <bore-id>)");
+        process.exit(1);
     }
 
-    // 2. Generate Sensor Data
-    const log = {
-        timestamp: new Date().toISOString(),
-        depth: parseFloat(depth.toFixed(2)),
-        pitch: parseFloat(pitch.toFixed(2)),
-        azimuth: parseFloat(azimuth.toFixed(2)),
-        toolFace: Math.random() * 360,
-        rpm: isDrilling ? 120 + (Math.random() * 10) : 0,
-        wob: isDrilling ? 15000 + (Math.random() * 1000) : 0,
-        torque: isDrilling ? 2500 + (Math.random() * 200) : 0,
-        pumpPressure: isDrilling ? 800 + (Math.random() * 50) : 0,
-        flowRate: isDrilling ? 50 + (Math.random() * 5) : 0,
-    };
+    const projectId = process.argv[3];
 
-    batch.push(log);
+    console.log(`🚀 Starting MOCK RIG EDGE device for bore: ${boreId}`);
+    console.log(`📡 Connecting to Cloud Ingestion API...`);
 
-    process.stdout.write(`\rDepth: ${log.depth.toFixed(1)}ft | RPM: ${log.rpm.toFixed(0)} | P: ${log.pumpPressure.toFixed(0)}psi | Batch: ${batch.length}`);
+    // State simulation
+    let rpm = 0;
+    let torque = 0;
+    let thrust = 0;
+    let pressure = 0;
+    let flow = 0;
+    let depth = 0;
+    let state = 'IDLE'; // IDLE, DRILLING, ADDING_ROD
 
-    // 3. Send Batch
-    if (batch.length >= BATCH_SIZE) {
+    setInterval(async () => {
+        // 1. Simulate Math (Physics Engine Lite)
+        if (state === 'DRILLING') {
+            rpm = 160 + (Math.random() * 20 - 10);
+            torque = 1200 + (Math.random() * 100 - 50);
+            thrust = 5000 + (Math.random() * 500 - 250);
+            pressure = 450 + (Math.random() * 50 - 25);
+            flow = 65 + (Math.random() * 5 - 2.5);
+            depth += 0.05; // 0.05 ft per tick (approx 1 ft/sec scaled)
+
+            // Randomly stop for "rod change"
+            if (Math.random() > 0.98) {
+                state = 'ADDING_ROD';
+                console.log("🛑 Rig Output: ADDING ROD...");
+            }
+        } else if (state === 'ADDING_ROD') {
+            rpm = 0;
+            torque = 0;
+            thrust = 0;
+            if (Math.random() > 0.95) {
+                state = 'DRILLING';
+                console.log("🟢 Rig Output: DRILLING RESUMED");
+            }
+        } else {
+            // IDLE -> Start
+            if (Math.random() > 0.8) {
+                state = 'DRILLING';
+                console.log("🟢 Rig Output: DRILLING STARTED");
+            }
+        }
+
+        // 2. Prepare Payload (Edge JSON)
+        const payload = {
+            boreId,
+            timestamp: new Date().toISOString(),
+            telemetry: {
+                rpm: Math.round(rpm),
+                torque: Math.round(torque),
+                thrust: Math.round(thrust),
+                pumpPressure: Math.round(pressure),
+                flowRate: Math.round(flow),
+                depth: parseFloat(depth.toFixed(2)),
+                bitStatus: state === 'DRILLING' ? 1 : 0
+            }
+        };
+
+        // 3. Send to API (Simulating Network Request)
+        // For demo speed, we write directly to DB instead of hitting localhost:3000 API to avoid fetch overhead/cors in CLI
+        // In production, this would be `fetch('https://api.mu-ops.com/ingest', ...)`
+
         try {
-            const payload = {
-                boreId: BORE_ID,
-                logs: batch
-            };
-
-            const res = await fetch(INGEST_ENDPOINT, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+            await prisma.telemetryLog.create({
+                data: {
+                    boreId: boreId,
+                    timestamp: payload.timestamp,
+                    depth: payload.telemetry.depth,
+                    rpm: payload.telemetry.rpm,
+                    torque: payload.telemetry.torque,
+                    wob: payload.telemetry.thrust, // Mapping thrust to WOB field for now
+                    pumpPressure: payload.telemetry.pumpPressure,
+                    flowRate: payload.telemetry.flowRate,
+                }
             });
 
-            if (!res.ok) {
-                console.error(`\nFailed to send batch: ${res.status} ${res.statusText}`);
-                const text = await res.text();
-                console.error(text);
-            } else {
-                // Success, clear buffer
-            }
-        } catch (err) {
-            console.error('\nNetwork Error:', err);
+            // console.log(`📡 TX: D:${depth.toFixed(1)}ft | ${rpm} RPM | ${pressure} PSI`);
+            process.stdout.write(`\r📡 TX: Depth:${depth.toFixed(1)}ft | ${rpm} RPM | ${pressure} PSI | Status: ${state}   `);
+        } catch (e) {
+            console.error("Transmission Error:", e);
         }
-        batch = [];
-    }
 
-}, 1000 / UPDATE_HZ);
+    }, 1000); // 1Hz update rate
+}
 
-// Handle exit
-process.on('SIGINT', () => {
-    console.log('\nStopping simulation...');
-    process.exit();
-});
+main();

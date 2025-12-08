@@ -1,3 +1,5 @@
+import ProjectAnalytics from "@/components/analytics/ProjectAnalytics";
+
 import { getProject, getProjectLaborStats } from "@/actions/projects";
 import { getProjectSummary } from "@/actions/closeout";
 import { notFound } from "next/navigation";
@@ -25,64 +27,69 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
 
     return (
         <div className="space-y-8">
+            {/* Analytics Section */}
+            <div className="mb-8">
+                <h2 className="text-lg font-semibold mb-4">Project Performance</h2>
+                <ProjectAnalytics data={summary.financials} />
+            </div>
+
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center text-gray-500 mb-2">
-                        <DollarSign className="h-4 w-4 mr-2" />
-                        <span className="text-sm font-medium">Financials</span>
-                    </div>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                        {summary.financials.percentBilled.toFixed(1)}%
-                    </p>
-                    <p className="text-xs text-muted-foreground">Invoiced of Budget</p>
+                {/* ... existing stats grid ... */}
+                <div className="flex items-center text-gray-500 mb-2">
+                    <DollarSign className="h-4 w-4 mr-2" />
+                    <span className="text-sm font-medium">Financials</span>
                 </div>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {summary.financials.percentBilled.toFixed(1)}%
+                </p>
+                <p className="text-xs text-muted-foreground">Invoiced of Budget</p>
+            </div>
 
-                {/* Labor Stats Card */}
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center text-gray-500 mb-2">
-                        <HardHat className="h-4 w-4 mr-2" />
-                        <span className="text-sm font-medium">Labor Cost</span>
-                    </div>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                        ${laborStats?.actualLaborCost.toLocaleString() || '0'}
-                    </p>
-                    <div className="flex justify-between items-center text-xs mt-1">
-                        <span className="text-gray-500">Est. Budget:</span>
-                        <span className="font-medium text-gray-700 dark:text-gray-300">
-                            ${laborStats?.estimatedLaborBudget.toLocaleString() || '0'}
-                        </span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
-                        <div
-                            className={`bg-blue-600 h-1.5 rounded-full`}
-                            style={{
-                                width: `${Math.min(100, ((laborStats?.actualLaborCost || 0) / (laborStats?.estimatedLaborBudget || 1)) * 100)}%`
-                            }}
-                        ></div>
-                    </div>
+            {/* Labor Stats Card */}
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                <div className="flex items-center text-gray-500 mb-2">
+                    <HardHat className="h-4 w-4 mr-2" />
+                    <span className="text-sm font-medium">Labor Cost</span>
                 </div>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    ${laborStats?.actualLaborCost.toLocaleString() || '0'}
+                </p>
+                <div className="flex justify-between items-center text-xs mt-1">
+                    <span className="text-gray-500">Est. Budget:</span>
+                    <span className="font-medium text-gray-700 dark:text-gray-300">
+                        ${laborStats?.estimatedLaborBudget.toLocaleString() || '0'}
+                    </span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                    <div
+                        className={`bg-blue-600 h-1.5 rounded-full`}
+                        style={{
+                            width: `${Math.min(100, ((laborStats?.actualLaborCost || 0) / (laborStats?.estimatedLaborBudget || 1)) * 100)}%`
+                        }}
+                    ></div>
+                </div>
+            </div>
 
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center text-gray-500 mb-2">
-                        <ShieldCheck className="h-4 w-4 mr-2" />
-                        <span className="text-sm font-medium">Safety</span>
-                    </div>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                        {summary.safety.meetings}
-                    </p>
-                    <p className="text-xs text-muted-foreground">Safety Meetings</p>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                <div className="flex items-center text-gray-500 mb-2">
+                    <ShieldCheck className="h-4 w-4 mr-2" />
+                    <span className="text-sm font-medium">Safety</span>
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center text-gray-500 mb-2">
-                        <CheckSquare className="h-4 w-4 mr-2" />
-                        <span className="text-sm font-medium">QC Items</span>
-                    </div>
-                    <p className={`text-2xl font-bold ${summary.qc.openPunchItems > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                        {summary.qc.openPunchItems}
-                    </p>
-                    <p className="text-xs text-muted-foreground">Open Punch Items</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {summary.safety.meetings}
+                </p>
+                <p className="text-xs text-muted-foreground">Safety Meetings</p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                <div className="flex items-center text-gray-500 mb-2">
+                    <CheckSquare className="h-4 w-4 mr-2" />
+                    <span className="text-sm font-medium">QC Items</span>
                 </div>
+                <p className={`text-2xl font-bold ${summary.qc.openPunchItems > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                    {summary.qc.openPunchItems}
+                </p>
+                <p className="text-xs text-muted-foreground">Open Punch Items</p>
             </div>
 
             {/* Linear Progress Section */}
@@ -186,6 +193,6 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
                     <CloseoutModal projectId={project.id} summary={summary} />
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

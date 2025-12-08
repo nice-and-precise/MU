@@ -14,7 +14,10 @@ async function main() {
 
   // --- 1. USERS & CREW ---
   console.log('Creating Users...');
-  const passwordHash = '$2b$10$PHv0g4qkTzwRKGkeGxGPf.x1QtOOgCkKVh2Og9RCw6VfXA6XaGYT6'; // password123
+  // Use a fixed salt or just hash it now to ensure it matches the library version
+  const hash = await import('bcryptjs');
+  const passwordHash = await hash.hash('password123', 10);
+
 
   const owner = await prisma.user.upsert({
     where: { email: 'owner@midwestunderground.com' },
@@ -134,10 +137,10 @@ async function main() {
   // --- 4. ASSETS & FLEET ---
   console.log('Creating Fleet...');
   const assetsData = [
-    { name: 'Vermeer D24x40 S3', type: 'Drill', model: 'D24x40', serial: 'VRM-2440-001', status: 'AVAILABLE', hours: 2450 },
-    { name: 'Vermeer D40x55 S3', type: 'Drill', model: 'D40x55', serial: 'VRM-4055-002', status: 'IN_USE', hours: 1800 },
-    { name: 'Vac-Tron LP 500', type: 'Vac', model: 'LP 500', serial: 'VAC-500-003', status: 'AVAILABLE', hours: 1200 },
-    { name: 'Ford F-550 Flatbed', type: 'Truck', model: 'F-550', serial: 'FRD-550-004', status: 'IN_USE', hours: 45000 }, // miles really
+    { name: 'Vermeer D24x40 S3', type: 'Drill', model: 'D24x40', serial: 'VRM-2440-001', status: 'ACTIVE', hours: 2450 },
+    { name: 'Vermeer D40x55 S3', type: 'Drill', model: 'D40x55', serial: 'VRM-4055-002', status: 'ACTIVE', hours: 1800 },
+    { name: 'Vac-Tron LP 500', type: 'Vac', model: 'LP 500', serial: 'VAC-500-003', status: 'ACTIVE', hours: 1200 },
+    { name: 'Ford F-550 Flatbed', type: 'Truck', model: 'F-550', serial: 'FRD-550-004', status: 'ACTIVE', hours: 45000 }, // miles really
     { name: 'Kubota KX040', type: 'Excavator', model: 'KX040', serial: 'KUB-040-005', status: 'MAINTENANCE', hours: 3200 },
   ];
 

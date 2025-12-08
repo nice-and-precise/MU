@@ -1,17 +1,18 @@
 'use server';
 
-import { TelemetryService } from "@/services/telemetry";
-import { authenticatedAction } from "@/lib/safe-action";
-import { z } from "zod";
+import { prisma } from '@/lib/prisma';
 
-const GetTelemetrySchema = z.object({
-    boreId: z.string()
-});
+export async function getLatestBoreTelemetry(input: { boreId: string }) {
+    try {
+        const latest = await prisma.telemetryLog.findFirst({
+            where: { boreId: input.boreId },
+            orderBy: { timestamp: 'desc' }
+        });
 
-export const getLatestBoreTelemetry = authenticatedAction(
-    GetTelemetrySchema,
-    async ({ boreId }) => {
-        const log = await TelemetryService.getLatestTelemetry(boreId);
-        return log;
+        if (!latest) return { success: false, data: null };
+        return { success: true, data: latest };
+    } catch (error) {
+        console.error("Fetch Telemetry Error:", error);
+        return { success: false, error: 'Failed' };
     }
-);
+}
