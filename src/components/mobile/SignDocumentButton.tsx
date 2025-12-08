@@ -25,9 +25,8 @@ export function SignDocumentButton({ id }: SignDocumentButtonProps) {
 
     return (
         <Button
-            size="sm"
             variant="outline"
-            className="h-7 text-xs"
+            className="text-xs"
             onClick={handleSign}
             disabled={isPending}
         >

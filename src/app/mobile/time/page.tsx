@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { format, startOfWeek, endOfWeek } from "date-fns";
-import { TimeEntryControls } from "@/components/mobile/TimeEntryControls";
+import { MobileClockInWrapper } from "@/components/mobile/MobileClockInWrapper";
 import { TimeService } from "@/services/time";
 
 export default async function TimePage() {
@@ -53,9 +53,9 @@ export default async function TimePage() {
 
     return (
         <div className="min-h-screen bg-slate-50 pb-24">
-            <div className="bg-[#003366] text-white p-4 sticky top-0 z-10 shadow-md">
+            <div className="bg-charcoal text-white p-4 sticky top-0 z-10 shadow-md">
                 <div>
-                    <h1 className="text-lg font-bold">Time Sheet</h1>
+                    <h1 className="text-lg font-heading uppercase tracking-tight">Time Sheet</h1>
                     <div className="flex justify-between items-end">
                         <p className="text-xs text-blue-200">This Week: {totalHours.toFixed(2)} hrs</p>
                         <p className="text-sm font-bold text-green-300">Est: ${weeklyEstPay.toLocaleString()}</p>
@@ -64,15 +64,23 @@ export default async function TimePage() {
             </div>
 
             <div className="p-4 space-y-6">
-                <TimeEntryControls
-                    employeeId={employee.id}
-                    activeEntry={activeEntry}
-                    projects={projects}
-                    weeklyEstimatedGrossPay={weeklyEstPay}
-                />
+                {/* Primary Clock In Control - Standardized */}
+                <div className="bg-white rounded-lg shadow-sm border p-1">
+                    {/* Project Selection for Clock In is handled within GeoClockIn or pre-selection */}
+                    {/* For mobile, we might want to let them pick project then clock in, 
+                        BUT GeoClockIn takes a single project. 
+                        We need a wrapper to pick project OR render a list. 
+                        Let's render a Selector then the ClockIn component. */}
+
+                    <MobileClockInWrapper
+                        employeeId={employee.id}
+                        projects={projects}
+                        initialActiveEntry={activeEntry}
+                    />
+                </div>
 
                 <div className="space-y-3">
-                    <h3 className="font-semibold text-sm text-gray-600 uppercase tracking-wide">Recent Activity</h3>
+                    <h3 className="font-heading uppercase tracking-tight text-sm text-gray-600">Recent Activity</h3>
                     {entries.length === 0 ? (
                         <div className="text-center py-10 text-gray-500 bg-white rounded-lg border border-dashed">
                             No entries for this week.

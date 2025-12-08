@@ -62,7 +62,14 @@ export default function DailyReportForm({ projects }: { projects: any[] }) {
             }
 
             const { createDailyReport } = await import("@/actions/reports");
-            await createDailyReport(data);
+            const result = await createDailyReport(data);
+
+            if (!result.success) {
+                console.error("Server Action Failed:", result.error);
+                toast.error(result.error || "Failed to create report");
+                return;
+            }
+
             toast.success("Daily report created successfully");
             router.push("/dashboard/reports");
             router.refresh();

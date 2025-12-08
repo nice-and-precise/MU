@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
         description: 'Field Operations & Drilling Management Platform',
         start_url: '/dashboard',
         display: 'standalone',
-        background_color: '#0f172a', // Slate 900
-        theme_color: '#fbbf24', // Amber 400 (Safety Yellow)
+        background_color: '#2A2A2A', // Midwest Charcoal
+        theme_color: '#FF6700', // Safety Orange
         icons: [
             {
                 src: '/icon/medium',

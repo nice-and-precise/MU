@@ -44,24 +44,12 @@ export default async function CrewDashboard() {
         select: { hasCompletedOnboarding: true, name: true, preferences: true }
     });
 
-    // Check if profile is set up
-    let profileSetupComplete = false;
-    try {
-        const prefs = typeof currentUser?.preferences === 'string'
-            ? JSON.parse(currentUser.preferences)
-            : currentUser?.preferences || {};
-        profileSetupComplete = !!prefs.onboardingComplete;
-    } catch (e) {
-        profileSetupComplete = false;
-    }
-
     return (
         <div className="p-4 md:p-8 space-y-6">
             <DashboardOnboarding
                 role={userRole.toUpperCase()}
                 hasCompletedOnboarding={currentUser?.hasCompletedOnboarding ?? false}
                 userName={currentUser?.name || ""}
-                profileSetupComplete={profileSetupComplete}
             />
 
             {/* UX Promise Header */}

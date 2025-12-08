@@ -19,21 +19,20 @@ interface DashboardOnboardingProps {
     role: string;
     hasCompletedOnboarding: boolean;
     userName?: string;
-    profileSetupComplete?: boolean; // New prop to enforce sequencing
 }
 
-export function DashboardOnboarding({ role, hasCompletedOnboarding, userName, profileSetupComplete = true }: DashboardOnboardingProps) {
+export function DashboardOnboarding({ role, hasCompletedOnboarding, userName }: DashboardOnboardingProps) {
     const [isOpen, setIsOpen] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
-        // Only show if not completed AND profile setup is confirmed complete
-        if (!hasCompletedOnboarding && profileSetupComplete) {
+        // Only show if not completed
+        if (!hasCompletedOnboarding) {
             // Small delay to let the UI load first
             const timer = setTimeout(() => setIsOpen(true), 1000);
             return () => clearTimeout(timer);
         }
-    }, [hasCompletedOnboarding, profileSetupComplete]);
+    }, [hasCompletedOnboarding]);
 
     const handleComplete = async () => {
         setIsOpen(false);

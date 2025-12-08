@@ -37,8 +37,8 @@ export default async function MobileSchedulePage() {
 
     return (
         <div className="min-h-screen bg-slate-50 pb-20">
-            <div className="bg-[#003366] text-white p-4 sticky top-0 z-10 shadow-md">
-                <h1 className="text-lg font-bold">My Schedule</h1>
+            <div className="bg-charcoal text-white p-4 sticky top-0 z-10 shadow-md">
+                <h1 className="text-lg font-heading uppercase tracking-tight">My Schedule</h1>
                 <p className="text-xs text-blue-200">{new Date().toLocaleDateString()}</p>
             </div>
 

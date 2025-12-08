@@ -43,30 +43,12 @@ export default async function OwnerDashboard() {
         select: { hasCompletedOnboarding: true, name: true, preferences: true }
     });
 
-    // Check if profile is set up (phone exists in preferences)
-    let profileSetupComplete = false;
-    try {
-        const prefs = typeof currentUser?.preferences === 'string'
-            ? JSON.parse(currentUser.preferences)
-            : currentUser?.preferences || {};
-        profileSetupComplete = !!currentUser?.hasCompletedOnboarding;
-
-        // Actually, looking at UserOnboarding logic: 
-        // effectively "profile setup" is done if we shouldn't show the UserOnboarding modal.
-        // UserOnboarding shows if !prefs.onboardingComplete.
-        // So profileSetupComplete = !!prefs.onboardingComplete.
-        profileSetupComplete = !!prefs.onboardingComplete;
-    } catch (e) {
-        profileSetupComplete = false;
-    }
-
     return (
         <div className="p-8 space-y-8">
             <DashboardOnboarding
                 role="OWNER"
                 hasCompletedOnboarding={currentUser?.hasCompletedOnboarding ?? false}
                 userName={currentUser?.name || ""}
-                profileSetupComplete={profileSetupComplete}
             />
 
             {/* UX Promise Header */}

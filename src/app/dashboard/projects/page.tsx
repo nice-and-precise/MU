@@ -17,12 +17,12 @@ export default async function ProjectsPage() {
         <div className="p-8">
             <div className="flex justify-between items-center mb-8 border-b border-gray-200 pb-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-[#003366] uppercase tracking-tight">Projects</h1>
+                    <h1 className="text-3xl font-bold text-charcoal uppercase tracking-tight">Projects</h1>
                     <p className="text-gray-500 mt-1">Manage and track all active jobs</p>
                 </div>
                 <Link
                     href="/dashboard/projects/new"
-                    className="bg-[#003366] hover:bg-[#002244] text-white px-6 py-3 rounded font-bold shadow-sm transition-colors flex items-center"
+                    className="bg-charcoal hover:bg-black text-white px-6 py-3 rounded font-bold shadow-sm transition-colors flex items-center"
                 >
                     <span className="mr-2">+</span> New Project
                 </Link>
@@ -44,11 +44,11 @@ export default async function ProjectsPage() {
                         <Link
                             key={project.id}
                             href={`/dashboard/projects/${project.id}`}
-                            className="group bg-white rounded-lg shadow-sm border border-gray-200 hover:border-[#003366] transition-all duration-200 overflow-hidden hover:shadow-md"
+                            className="group bg-white rounded-lg shadow-sm border border-gray-200 hover:border-charcoal transition-all duration-200 overflow-hidden hover:shadow-md"
                         >
                             <div className="p-6">
                                 <div className="flex justify-between items-start mb-4">
-                                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#003366] transition-colors">
+                                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-charcoal transition-colors">
                                         {project.name}
                                     </h3>
                                     <span

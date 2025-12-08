@@ -30,14 +30,14 @@ export default async function ProfilePage() {
                     {employee?.firstName?.[0] || "U"}
                 </div>
                 <div>
-                    <h2 className="text-lg font-bold">{employee ? `${employee.firstName} ${employee.lastName}` : session?.user?.name}</h2>
+                    <h2 className="text-lg font-heading uppercase tracking-tight">{employee ? `${employee.firstName} ${employee.lastName}` : session?.user?.name}</h2>
                     <p className="text-sm text-gray-500">{employee?.position || "Staff"}</p>
                     <p className="text-xs text-gray-400">{session?.user?.email}</p>
                 </div>
             </div>
 
             <div className="space-y-2">
-                <h3 className="font-semibold text-sm text-gray-600 uppercase tracking-wide">Pending Documents</h3>
+                <h3 className="font-heading uppercase tracking-tight text-sm text-gray-600">Pending Documents</h3>
                 {docs.length === 0 ? (
                     <div className="bg-white rounded-lg shadow-sm border p-3 text-sm text-gray-500">
                         No pending documents to sign.
@@ -79,7 +79,7 @@ export default async function ProfilePage() {
             </div>
 
             <form action="/api/auth/signout" method="POST">
-                <Button variant="destructive" className="w-full flex items-center gap-2 justify-center">
+                <Button variant="destructive" size="mobile" className="w-full flex items-center gap-2 justify-center">
                     <LogOut className="w-4 h-4" />
                     Sign Out
                 </Button>

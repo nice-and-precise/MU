@@ -1,0 +1,160 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - link "Skip to main content" [ref=e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - complementary [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - heading "MIDWEST UNDERGROUND" [level=1] [ref=e7]
+          - paragraph [ref=e8]: Operations Command
+          - button "Search... ⌘ K" [ref=e10]:
+            - generic [ref=e11]: Search...
+            - generic:
+              - generic: ⌘
+              - text: K
+        - navigation [ref=e12]:
+          - generic [ref=e13]:
+            - paragraph [ref=e14]: Operations
+            - generic [ref=e15]:
+              - link "Dashboard" [ref=e16] [cursor=pointer]:
+                - /url: /dashboard
+                - img [ref=e17]
+                - generic [ref=e22]: Dashboard
+              - button [ref=e23]:
+                - img
+            - generic [ref=e24]:
+              - link "Projects" [ref=e25] [cursor=pointer]:
+                - /url: /dashboard/projects
+                - img [ref=e26]
+                - generic [ref=e31]: Projects
+              - button [ref=e32]:
+                - img
+            - generic [ref=e33]:
+              - link "3D Maps" [ref=e34] [cursor=pointer]:
+                - /url: /dashboard/map
+                - img [ref=e35]
+                - generic [ref=e38]: 3D Maps
+              - button [ref=e39]:
+                - img
+            - generic [ref=e40]:
+              - link "Live Tracking" [ref=e41] [cursor=pointer]:
+                - /url: /dashboard/track
+                - img [ref=e42]
+                - generic [ref=e45]: Live Tracking
+              - button [ref=e46]:
+                - img
+            - generic [ref=e47]:
+              - link "811 Tickets" [ref=e48] [cursor=pointer]:
+                - /url: /811
+                - img [ref=e49]
+                - generic [ref=e51]: 811 Tickets
+              - button [ref=e52]:
+                - img
+          - generic [ref=e53]:
+            - paragraph [ref=e54]: Field Reporting
+            - generic [ref=e55]:
+              - link "Daily Reports" [ref=e56] [cursor=pointer]:
+                - /url: /dashboard/reports
+                - img [ref=e57]
+                - generic [ref=e60]: Daily Reports
+              - button [ref=e61]:
+                - img
+            - generic [ref=e62]:
+              - link "Drilling Ops" [ref=e63] [cursor=pointer]:
+                - /url: /dashboard/drilling
+                - img [ref=e64]
+                - generic [ref=e66]: Drilling Ops
+              - button [ref=e67]:
+                - img
+            - generic [ref=e68]:
+              - link "Log Rod Pass" [ref=e69] [cursor=pointer]:
+                - /url: /dashboard/rod-pass
+                - img [ref=e70]
+                - generic [ref=e72]: Log Rod Pass
+              - button [ref=e73]:
+                - img
+            - generic [ref=e74]:
+              - link "Quality Control" [ref=e75] [cursor=pointer]:
+                - /url: /dashboard/qc
+                - img [ref=e76]
+                - generic [ref=e80]: Quality Control
+              - button [ref=e81]:
+                - img
+          - generic [ref=e82]:
+            - paragraph [ref=e83]: Resources
+            - generic [ref=e84]:
+              - link "Labor" [ref=e85] [cursor=pointer]:
+                - /url: /dashboard/labor
+                - img [ref=e86]
+                - generic [ref=e91]: Labor
+              - button [ref=e92]:
+                - img
+          - paragraph [ref=e94]: Administration
+        - generic [ref=e95]:
+          - generic [ref=e96]:
+            - img [ref=e98]
+            - generic [ref=e101]:
+              - paragraph [ref=e102]: Mike "Tophand" Williams
+              - paragraph [ref=e103]: FOREMAN
+          - link "Sign Out" [ref=e104] [cursor=pointer]:
+            - /url: /api/auth/signout
+            - img [ref=e105]
+            - generic [ref=e108]: Sign Out
+    - main [ref=e109]:
+      - generic [ref=e110]:
+        - navigation "breadcrumb" [ref=e112]:
+          - list [ref=e113]:
+            - listitem [ref=e114]:
+              - link "Dashboard" [ref=e115] [cursor=pointer]:
+                - /url: /dashboard
+            - listitem [ref=e116]:
+              - img [ref=e117]
+            - listitem [ref=e119]:
+              - link "Reports" [ref=e120] [cursor=pointer]:
+                - /url: /dashboard/reports
+            - listitem [ref=e121]:
+              - img [ref=e122]
+            - listitem [ref=e124]:
+              - link "New Report" [disabled] [ref=e125]
+        - heading "New Daily Report" [level=1] [ref=e126]
+        - generic [ref=e127]:
+          - generic [ref=e128]:
+            - generic [ref=e129]:
+              - generic [ref=e130]: OFFICE IMPACT
+              - paragraph [ref=e131]: Approving this Daily Report creates timecards and equipment usage for payroll and costs.
+            - button "Explain this form" [ref=e132]:
+              - img
+              - text: Explain this form
+          - generic [ref=e133]:
+            - generic [ref=e134]:
+              - text: Project
+              - generic [ref=e135]: "*"
+            - combobox "Project *" [ref=e136]:
+              - generic: Fiber Expansion Phase 1
+              - img
+            - combobox [ref=e137]
+          - generic [ref=e138]:
+            - generic [ref=e139]:
+              - text: Date
+              - generic [ref=e140]: "*"
+            - textbox "Date *" [ref=e141]: 2035-01-18
+          - generic [ref=e142]:
+            - generic [ref=e143]: Notes
+            - textbox "Notes" [ref=e144]: E2E Test Report Notes
+          - button "Create Report" [ref=e145]
+    - region "Notifications alt+T"
+  - button [ref=e148]:
+    - img
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e154] [cursor=pointer]:
+    - generic [ref=e157]:
+      - text: Rendering
+      - generic [ref=e158]:
+        - generic [ref=e159]: .
+        - generic [ref=e160]: .
+        - generic [ref=e161]: .
+  - alert [ref=e162]
+```

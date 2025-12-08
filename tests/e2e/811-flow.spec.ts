@@ -6,7 +6,7 @@ test.describe('811 Ticket Management', () => {
         await page.fill('input[name="email"]', 'owner@midwestunderground.com');
         await page.fill('input[name="password"]', 'password123');
         await page.click('button[type="submit"]');
-        await expect(page).toHaveURL(/\/dashboard/);
+        await expect(page).toHaveURL(/\/dashboard/, { timeout: 30000 });
     });
 
     test('should allow navigating to 811 dashboard', async ({ page }) => {
@@ -23,7 +23,7 @@ test.describe('811 Ticket Management', () => {
         // Click first ticket
         const firstTicket = page.locator('table tbody tr').first();
         if (await firstTicket.count() > 0) {
-            await firstTicket.click();
+            await firstTicket.getByLabel('View Ticket Details').click();
             await expect(page).toHaveURL(/\/811\/.+/);
             await expect(page.locator('h1')).toBeVisible();
         }

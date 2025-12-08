@@ -37,27 +37,15 @@ export default async function SuperDashboard() {
         select: { hasCompletedOnboarding: true, name: true, preferences: true }
     });
 
-    // Check if profile is set up
-    let profileSetupComplete = false;
-    try {
-        const prefs = typeof currentUser?.preferences === 'string'
-            ? JSON.parse(currentUser.preferences)
-            : currentUser?.preferences || {};
-        profileSetupComplete = !!prefs.onboardingComplete;
-    } catch (e) {
-        profileSetupComplete = false;
-    }
-
     return (
         <div className="p-8 space-y-6">
             <DashboardOnboarding
                 role="SUPER"
                 hasCompletedOnboarding={currentUser?.hasCompletedOnboarding ?? false}
                 userName={currentUser?.name || ""}
-                profileSetupComplete={profileSetupComplete}
             />
             {/* UX Promise Header */}
-            <div className="bg-gradient-to-r from-[#003366] to-slate-900 p-6 rounded-lg text-white shadow-lg">
+            <div className="bg-gradient-to-r from-charcoal to-slate-900 p-6 rounded-lg text-white shadow-lg">
                 <h1 className="text-3xl font-bold uppercase tracking-tight">Superintendent Dashboard</h1>
                 <p className="text-lg opacity-90 font-medium mt-2">
                     "Keep crews productive and compliant today."
@@ -66,7 +54,7 @@ export default async function SuperDashboard() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Key Metrics */}
-                <div className="bg-white p-6 rounded-lg border-t-4 border-[#003366] shadow-sm border-x border-b border-gray-200">
+                <div className="bg-white p-6 rounded-lg border-t-4 border-charcoal shadow-sm border-x border-b border-gray-200">
                     <h3 className="text-gray-500 text-xs font-bold uppercase tracking-wider">My Projects</h3>
                     <p className="text-4xl font-extrabold text-gray-900 mt-2">{stats.myProjects}</p>
                 </div>

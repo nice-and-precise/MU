@@ -97,7 +97,7 @@ export default function TicketList({ tickets }: TicketListProps) {
                                                             </a>
                                                         </Button>
                                                     )}
-                                                    <Button variant="ghost" size="icon" asChild>
+                                                    <Button variant="ghost" size="icon" asChild aria-label="View Ticket Details">
                                                         <Link href={`/811/${ticket.id}`}>
                                                             <Eye className="h-4 w-4" />
                                                         </Link>

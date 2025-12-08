@@ -30,11 +30,11 @@ export function ShiftCard({ shift }: ShiftCardProps) {
     };
 
     return (
-        <Card className="border-l-4 border-l-[#003366] shadow-sm">
+        <Card className="border-l-4 border-charcoal shadow-sm">
             <CardHeader className="p-4 pb-2">
                 <div className="flex justify-between items-start">
                     <div>
-                        <h3 className="font-bold text-lg text-gray-900">{shift.project.name}</h3>
+                        <h3 className="font-heading uppercase tracking-tight text-lg text-gray-900">{shift.project.name}</h3>
                         <div className="text-sm text-gray-500 flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             {format(new Date(shift.startTime), 'h:mm a')} - {format(new Date(shift.endTime), 'h:mm a')}
@@ -64,6 +64,7 @@ export function ShiftCard({ shift }: ShiftCardProps) {
             <CardFooter className="p-4 pt-0 grid grid-cols-2 gap-2">
                 <Button
                     variant="outline"
+                    size="mobile"
                     className="w-full"
                     onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(shift.project.location || '')}`, '_blank')}
                 >
@@ -72,6 +73,7 @@ export function ShiftCard({ shift }: ShiftCardProps) {
 
                 {status === 'SCHEDULED' && (
                     <Button
+                        size="mobile"
                         className="w-full bg-blue-600 hover:bg-blue-700"
                         onClick={() => handleStatusUpdate('IN_PROGRESS')}
                         disabled={loading}
@@ -81,6 +83,7 @@ export function ShiftCard({ shift }: ShiftCardProps) {
                 )}
                 {status === 'IN_PROGRESS' && (
                     <Button
+                        size="mobile"
                         className="w-full bg-green-600 hover:bg-green-700"
                         onClick={() => handleStatusUpdate('COMPLETED')}
                         disabled={loading}

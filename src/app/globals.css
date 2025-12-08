@@ -4,43 +4,55 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Midwest Charcoal */
+  /* Midwest Charcoal #2A2A2A */
   --primary: oklch(0.205 0 0);
+  /* Safety Orange #FF6700 */
   --secondary: oklch(0.646 0.222 41.116);
-  /* Safety Orange #FF6700 approx */
-  --accent: oklch(0.55 0.168 256.6);
-  /* Darker Sky Blue for 4.5:1 contrast */
+  /* Sky Blue #4A90E2 */
+  --accent: oklch(0.623 0.168 256.6);
 
   --color-charcoal: #2A2A2A;
   --color-orange: #FF6700;
   --color-blue: #4A90E2;
+
   --radius: 0.625rem;
+
   --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --foreground: oklch(0.205 0 0);
+  /* Charcoal matching primary */
+
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.205 0 0);
+
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.205 0 0);
+
   --primary-foreground: oklch(0.985 0 0);
   --secondary-foreground: oklch(0.145 0 0);
-  /* Dark text on Orange */
+
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.45 0 0);
-  /* Darker for 4.5:1 contrast */
+
   --accent-foreground: oklch(0.985 0 0);
-  /* White text on Blue */
+
   --destructive: oklch(0.577 0.245 27.325);
+
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.623 0.168 256.6);
-  /* Ring matches Accent (Sky Blue) */
+  /* Matches Sky Blue */
+
   --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
+  /* Orange */
+  --chart-2: oklch(0.623 0.168 256.6);
+  /* Blue */
+  --chart-3: oklch(0.205 0 0);
+  /* Charcoal */
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
+
   --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-foreground: oklch(0.205 0 0);
   --sidebar-primary: oklch(0.205 0 0);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.97 0 0);
@@ -62,6 +74,7 @@
 
   --font-sans: var(--font-inter);
   --font-heading: var(--font-oswald);
+
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -94,11 +107,7 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Dark Slate Blue - Night Mode */
-  }
-}
+
 
 body {
   @apply bg-gray-50 dark:bg-gray-950 antialiased leading-relaxed text-base;

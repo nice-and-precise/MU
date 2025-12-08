@@ -33,7 +33,6 @@ export default function LoginPage() {
                 setIsLoading(false);
             } else {
                 router.push("/dashboard");
-                router.refresh();
             }
         } catch (error) {
             setError("An error occurred. Please try again.");
@@ -63,9 +62,11 @@ export default function LoginPage() {
                             <Label htmlFor="email">Email</Label>
                             <Input
                                 id="email"
+                                name="email"
                                 type="email"
                                 placeholder="name@midwestunderground.com"
                                 value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 required
                                 className="border-gray-300 bg-white text-black focus:border-orange focus:ring-orange"
                             />
@@ -74,8 +75,10 @@ export default function LoginPage() {
                             <Label htmlFor="password">Password</Label>
                             <Input
                                 id="password"
+                                name="password"
                                 type="password"
                                 value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                                 required
                                 className="border-gray-300 bg-white text-black focus:border-orange focus:ring-orange"
                             />

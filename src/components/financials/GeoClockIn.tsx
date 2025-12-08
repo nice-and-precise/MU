@@ -93,14 +93,17 @@ export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius,
     }, [projectLat, projectLong, employeeId, projectId, initialActiveEntry]);
 
     function handleClockAction() {
+        // GPS Missing Handling
         if (!location) {
-            alert("Waiting for GPS location...");
-            return;
+            const confirm = window.confirm("GPS location is not available. Clock in manually with 'No Location'?");
+            if (!confirm) return;
+            // Proceed with 0,0 location
         }
 
-        const isGeofenced = distance !== null && distance <= geofenceRadius;
+        const isGeofenced = location && distance !== null && distance <= geofenceRadius;
 
-        if (!isGeofenced) {
+        // If we have location but are outside fence, warn
+        if (location && !isGeofenced) {
             const confirm = window.confirm(`You are ${Math.round(distance || 0)}ft away from the project center (Limit: ${geofenceRadius}ft). Clock in anyway?`);
             if (!confirm) return;
         }
@@ -133,8 +136,8 @@ export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius,
                 const res = await clockIn({
                     employeeId,
                     projectId,
-                    lat: location!.lat,
-                    long: location!.long,
+                    lat: location ? location.lat : 0,
+                    long: location ? location.long : 0,
                     type: "WORK"
                 });
 
@@ -167,8 +170,8 @@ export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius,
             try {
                 const res = await clockOut({
                     employeeId,
-                    lat: location!.lat,
-                    long: location!.long
+                    lat: location ? location.lat : 0,
+                    long: location ? location.long : 0
                 });
 
                 if (res.success) {
