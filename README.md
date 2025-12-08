@@ -1,7 +1,7 @@
 # Midwest Underground (MU) | Digital Operations Platform
 
-![Deployment Status](https://img.shields.io/badge/Deployment-Live-success?style=for-the-badge&logo=vercel)
-![Version](https://img.shields.io/badge/Version-0.3.0--beta-blue?style=for-the-badge)
+![Deployment Status](https://img.shields.io/badge/Deployment-Demo_Ready-success?style=for-the-badge&logo=vercel)
+![Version](https://img.shields.io/badge/Version-0.3.1--RC-blue?style=for-the-badge)
 ![Tech Stack](https://img.shields.io/badge/Stack-Next.js_15_|_Prisma_|_Postgres-black?style=for-the-badge&logo=next.js)
 
 > **The Operating System for Horizontal Directional Drilling (HDD).**

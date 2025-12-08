@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { FinancialsService } from './financials';
 
 export const CloseoutService = {
     getProjectSummary: async (projectId: string) => {
@@ -29,6 +30,9 @@ export const CloseoutService = {
             .reduce((sum, co) => sum + (co.budgetImpact || 0), 0);
         const currentBudget = (project.budget || 0) + approvedCOs;
 
+        // Get detailed financials for analytics
+        const detailedFinancials = await FinancialsService.getProjectFinancials(projectId);
+
         // Production
         const totalFootage = bores.reduce((sum, bore) => sum + (bore.totalLength || 0), 0);
         const activeBores = bores.filter(b => b.status === 'DRILLING').length;
@@ -38,6 +42,7 @@ export const CloseoutService = {
 
         return {
             financials: {
+                ...detailedFinancials,
                 budget: currentBudget,
                 invoiced: totalInvoiced,
                 percentBilled: currentBudget > 0 ? (totalInvoiced / currentBudget) * 100 : 0
