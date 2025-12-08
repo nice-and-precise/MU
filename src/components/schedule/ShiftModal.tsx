@@ -11,12 +11,25 @@ import { Shift, Crew, Employee, Project } from '@prisma/client';
 import { useRouter } from 'next/navigation';
 import { Loader2, Trash2 } from 'lucide-react';
 
+interface SafeEmployee extends Omit<Employee, 'hourlyRate' | 'burdenRate' | 'salary' | 'ssn' | 'defaultOvertimeMultiplier' | 'doubleTimeMultiplier' | 'doubleTimeDailyThreshold' | 'qboEmployeeId' | 'adpEmployeeId' | 'defaultEarningCode'> {
+    hourlyRate?: number | null;
+    burdenRate?: number | null;
+    salary?: number | null;
+    ssn?: string | null;
+    defaultOvertimeMultiplier?: number | null;
+    doubleTimeMultiplier?: number | null;
+    doubleTimeDailyThreshold?: number | null;
+    qboEmployeeId?: string | null;
+    adpEmployeeId?: string | null;
+    defaultEarningCode?: string | null;
+}
+
 interface ShiftModalProps {
     isOpen: boolean;
     onClose: () => void;
     shift: Shift | null;
     crews: Crew[];
-    employees: Employee[];
+    employees: SafeEmployee[];
     projects: Project[];
 }
 

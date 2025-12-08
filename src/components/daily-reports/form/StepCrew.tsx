@@ -12,6 +12,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { getRecentProjectReport } from '@/actions/reports';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { CostCodeSelect } from './CostCodeSelect';
 
 interface StepCrewProps {
     employees: any[];
@@ -94,7 +95,7 @@ export function StepCrew({ employees, projectId }: StepCrewProps) {
                     {fields.map((field, index) => (
                         <Card key={field.id} className="bg-slate-50">
                             <CardContent className="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-                                <div className="md:col-span-5">
+                                <div className="md:col-span-4">
                                     <FormLayout
                                         name={`crew.${index}.employeeId`}
                                         label="Employee"
@@ -126,7 +127,7 @@ export function StepCrew({ employees, projectId }: StepCrewProps) {
                                         )}
                                     />
                                 </div>
-                                <div className="md:col-span-3">
+                                <div className="md:col-span-2">
                                     <FormLayout
                                         name={`crew.${index}.role`}
                                         label="Role"
@@ -134,7 +135,7 @@ export function StepCrew({ employees, projectId }: StepCrewProps) {
                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl>
                                                     <SelectTrigger>
-                                                        <SelectValue placeholder="Select Role" />
+                                                        <SelectValue placeholder="Role" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
@@ -147,7 +148,19 @@ export function StepCrew({ employees, projectId }: StepCrewProps) {
                                         )}
                                     />
                                 </div>
-                                <div className="md:col-span-3">
+                                <div className="md:col-span-4">
+                                    <FormLayout
+                                        name={`crew.${index}.costItemId`}
+                                        label="Cost Code"
+                                        children={(field) => (
+                                            <CostCodeSelect
+                                                value={field.value}
+                                                onChange={(val) => field.onChange(val)}
+                                            />
+                                        )}
+                                    />
+                                </div>
+                                <div className="md:col-span-2">
                                     <FormLayout
                                         name={`crew.${index}.hours`}
                                         label="Hours"

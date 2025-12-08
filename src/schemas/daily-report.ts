@@ -6,6 +6,7 @@ export const CrewMemberSchema = z.object({
     employeeId: z.string().min(1, "Select an employee"),
     hours: z.coerce.number().min(0, "Enter hours"),
     role: z.string().min(1, "Select a role"),
+    costItemId: z.string().optional(),
 });
 
 export const ProductionLogSchema = z.object({
@@ -13,16 +14,19 @@ export const ProductionLogSchema = z.object({
     lf: z.coerce.number().min(0, "Enter footage"),
     pitch: z.coerce.number().optional(),
     azimuth: z.coerce.number().optional(),
+    costItemId: z.string().optional(),
 });
 
 export const MaterialUsageSchema = z.object({
     inventoryItemId: z.string().min(1, "Select item"),
     quantity: z.coerce.number().min(0, "Enter quantity"),
+    costItemId: z.string().optional(),
 });
 
 export const EquipmentUsageSchema = z.object({
     assetId: z.string().min(1, "Select asset"),
     hours: z.coerce.number().min(0, "Enter hours"),
+    costItemId: z.string().optional(),
 });
 
 // --- Main Schemas ---

@@ -57,11 +57,8 @@ export class DailyReportService {
                 reportDate: new Date(reportDate),
                 notes,
                 createdById: userId,
+                createdById: userId,
                 status: "DRAFT",
-                crew: "[]", // Initialize empty JSON for legacy compatibility
-                production: "[]",
-                materials: "[]",
-                equipment: "[]",
             },
         });
 
@@ -85,6 +82,7 @@ export class DailyReportService {
                             hours: member.hours,
                             type: LaborType.REGULAR, // Defaulting to REGULAR for now
                             costCode: member.role, // Storing role in costCode as per migration strategy
+                            costItemId: member.costItemId,
                         }
                     });
                 }
@@ -99,6 +97,7 @@ export class DailyReportService {
                             dailyReportId: id,
                             assetId: eq.assetId,
                             hours: eq.hours,
+                            costItemId: eq.costItemId,
                         }
                     });
                 }
@@ -126,7 +125,8 @@ export class DailyReportService {
                             inventoryItemId: mat.inventoryItemId,
                             quantity: mat.quantity,
                             name: item?.name || "Unknown",
-                            unit: unit
+                            unit: unit,
+                            costItemId: mat.costItemId,
                         }
                     });
                 }
@@ -146,6 +146,7 @@ export class DailyReportService {
                             quantity: prod.lf,
                             unit: MeasurementUnit.FT,
                             description: descParts.join(', '),
+                            costItemId: prod.costItemId,
                         }
                     });
                 }
@@ -155,10 +156,6 @@ export class DailyReportService {
             const updated = await tx.dailyReport.update({
                 where: { id },
                 data: {
-                    crew: data.crew ? JSON.stringify(data.crew) : undefined,
-                    production: data.production ? JSON.stringify(data.production) : undefined,
-                    materials: data.materials ? JSON.stringify(data.materials) : undefined,
-                    equipment: data.equipment ? JSON.stringify(data.equipment) : undefined,
                     weather: data.weather,
                     notes: data.notes,
                 },
@@ -205,6 +202,14 @@ export class DailyReportService {
             throw new Error("Report is already approved");
         }
 
+        // Validation: Enforce Cost Codes (ER-P Spine)
+        const missingLaborCost = report.laborEntries.filter(e => !e.costItemId && e.hours > 0);
+        const missingEquipmentCost = report.equipmentEntries.filter(e => !e.costItemId && e.hours > 0);
+
+        if (missingLaborCost.length > 0 || missingEquipmentCost.length > 0) {
+            throw new Error(`Cannot approve report. Missing Cost Codes for ${missingLaborCost.length} labor entries and ${missingEquipmentCost.length} equipment entries.`);
+        }
+
         await prisma.$transaction(async (tx) => {
             // 1. Deduct Inventory (Use materialEntries)
             for (const mat of report.materialEntries) {
@@ -241,7 +246,8 @@ export class DailyReportService {
                             endTime: new Date(report.reportDate.getTime() + member.hours * 60 * 60 * 1000),
                             type: 'WORK',
                             status: 'APPROVED',
-                            description: `Daily Report: ${member.costCode || 'Worker'}` // Use costCode as Role
+                            description: `Daily Report: ${member.costCode || 'Worker'}`, // Use costCode as Role
+                            costItemId: member.costItemId
                         }
                     });
                 }
@@ -256,7 +262,8 @@ export class DailyReportService {
                             projectId: report.projectId,
                             date: report.reportDate,
                             hours: eq.hours,
-                            notes: 'Logged via Daily Report'
+                            notes: 'Logged via Daily Report',
+                            costItemId: eq.costItemId
                         }
                     });
                 }

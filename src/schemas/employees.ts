@@ -20,6 +20,7 @@ export const CreateEmployeeSchema = z.object({
     payType: z.enum(['HOURLY', 'SALARY']).default('HOURLY'),
     paySchedule: z.enum(['WEEKLY', 'BIWEEKLY', 'SEMIMONTHLY', 'MONTHLY']).default('WEEKLY'),
     hourlyRate: z.number().min(0).default(0),
+    burdenRate: z.number().min(0).default(0),
     salary: z.number().optional().nullable(),
     overtimeRule: z.string().optional().nullable(),
     defaultOvertimeMultiplier: z.number().default(1.5),

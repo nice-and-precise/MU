@@ -6,9 +6,33 @@ import { CreateEmployeeSchema, UpdateEmployeeSchema } from '@/schemas/employees'
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+
 export const getEmployees = authenticatedActionNoInput(
     async () => {
-        return await EmployeeService.getEmployees();
+        const session = await getServerSession(authOptions);
+        const isOwner = session?.user?.role === "OWNER";
+        const employees = await EmployeeService.getEmployees();
+
+        if (isOwner) {
+            return employees;
+        }
+
+        // Strip sensitive data for non-owners
+        return employees.map(emp => ({
+            ...emp,
+            hourlyRate: null,
+            burdenRate: null,
+            salary: null,
+            ssn: null,
+            defaultEarningCode: null,
+            qboEmployeeId: null,
+            adpEmployeeId: null,
+            doubleTimeMultiplier: null,
+            defaultOvertimeMultiplier: null,
+            doubleTimeDailyThreshold: null
+        }));
     }
 );
 
@@ -21,7 +45,11 @@ export const getEmployee = authenticatedAction(
 
 export const createEmployee = authenticatedAction(
     CreateEmployeeSchema,
-    async (data) => {
+    async (data, userId) => {
+        const session = await getServerSession(authOptions);
+        if (session?.user?.role !== "OWNER") {
+            throw new Error("Unauthorized: Only Owners can create employees.");
+        }
         const employee = await EmployeeService.createEmployee(data);
         revalidatePath('/dashboard/labor');
         return employee;
@@ -34,6 +62,10 @@ export const updateEmployee = authenticatedAction(
         data: UpdateEmployeeSchema
     }),
     async ({ id, data }) => {
+        const session = await getServerSession(authOptions);
+        if (session?.user?.role !== "OWNER") {
+            throw new Error("Unauthorized: Only Owners can update employees.");
+        }
         const employee = await EmployeeService.updateEmployee(id, data);
         revalidatePath('/dashboard/labor');
         revalidatePath(`/dashboard/labor/${id}`);
@@ -44,6 +76,10 @@ export const updateEmployee = authenticatedAction(
 export const deleteEmployee = authenticatedAction(
     z.string(),
     async (id) => {
+        const session = await getServerSession(authOptions);
+        if (session?.user?.role !== "OWNER") {
+            throw new Error("Unauthorized: Only Owners can delete employees.");
+        }
         await EmployeeService.deleteEmployee(id);
         revalidatePath('/dashboard/labor');
         return { success: true };

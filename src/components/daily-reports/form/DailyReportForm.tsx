@@ -51,69 +51,50 @@ export default function DailyReportForm({
     // Parse initial data from Relational Tables (preferred) or Legacy JSON (fallback)
 
     // Labor / Crew
-    const crew: CrewMember[] = report.laborEntries?.length > 0
-        ? report.laborEntries.map((l: any) => ({
-            employeeId: String(l.employeeId),
-            role: String(l.costCode || 'Labor'), // Mapping costCode back to role
-            hours: Number(l.hours || 0)
-        }))
-        : (report.crew ? (JSON.parse(report.crew) as any[]).map((c: any) => ({
-            employeeId: String(c.employeeId),
-            role: String(c.role || 'Labor'),
-            hours: Number(c.hours || 0)
-        })) : []);
+    const crew: CrewMember[] = report.laborEntries?.map((l: any) => ({
+        employeeId: String(l.employeeId),
+        role: String(l.costCode || 'Labor'),
+        hours: Number(l.hours || 0),
+        costItemId: l.costItemId
+    })) || [];
 
     // Production
-    const production: ProductionLog[] = report.productionEntries?.length > 0
-        ? report.productionEntries.map((p: any) => {
-            // Parse description for Activity, Pitch, Azimuth
-            // Format: "Activity, Pitch: X, Az: Y"
-            const parts = (p.description || '').split(',').map((s: string) => s.trim());
-            const activity = parts[0] || 'Drill';
+    const production: ProductionLog[] = report.productionEntries?.map((p: any) => {
+        // Parse description for Activity, Pitch, Azimuth
+        // Format: "Activity, Pitch: X, Az: Y"
+        const parts = (p.description || '').split(',').map((s: string) => s.trim());
+        const activity = parts[0] || 'Drill';
 
-            let pitch = 0;
-            let azimuth = 0;
+        let pitch = 0;
+        let azimuth = 0;
 
-            parts.forEach((part: string) => {
-                if (part.startsWith('Pitch:')) pitch = Number(part.replace('Pitch:', '').trim());
-                if (part.startsWith('Az:')) azimuth = Number(part.replace('Az:', '').trim());
-            });
+        parts.forEach((part: string) => {
+            if (part.startsWith('Pitch:')) pitch = Number(part.replace('Pitch:', '').trim());
+            if (part.startsWith('Az:')) azimuth = Number(part.replace('Az:', '').trim());
+        });
 
-            return {
-                activity,
-                lf: Number(p.quantity || 0),
-                pitch,
-                azimuth
-            };
-        })
-        : (report.production ? (JSON.parse(report.production) as any[]).map((p: any) => ({
-            activity: String(p.activity || 'Drill'),
-            lf: Number(p.lf || 0),
-            pitch: Number(p.pitch || 0),
-            azimuth: Number(p.azimuth || 0)
-        })) : []);
+        return {
+            activity,
+            lf: Number(p.quantity || 0),
+            pitch,
+            azimuth,
+            costItemId: p.costItemId
+        };
+    }) || [];
 
     // Materials
-    const materials: MaterialUsage[] = report.materialEntries?.length > 0
-        ? report.materialEntries.map((m: any) => ({
-            inventoryItemId: String(m.inventoryItemId),
-            quantity: Number(m.quantity || 0)
-        }))
-        : (report.materials ? (JSON.parse(report.materials) as any[]).map((m: any) => ({
-            inventoryItemId: String(m.inventoryItemId),
-            quantity: Number(m.quantity || 0)
-        })) : []);
+    const materials: MaterialUsage[] = report.materialEntries?.map((m: any) => ({
+        inventoryItemId: String(m.inventoryItemId),
+        quantity: Number(m.quantity || 0),
+        costItemId: m.costItemId
+    })) || [];
 
     // Equipment
-    const equipment: EquipmentUsage[] = report.equipmentEntries?.length > 0
-        ? report.equipmentEntries.map((e: any) => ({
-            assetId: String(e.assetId),
-            hours: Number(e.hours || 0)
-        }))
-        : (report.equipment ? (JSON.parse(report.equipment) as any[]).map((e: any) => ({
-            assetId: String(e.assetId),
-            hours: Number(e.hours || 0)
-        })) : []);
+    const equipment: EquipmentUsage[] = report.equipmentEntries?.map((e: any) => ({
+        assetId: String(e.assetId),
+        hours: Number(e.hours || 0),
+        costItemId: e.costItemId
+    })) || [];
 
     const defaultValues: Partial<UpdateDailyReportInput> = {
         weather: report.weather || '',

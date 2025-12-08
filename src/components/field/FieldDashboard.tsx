@@ -14,6 +14,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
+import { SyncManager } from "@/lib/sync-manager";
+import { OfflineQueue } from "@/lib/offline-queue";
 
 interface FieldDashboardProps {
     userRole: "Foreman" | "Operator" | "Laborer";
@@ -57,6 +59,27 @@ export function FieldDashboard({
         production: false,
         clockOut: false
     });
+
+    // Sync Manager Trigger
+    React.useEffect(() => {
+        const handleOnline = () => {
+            console.log("Network detected. Attempting sync...");
+            toast.info("Back online. Syncing data...");
+            SyncManager.sync();
+        };
+
+        window.addEventListener('online', handleOnline);
+
+        // Also try to sync on mount if online and has pending items
+        if (typeof window !== 'undefined' && navigator.onLine) {
+            const pending = OfflineQueue.getPendingCount();
+            if (pending > 0) {
+                handleOnline();
+            }
+        }
+
+        return () => window.removeEventListener('online', handleOnline);
+    }, []);
 
     const handleChecklistAction = (key: keyof typeof checklist) => {
         // In a real app, this would check status or navigate

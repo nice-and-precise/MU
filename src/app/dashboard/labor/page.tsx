@@ -1,7 +1,12 @@
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import { getEmployees } from "@/actions/employees";
 import EmployeeDirectory from "@/components/labor/EmployeeDirectory";
 
 export default async function LaborPage() {
+    const session = await getServerSession(authOptions);
+    const userRole = session?.user?.role || "CREW";
+
     const res = await getEmployees();
     const data = res.success ? res.data : [];
     const employees = data || [];
@@ -13,7 +18,7 @@ export default async function LaborPage() {
                 <p className="text-gray-500">Manage employees, crews, and rates.</p>
             </div>
 
-            <EmployeeDirectory employees={employees} />
+            <EmployeeDirectory employees={employees} userRole={userRole} />
         </div>
     );
 }

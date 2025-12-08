@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { UpdateDailyReportInput } from '@/schemas/daily-report';
 import { Plus, Trash2, Truck } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { CostCodeSelect } from './CostCodeSelect';
 
 interface StepEquipmentProps {
     assets: any[];
@@ -40,7 +41,7 @@ export function StepEquipment({ assets }: StepEquipmentProps) {
                     {fields.map((field, index) => (
                         <Card key={field.id} className="bg-slate-50">
                             <CardContent className="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-                                <div className="md:col-span-8">
+                                <div className="md:col-span-5">
                                     <FormLayout
                                         name={`equipment.${index}.assetId`}
                                         label="Asset"
@@ -62,7 +63,19 @@ export function StepEquipment({ assets }: StepEquipmentProps) {
                                         )}
                                     />
                                 </div>
-                                <div className="md:col-span-3">
+                                <div className="md:col-span-4">
+                                    <FormLayout
+                                        name={`equipment.${index}.costItemId`}
+                                        label="Cost Code"
+                                        children={(field) => (
+                                            <CostCodeSelect
+                                                value={field.value}
+                                                onChange={(val) => field.onChange(val)}
+                                            />
+                                        )}
+                                    />
+                                </div>
+                                <div className="md:col-span-2">
                                     <FormLayout
                                         name={`equipment.${index}.hours`}
                                         label="Hours"

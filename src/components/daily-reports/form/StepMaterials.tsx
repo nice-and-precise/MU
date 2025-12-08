@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { UpdateDailyReportInput } from '@/schemas/daily-report';
 import { Plus, Trash2, Package } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { CostCodeSelect } from './CostCodeSelect';
 
 interface StepMaterialsProps {
     inventoryItems: any[];
@@ -40,7 +41,7 @@ export function StepMaterials({ inventoryItems }: StepMaterialsProps) {
                     {fields.map((field, index) => (
                         <Card key={field.id} className="bg-slate-50">
                             <CardContent className="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-                                <div className="md:col-span-8">
+                                <div className="md:col-span-5">
                                     <FormLayout
                                         name={`materials.${index}.inventoryItemId`}
                                         label="Item"
@@ -62,7 +63,19 @@ export function StepMaterials({ inventoryItems }: StepMaterialsProps) {
                                         )}
                                     />
                                 </div>
-                                <div className="md:col-span-3">
+                                <div className="md:col-span-4">
+                                    <FormLayout
+                                        name={`materials.${index}.costItemId`}
+                                        label="Cost Code"
+                                        children={(field) => (
+                                            <CostCodeSelect
+                                                value={field.value}
+                                                onChange={(val) => field.onChange(val)}
+                                            />
+                                        )}
+                                    />
+                                </div>
+                                <div className="md:col-span-2">
                                     <FormLayout
                                         name={`materials.${index}.quantity`}
                                         label="Quantity Used"

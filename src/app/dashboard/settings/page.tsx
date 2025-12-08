@@ -2,12 +2,18 @@ import { getEmployees } from "@/actions/employees";
 import { getUserPreferences } from "@/actions/user";
 import { getAuditLogs } from "@/actions/audit";
 import { SettingsView } from "./settings-view";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export default async function SettingsPage() {
+    const session = await getServerSession(authOptions);
+    const userRole = session?.user?.role || "CREW";
+    const isOwner = userRole === "OWNER";
+
     const [empRes, prefRes, auditRes] = await Promise.all([
         getEmployees(),
         getUserPreferences(),
-        getAuditLogs({ limit: 50 })
+        isOwner ? getAuditLogs({ limit: 50 }) : Promise.resolve({ success: true, data: [] })
     ]);
 
     const data = empRes.success ? empRes.data : [];
@@ -21,6 +27,7 @@ export default async function SettingsPage() {
             initialEmployees={employees}
             preferences={preferences}
             initialAuditLogs={auditLogs}
+            userRole={userRole}
         />
     );
 }

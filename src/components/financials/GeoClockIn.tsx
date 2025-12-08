@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Clock, AlertTriangle, Loader2 } from "lucide-react";
 import { InspectionChecklist } from "@/components/field/InspectionChecklist";
 import { clockIn, clockOut, getClockStatus } from "@/actions/time";
+import { OfflineQueue } from "@/lib/offline-queue";
+import { toast } from "sonner";
 
 // Haversine formula to calculate distance in feet
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
@@ -114,6 +116,19 @@ export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius,
 
     function performClockIn() {
         startTransition(async () => {
+            if (!navigator.onLine) {
+                OfflineQueue.add('TIME_CLOCK_IN', {
+                    employeeId,
+                    projectId,
+                    lat: location ? location.lat : 0,
+                    long: location ? location.long : 0,
+                    type: "WORK"
+                });
+                setStatus("IN");
+                toast.success("Offline: Clock In queued");
+                return;
+            }
+
             try {
                 const res = await clockIn({
                     employeeId,
@@ -125,19 +140,30 @@ export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius,
 
                 if (res.success) {
                     setStatus("IN");
-                    alert("Clocked IN!");
+                    toast.success("Clocked IN!");
                 } else {
-                    alert("Failed to clock in: " + res.error);
+                    toast.error("Failed to clock in: " + res.error);
                 }
             } catch (e) {
                 console.error(e);
-                alert("Error clocking in");
+                toast.error("Error clocking in");
             }
         });
     }
 
     function performClockOut() {
         startTransition(async () => {
+            if (!navigator.onLine) {
+                OfflineQueue.add('TIME_CLOCK_OUT', {
+                    employeeId,
+                    lat: location ? location.lat : 0,
+                    long: location ? location.long : 0
+                });
+                setStatus("OUT");
+                toast.success("Offline: Clock Out queued");
+                return;
+            }
+
             try {
                 const res = await clockOut({
                     employeeId,
@@ -147,13 +173,13 @@ export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius,
 
                 if (res.success) {
                     setStatus("OUT");
-                    alert("Clocked OUT!");
+                    toast.success("Clocked OUT!");
                 } else {
-                    alert("Failed to clock out: " + res.error);
+                    toast.error("Failed to clock out: " + res.error);
                 }
             } catch (e) {
                 console.error(e);
-                alert("Error clocking out");
+                toast.error("Error clocking out");
             }
         });
     }

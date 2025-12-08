@@ -82,6 +82,7 @@ model User {
 
   whiteLiningSnapshots  WhiteLiningSnapshot[]
   complianceEvents      ComplianceEvent[]
+  auditEvents           AuditEvent[]
 
   @@index([email])
   @@index([role])
@@ -177,6 +178,7 @@ model Bore {
   rfis            RFI[]
   rodPasses       RodPass[]
   telemetryLogs   TelemetryLog[]
+  dailyReportProductions DailyReportProduction[]
 
   @@index([projectId])
   @@index([status])
@@ -258,11 +260,7 @@ model DailyReport {
   id          String        @id @default(cuid())
   projectId   String
   reportDate  DateTime
-  crew        String
-  production  String        @default("[]")
-  labor       String        @default("[]")
-  equipment   String        @default("[]")
-  materials   String        @default("[]")
+
   weather     String?
   notes       String?
   photos      String        @default("[]")
@@ -647,6 +645,12 @@ model CostItem {
   updatedAt      DateTime       @updatedAt
   category       CostCategory   @relation(fields: [categoryId], references: [id])
   estimateLines  EstimateLine[]
+  dailyReportLabors DailyReportLabor[]
+  dailyReportEquipments DailyReportEquipment[]
+  dailyReportProductions DailyReportProduction[]
+  dailyReportMaterials DailyReportMaterial[]
+  timeEntries          TimeEntry[]
+  equipmentUsage       EquipmentUsage[]
 
   @@index([categoryId])
   @@index([code])
@@ -795,6 +799,7 @@ model InventoryItem {
   createdAt      DateTime               @default(now())
   updatedAt      DateTime               @updatedAt
   transactions   InventoryTransaction[]
+  dailyReportMaterials DailyReportMaterial[]
 }
 
 model InventoryTransaction {
@@ -856,6 +861,7 @@ model Asset {
   inspections     Inspection[]
   jobAssets       JobAsset[]
   shiftAssignments ShiftAsset[]
+  dailyReportEquipments DailyReportEquipment[]
 
   @@index([projectId])
   @@index([status])
@@ -888,11 +894,14 @@ model EquipmentUsage {
   notes     String?
   employeeId String?
   employee   Employee? @relation(fields: [employeeId], references: [id])
+  costItemId String?
+  costItem   CostItem? @relation(fields: [costItemId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([assetId])
   @@index([projectId])
+  @@index([costItemId])
 }
 
 model SafetyMeeting {
@@ -1027,10 +1036,12 @@ model Employee {
   payType                 String     @default("HOURLY") // HOURLY, SALARY
   paySchedule             String     @default("WEEKLY") // WEEKLY, BIWEEKLY, SEMIMONTHLY, MONTHLY
   hourlyRate              Float      @default(0)
+  burdenRate              Float?     @default(0)
   salary                  Float?
   overtimeRule            String?    // "OVER_40_WEEK", "OVER_8_DAY", "UNION_X"
   defaultOvertimeMultiplier Float    @default(1.5)
   doubleTimeMultiplier    Float      @default(2.0)
+  doubleTimeDailyThreshold Float     @default(12) // Hours per day to trigger DT
   
   taxStatus               String?    // W-4 Single, etc.
   primaryState            String?    // MN, ND, etc.
@@ -1061,6 +1072,8 @@ model Employee {
   
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
+  
+  dailyReportLabors DailyReportLabor[]
 }
 
 model EmploymentStatusHistory {
@@ -1116,6 +1129,8 @@ model TimeEntry {
   
   type        String    @default("WORK") // WORK, TRAVEL, BREAK
   description String?
+  costItemId  String?
+  costItem    CostItem? @relation(fields: [costItemId], references: [id])
   
   status      String    @default("PENDING") // PENDING, APPROVED, REJECTED
   
@@ -1125,6 +1140,7 @@ model TimeEntry {
   @@index([employeeId])
   @@index([projectId])
   @@index([startTime])
+  @@index([costItemId])
   @@index([employeeId, startTime])
 }
 
@@ -1468,3 +1484,126 @@ model ScheduleTemplate {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+enum MeasurementUnit {
+  FT
+  EA
+  HR
+  LS
+}
+
+enum LaborType {
+  REGULAR
+  OVERTIME
+  DOUBLE_TIME
+  TRAVEL
+}
+
+// --- New ERP Models ---
+
+model DailyReportLabor {
+  id            String      @id @default(cuid())
+  dailyReportId String
+  dailyReport   DailyReport @relation(fields: [dailyReportId], references: [id], onDelete: Cascade)
+  employeeId    String
+  employee      Employee    @relation(fields: [employeeId], references: [id])
+  hours         Float
+  type          LaborType   @default(REGULAR)
+  costCode      String?
+  costItemId    String?
+  costItem      CostItem?   @relation(fields: [costItemId], references: [id])
+  notes         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([dailyReportId])
+  @@index([employeeId])
+  @@index([costItemId])
+}
+
+model DailyReportEquipment {
+  id            String      @id @default(cuid())
+  dailyReportId String
+  dailyReport   DailyReport @relation(fields: [dailyReportId], references: [id], onDelete: Cascade)
+  assetId       String
+  asset         Asset       @relation(fields: [assetId], references: [id])
+  hours         Float
+  costCode      String?
+  costItemId    String?
+  costItem      CostItem?   @relation(fields: [costItemId], references: [id])
+  curReading    Float? // Odometer/Hours reading
+  notes         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([dailyReportId])
+  @@index([assetId])
+  @@index([costItemId])
+}
+
+model DailyReportProduction {
+  id            String      @id @default(cuid())
+  dailyReportId String
+  dailyReport   DailyReport @relation(fields: [dailyReportId], references: [id], onDelete: Cascade)
+  boreId        String?
+  bore          Bore?       @relation(fields: [boreId], references: [id])
+
+  quantity    Float
+  unit        MeasurementUnit
+  description String // e.g. "Installed 4in duct"
+
+  costCode   String?
+  costItemId String?
+  costItem   CostItem? @relation(fields: [costItemId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([dailyReportId])
+  @@index([boreId])
+  @@index([costItemId])
+}
+
+model DailyReportMaterial {
+  id            String      @id @default(cuid())
+  dailyReportId String
+  dailyReport   DailyReport @relation(fields: [dailyReportId], references: [id], onDelete: Cascade)
+
+  name     String
+  quantity Float
+  unit     MeasurementUnit
+
+  inventoryItemId String?
+  inventoryItem   InventoryItem? @relation(fields: [inventoryItemId], references: [id])
+
+  costItemId String?
+  costItem   CostItem? @relation(fields: [costItemId], references: [id])
+
+  cost  Float?
+  notes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([dailyReportId])
+  @@index([inventoryItemId])
+  @@index([costItemId])
+}
+
+model AuditEvent {
+  id         String      @id @default(cuid())
+  action     AuditAction
+  entityType String // DailyReport, TimeEntry, etc.
+  entityId   String
+  actorId    String
+  actor      User        @relation(fields: [actorId], references: [id])
+
+  metadata String? // JSON details of diff/changes
+
+  createdAt DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([actorId])
+  @@index([createdAt])
+}
+

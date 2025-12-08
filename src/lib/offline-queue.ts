@@ -1,6 +1,6 @@
 export interface QueuedRequest {
     id: string;
-    type: 'ROD_PASS' | 'DAILY_REPORT';
+    type: 'ROD_PASS' | 'DAILY_REPORT' | 'TIME_CLOCK_IN' | 'TIME_CLOCK_OUT';
     payload: any;
     timestamp: number;
     status: 'PENDING' | 'SYNCED' | 'FAILED';
@@ -15,7 +15,7 @@ export const OfflineQueue = {
         return raw ? JSON.parse(raw) : [];
     },
 
-    add: (type: 'ROD_PASS' | 'DAILY_REPORT', payload: any) => {
+    add: (type: 'ROD_PASS' | 'DAILY_REPORT' | 'TIME_CLOCK_IN' | 'TIME_CLOCK_OUT', payload: any) => {
         const queue = OfflineQueue.getAll();
         const request: QueuedRequest = {
             id: crypto.randomUUID(),
@@ -40,5 +40,10 @@ export const OfflineQueue = {
 
     getPendingCount: () => {
         return OfflineQueue.getAll().filter(i => i.status === 'PENDING').length;
+    },
+
+    removeMany: (ids: string[]) => {
+        const queue = OfflineQueue.getAll().filter(item => !ids.includes(item.id));
+        localStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
     }
 };

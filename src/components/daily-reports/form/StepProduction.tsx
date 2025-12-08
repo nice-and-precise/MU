@@ -10,6 +10,7 @@ import { UpdateDailyReportInput } from '@/schemas/daily-report';
 import { Plus, Trash2, ClipboardList, BookTemplate } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { CostCodeSelect } from './CostCodeSelect';
 
 export function StepProduction() {
     const { control } = useFormContext<UpdateDailyReportInput>();
@@ -88,10 +89,22 @@ export function StepProduction() {
                                         )}
                                     />
                                 </div>
+                                <div className="md:col-span-3">
+                                    <FormLayout
+                                        name={`production.${index}.costItemId`}
+                                        label="Cost Code"
+                                        children={(field) => (
+                                            <CostCodeSelect
+                                                value={field.value}
+                                                onChange={(val) => field.onChange(val)}
+                                            />
+                                        )}
+                                    />
+                                </div>
                                 <div className="md:col-span-2">
                                     <FormLayout
                                         name={`production.${index}.lf`}
-                                        label="Footage (LF)"
+                                        label="Footage"
                                         children={(field) => (
                                             <Input
                                                 type="number"
@@ -105,7 +118,7 @@ export function StepProduction() {
                                 <div className="md:col-span-2">
                                     <FormLayout
                                         name={`production.${index}.pitch`}
-                                        label="Pitch (%)"
+                                        label="Pitch"
                                         children={(field) => (
                                             <Input
                                                 type="number"
@@ -115,10 +128,10 @@ export function StepProduction() {
                                         )}
                                     />
                                 </div>
-                                <div className="md:col-span-2">
+                                <div className="md:col-span-1">
                                     <FormLayout
                                         name={`production.${index}.azimuth`}
-                                        label="Azimuth"
+                                        label="Az"
                                         children={(field) => (
                                             <Input
                                                 type="number"
@@ -128,12 +141,7 @@ export function StepProduction() {
                                         )}
                                     />
                                 </div>
-
-                                <div className="md:col-span-3"> {/* Spacer/Extra if needed, currently 12 cols total used: 3+2+2+2 = 9. Wait, 12 - 9 = 3 remainder for correct layout. Actually 3+2+2+2 = 9. Let's make button take 1 col and stretch the first one? */}
-                                    {/* Re-aligning: Activity 3, LF 3, Pitch 2, Nazi 2, Delete 1? */}
-                                </div>
-
-                                <div className="md:col-span-12 lg:col-span-1 flex justify-end">
+                                <div className="md:col-span-1 flex justify-end">
                                     <Button variant="ghost" size="icon" onClick={() => remove(index)}>
                                         <Trash2 className="w-4 h-4 text-red-500" />
                                     </Button>

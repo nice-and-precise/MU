@@ -13,7 +13,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { AuditLogViewer } from "@/components/settings/AuditLogViewer";
 
-type EmployeeWithRelations = Employee & {
+type SafeEmployee = Omit<Employee, 'hourlyRate' | 'burdenRate' | 'salary' | 'ssn' | 'defaultOvertimeMultiplier' | 'doubleTimeMultiplier' | 'doubleTimeDailyThreshold' | 'qboEmployeeId' | 'adpEmployeeId' | 'defaultEarningCode'> & {
+    hourlyRate?: number | null;
+    burdenRate?: number | null;
+    salary?: number | null;
+    ssn?: string | null;
+    defaultOvertimeMultiplier?: number | null;
+    doubleTimeMultiplier?: number | null;
+    doubleTimeDailyThreshold?: number | null;
+    qboEmployeeId?: string | null;
+    adpEmployeeId?: string | null;
+    defaultEarningCode?: string | null;
+};
+
+type EmployeeWithRelations = SafeEmployee & {
     crews: (CrewMember & { crew: Crew })[];
     foremanCrews: Crew[];
     user: PrismaUser | null;
@@ -23,10 +36,13 @@ interface SettingsViewProps {
     initialEmployees: EmployeeWithRelations[];
     preferences: { notifications: boolean };
     initialAuditLogs: any[];
+    userRole: string;
 }
 
-export function SettingsView({ initialEmployees, preferences, initialAuditLogs }: SettingsViewProps) {
+export function SettingsView({ initialEmployees, preferences, initialAuditLogs, userRole }: SettingsViewProps) {
     const [integrationKeys, setIntegrationKeys] = useState({ qbClientId: "", qbClientSecret: "" });
+
+    const isOwner = userRole === 'OWNER';
 
     return (
         <div className="p-8 max-w-7xl mx-auto space-y-8">
@@ -35,21 +51,23 @@ export function SettingsView({ initialEmployees, preferences, initialAuditLogs }
                 <p className="text-muted-foreground">Manage system configuration, access control, and integrations.</p>
             </div>
 
-            <Tabs defaultValue="access" className="space-y-6">
+            <Tabs defaultValue={isOwner ? "access" : "integrations"} className="space-y-6">
                 <TabsList className="bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
-                    <TabsTrigger value="access" className="gap-2"><Shield className="w-4 h-4" /> Access & Team</TabsTrigger>
+                    {isOwner && <TabsTrigger value="access" className="gap-2"><Shield className="w-4 h-4" /> Access & Team</TabsTrigger>}
                     <TabsTrigger value="integrations" className="gap-2"><Layers className="w-4 h-4" /> Integrations</TabsTrigger>
                     <TabsTrigger value="general" className="gap-2"><Settings2 className="w-4 h-4" /> General</TabsTrigger>
-                    <TabsTrigger value="audit" className="gap-2"><Lock className="w-4 h-4" /> Security Audit</TabsTrigger>
+                    {isOwner && <TabsTrigger value="audit" className="gap-2"><Lock className="w-4 h-4" /> Security Audit</TabsTrigger>}
                 </TabsList>
 
                 {/* --- ACCESS & TEAM --- */}
-                <TabsContent value="access" className="space-y-4 animate-in fade-in-50 duration-300">
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-bold tracking-tight">Role-Based Access Control</h2>
-                    </div>
-                    <EmployeeManager employees={initialEmployees || []} />
-                </TabsContent>
+                {isOwner && (
+                    <TabsContent value="access" className="space-y-4 animate-in fade-in-50 duration-300">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-xl font-bold tracking-tight">Role-Based Access Control</h2>
+                        </div>
+                        <EmployeeManager employees={initialEmployees || []} />
+                    </TabsContent>
+                )}
 
                 {/* --- INTEGRATIONS --- */}
                 <TabsContent value="integrations" className="space-y-6 animate-in fade-in-50 duration-300">
@@ -146,17 +164,19 @@ export function SettingsView({ initialEmployees, preferences, initialAuditLogs }
                 </TabsContent>
 
                 {/* --- SECURITY AUDIT --- */}
-                <TabsContent value="audit" className="space-y-4 animate-in fade-in-50 duration-300">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Security Logs</CardTitle>
-                            <CardDescription>Recent system access and configuration changes.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <AuditLogViewer initialLogs={initialAuditLogs} />
-                        </CardContent>
-                    </Card>
-                </TabsContent>
+                {isOwner && (
+                    <TabsContent value="audit" className="space-y-4 animate-in fade-in-50 duration-300">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Security Logs</CardTitle>
+                                <CardDescription>Recent system access and configuration changes.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <AuditLogViewer initialLogs={initialAuditLogs} />
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+                )}
             </Tabs>
         </div>
     );

@@ -8,10 +8,23 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Plus, Calendar as CalendarIcon } from 'lucide-react';
 import { ShiftModal } from './ShiftModal';
 
+interface SafeEmployee extends Omit<Employee, 'hourlyRate' | 'burdenRate' | 'salary' | 'ssn' | 'defaultOvertimeMultiplier' | 'doubleTimeMultiplier' | 'doubleTimeDailyThreshold' | 'qboEmployeeId' | 'adpEmployeeId' | 'defaultEarningCode'> {
+    hourlyRate?: number | null;
+    burdenRate?: number | null;
+    salary?: number | null;
+    ssn?: string | null;
+    defaultOvertimeMultiplier?: number | null;
+    doubleTimeMultiplier?: number | null;
+    doubleTimeDailyThreshold?: number | null;
+    qboEmployeeId?: string | null;
+    adpEmployeeId?: string | null;
+    defaultEarningCode?: string | null;
+}
+
 interface ScheduleBoardProps {
     shifts: (Shift & { project: Project; crew: Crew | null; employee: Employee | null })[];
     crews: Crew[];
-    employees: Employee[];
+    employees: SafeEmployee[];
     projects: Project[];
 }
 

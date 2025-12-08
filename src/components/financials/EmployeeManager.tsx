@@ -52,6 +52,7 @@ interface Employee {
     email?: string | null;
     phone?: string | null;
     hourlyRate?: number | null;
+    burdenRate?: number | null;
     emergencyContact?: string | null;
     ssn?: string | null;
     payType?: string;
@@ -68,6 +69,7 @@ interface Employee {
     overtimeRule?: string | null;
     defaultOvertimeMultiplier?: number | null;
     doubleTimeMultiplier?: number | null;
+    doubleTimeDailyThreshold?: number | null;
     qboEmployeeId?: string | null;
     defaultEarningCode?: string | null;
     adpEmployeeId?: string | null;
@@ -285,6 +287,10 @@ function InnerForm({ isEditing, initialData, onSubmit, isPending }: any) {
         const finalData = {
             ...data,
             hourlyRate: data.hourlyRate ? Number(data.hourlyRate) : null,
+            burdenRate: data.burdenRate ? Number(data.burdenRate) : null,
+            defaultOvertimeMultiplier: data.defaultOvertimeMultiplier ? Number(data.defaultOvertimeMultiplier) : 1.5,
+            doubleTimeMultiplier: data.doubleTimeMultiplier ? Number(data.doubleTimeMultiplier) : 2.0,
+            doubleTimeDailyThreshold: data.doubleTimeDailyThreshold ? Number(data.doubleTimeDailyThreshold) : 12,
             email: data.email || null,
             phone: data.phone || null,
             emergencyContact: JSON.stringify(ec),
@@ -394,8 +400,57 @@ function InnerForm({ isEditing, initialData, onSubmit, isPending }: any) {
                                 </Select>
                             </div>
                             <div className="space-y-2">
-                                <Label>Rate ($)</Label>
+                                <Label>Hourly Rate ($)</Label>
                                 <Input type="number" step="0.01" value={data.hourlyRate || ''} onChange={e => handleChange('hourlyRate', e.target.value)} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Burden Rate ($)</Label>
+                                <Input type="number" step="0.01" value={data.burdenRate || ''} onChange={e => handleChange('burdenRate', e.target.value)} />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4 mt-4">
+                            <div className="space-y-2">
+                                <Label>Overtime Rule</Label>
+                                <Select value={data.overtimeRule || ''} onValueChange={v => handleChange('overtimeRule', v)}>
+                                    <SelectTrigger><SelectValue placeholder="Select Rule" /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="OVER_40_WEEK">Over 40 Hours / Week</SelectItem>
+                                        <SelectItem value="OVER_8_DAY">Over 8 Hours / Day</SelectItem>
+                                        <SelectItem value="UNION_X">Union (Special)</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                                <div className="space-y-2">
+                                    <Label>Regular OT (x)</Label>
+                                    <Input
+                                        type="number"
+                                        step="0.1"
+                                        value={data.defaultOvertimeMultiplier ?? 1.5}
+                                        onChange={e => handleChange('defaultOvertimeMultiplier', e.target.value)}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Double Time (x)</Label>
+                                    <Input
+                                        type="number"
+                                        step="0.1"
+                                        value={data.doubleTimeMultiplier ?? 2.0}
+                                        onChange={e => handleChange('doubleTimeMultiplier', e.target.value)}
+                                    />
+                                </div>
+                                <div className="col-span-2 space-y-2">
+                                    <Label>Double Time Start (Hours)</Label>
+                                    <Input
+                                        type="number"
+                                        step="0.5"
+                                        placeholder="e.g. 12"
+                                        value={data.doubleTimeDailyThreshold ?? 12}
+                                        onChange={e => handleChange('doubleTimeDailyThreshold', e.target.value)}
+                                    />
+                                    <p className="text-xs text-muted-foreground">Hours per day before Double Time applies.</p>
+                                </div>
                             </div>
                         </div>
 

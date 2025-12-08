@@ -13,9 +13,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 interface EmployeeDirectoryProps {
     employees: any[];
+    userRole: string;
 }
 
-export default function EmployeeDirectory({ employees }: EmployeeDirectoryProps) {
+export default function EmployeeDirectory({ employees, userRole }: EmployeeDirectoryProps) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [showForm, setShowForm] = useState(false);
@@ -91,12 +92,14 @@ export default function EmployeeDirectory({ employees }: EmployeeDirectoryProps)
                         </SelectContent>
                     </Select>
                 </div>
-                <Button
-                    onClick={() => setShowForm(!showForm)}
-                    className="w-full md:w-auto bg-[#003366] hover:bg-[#002244] text-white shadow-md dark:bg-blue-600 dark:hover:bg-blue-700"
-                >
-                    {showForm ? 'Cancel' : <><Plus className="w-4 h-4 mr-2" /> Add Employee</>}
-                </Button>
+                {userRole === 'OWNER' && (
+                    <Button
+                        onClick={() => setShowForm(!showForm)}
+                        className="w-full md:w-auto bg-[#003366] hover:bg-[#002244] text-white shadow-md dark:bg-blue-600 dark:hover:bg-blue-700"
+                    >
+                        {showForm ? 'Cancel' : <><Plus className="w-4 h-4 mr-2" /> Add Employee</>}
+                    </Button>
+                )}
             </div>
 
             {/* Quick Add Form */}
@@ -190,9 +193,13 @@ export default function EmployeeDirectory({ employees }: EmployeeDirectoryProps)
                                 <span className="text-muted-foreground flex items-center gap-2">
                                     <MapPin className="w-3 h-3" /> Rate
                                 </span>
-                                <span className="font-medium text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
-                                    ${emp.hourlyRate}/hr
-                                </span>
+                                {userRole === 'OWNER' && emp.hourlyRate ? (
+                                    <span className="font-medium text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                                        ${emp.hourlyRate}/hr
+                                    </span>
+                                ) : (
+                                    <span className="text-xs text-muted-foreground italic">Hidden</span>
+                                )}
                             </div>
                         </div>
 

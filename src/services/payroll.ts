@@ -50,6 +50,7 @@ export class PayrollService {
 
             let totalRegularMinutes = 0;
             let totalOvertimeMinutes = 0;
+            let totalDoubleTimeMinutes = 0;
             const weeklyRegularMinutes = new Map<string, number>();
 
             // Sort entries chronologically
@@ -75,12 +76,21 @@ export class PayrollService {
 
                 let dailyRegular = 0;
                 let dailyOT = 0;
+                let dailyDT = 0;
+
+                const dtThreshold = (employee.doubleTimeDailyThreshold || 12) * 60; // Default 12 hours
+                const otThreshold = 480; // 8 hours
 
                 // Check Overtime Rule
                 if (employee.overtimeRule === 'OVER_8_DAY' || employee.overtimeRule === 'UNION_X') {
-                    if (dailyMinutes > 480) { // 8 hours
-                        dailyRegular = 480;
-                        dailyOT = dailyMinutes - 480;
+                    if (dailyMinutes > dtThreshold) {
+                        // Regular = 8h, OT = (DT_Start - 8h), DT = (Total - DT_Start)
+                        dailyRegular = otThreshold;
+                        dailyOT = dtThreshold - otThreshold;
+                        dailyDT = dailyMinutes - dtThreshold;
+                    } else if (dailyMinutes > otThreshold) {
+                        dailyRegular = otThreshold;
+                        dailyOT = dailyMinutes - otThreshold;
                     } else {
                         dailyRegular = dailyMinutes;
                     }
@@ -91,6 +101,7 @@ export class PayrollService {
 
                 // Add to totals
                 totalOvertimeMinutes += dailyOT;
+                totalDoubleTimeMinutes += dailyDT;
 
                 // Track weekly regular for 40h rule
                 // Note: The dayKey is ISO string, we need week key
@@ -114,8 +125,8 @@ export class PayrollService {
                 employeeName,
                 regularHours: parseFloat((totalRegularMinutes / 60).toFixed(2)),
                 overtimeHours: parseFloat((totalOvertimeMinutes / 60).toFixed(2)),
-                doubleTimeHours: 0,
-                totalHours: parseFloat(((totalRegularMinutes + totalOvertimeMinutes) / 60).toFixed(2)),
+                doubleTimeHours: parseFloat((totalDoubleTimeMinutes / 60).toFixed(2)),
+                totalHours: parseFloat(((totalRegularMinutes + totalOvertimeMinutes + totalDoubleTimeMinutes) / 60).toFixed(2)),
                 qboEmployeeId: employee.qboEmployeeId,
                 defaultEarningCode: employee.defaultEarningCode,
                 defaultDept: employee.defaultDept,
