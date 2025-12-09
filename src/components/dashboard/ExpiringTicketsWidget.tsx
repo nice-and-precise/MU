@@ -28,12 +28,15 @@ export function ExpiringTicketsWidget() {
                 // Fetch all active tickets and filter client-side for now 
                 // (or update getTickets to support date filtering later)
                 const result = await getTickets(undefined);
-                if (result.success && result.data) {
+                if (result.success) {
+                    // Safe array check to prevent "map of undefined" crash
+                    const rawData = Array.isArray(result.data) ? result.data : [];
+
                     const now = new Date();
                     const threeDaysFromNow = new Date();
                     threeDaysFromNow.setDate(now.getDate() + 3);
 
-                    const expiring = (result.data as any[]).filter((t: any) => {
+                    const expiring = rawData.filter((t: any) => {
                         const expDate = new Date(t.expirationDate);
                         return t.status === 'ACTIVE' && expDate <= threeDaysFromNow;
                     }).sort((a: any, b: any) => new Date(a.expirationDate).getTime() - new Date(b.expirationDate).getTime())

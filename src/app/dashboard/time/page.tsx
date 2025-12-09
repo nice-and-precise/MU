@@ -22,6 +22,11 @@ export default async function TimePage() {
     const clockStatusRes = await getClockStatus(userId);
     const activeEntry = clockStatusRes?.success ? clockStatusRes.data : null;
 
+    // Fetch assets for DVIR
+    const { getAssets } = await import("@/actions/assets");
+    const assetsRes = await getAssets();
+    const assets = assetsRes.success && assetsRes.data ? assetsRes.data : [];
+
     return (
         <div className="p-4 md:p-8 space-y-6 max-w-4xl mx-auto">
             <div className="flex items-center space-x-4 mb-6">
@@ -62,6 +67,7 @@ export default async function TimePage() {
                                     geofenceRadius={500} // Standard geofence
                                     minimal={true}
                                     initialActiveEntry={activeEntry}
+                                    assets={assets}
                                 />
                             </CardContent>
                         </Card>

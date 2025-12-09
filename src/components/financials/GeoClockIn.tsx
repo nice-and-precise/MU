@@ -33,15 +33,17 @@ interface GeoClockInProps {
     employeeId: string;
     minimal?: boolean;
     initialActiveEntry?: any; // Pass the active entry if known
+    assets?: any[];
 }
 
-export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius, employeeId, minimal = false, initialActiveEntry }: GeoClockInProps) {
+export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius, employeeId, minimal = false, initialActiveEntry, assets = [] }: GeoClockInProps) {
     const [status, setStatus] = useState<"OUT" | "IN" | "BLOCKED">("OUT");
     const [blockedProjectName, setBlockedProjectName] = useState<string | null>(null);
     const [location, setLocation] = useState<{ lat: number; long: number } | null>(null);
     const [distance, setDistance] = useState<number | null>(null);
     const [error, setError] = useState("");
     const [showInspection, setShowInspection] = useState(false);
+    const [selectedAssetId, setSelectedAssetId] = useState<string>("");
     const [isPending, startTransition] = useTransition();
 
     useEffect(() => {
@@ -207,15 +209,38 @@ export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius,
                 {/* Inspection Modal for Minimal Mode */}
                 {showInspection && (
                     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                        <div className="bg-background rounded-xl max-h-[90vh] overflow-y-auto w-full max-w-2xl relative">
-                            <InspectionChecklist
-                                assetId="truck-1" // TODO: Select asset dynamically
-                                assetName="Ford F-550 (Truck #12)"
-                                onComplete={() => {
-                                    setShowInspection(false);
-                                    performClockIn();
-                                }}
-                            />
+                        <div className="bg-background rounded-xl max-h-[90vh] overflow-y-auto w-full max-w-2xl relative p-6">
+                            <h2 className="text-xl font-bold mb-4">Pre-Trip Inspection</h2>
+
+                            <div className="mb-6">
+                                <label className="block text-sm font-medium mb-2">Select Vehicle / Asset</label>
+                                <select
+                                    className="w-full p-2 border rounded-md"
+                                    value={selectedAssetId}
+                                    onChange={(e) => setSelectedAssetId(e.target.value)}
+                                >
+                                    <option value="">-- Select Vehicle --</option>
+                                    {assets.map(a => (
+                                        <option key={a.id} value={a.id}>{a.name} ({a.type})</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {selectedAssetId ? (
+                                <InspectionChecklist
+                                    assetId={selectedAssetId}
+                                    assetName={assets.find(a => a.id === selectedAssetId)?.name || "Unknown Asset"}
+                                    onComplete={() => {
+                                        setShowInspection(false);
+                                        performClockIn();
+                                    }}
+                                />
+                            ) : (
+                                <div className="text-center py-8 text-muted-foreground bg-slate-50 rounded-lg border border-dashed">
+                                    Please select a vehicle to begin inspection.
+                                </div>
+                            )}
+
                             <button
                                 onClick={() => setShowInspection(false)}
                                 className="absolute top-4 right-4 text-muted-foreground hover:text-foreground p-2 bg-white/80 rounded-full"
@@ -284,15 +309,38 @@ export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius,
                 {/* Inspection Modal */}
                 {showInspection && (
                     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                        <div className="bg-background rounded-xl max-h-[90vh] overflow-y-auto w-full max-w-2xl relative">
-                            <InspectionChecklist
-                                assetId="truck-1" // TODO: Select asset dynamically
-                                assetName="Ford F-550 (Truck #12)"
-                                onComplete={() => {
-                                    setShowInspection(false);
-                                    performClockIn();
-                                }}
-                            />
+                        <div className="bg-background rounded-xl max-h-[90vh] overflow-y-auto w-full max-w-2xl relative p-6">
+                            <h2 className="text-xl font-bold mb-4">Pre-Trip Inspection</h2>
+
+                            <div className="mb-6">
+                                <label className="block text-sm font-medium mb-2">Select Vehicle / Asset</label>
+                                <select
+                                    className="w-full p-2 border rounded-md"
+                                    value={selectedAssetId}
+                                    onChange={(e) => setSelectedAssetId(e.target.value)}
+                                >
+                                    <option value="">-- Select Vehicle --</option>
+                                    {assets.map(a => (
+                                        <option key={a.id} value={a.id}>{a.name} ({a.type})</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {selectedAssetId ? (
+                                <InspectionChecklist
+                                    assetId={selectedAssetId}
+                                    assetName={assets.find(a => a.id === selectedAssetId)?.name || "Unknown Asset"}
+                                    onComplete={() => {
+                                        setShowInspection(false);
+                                        performClockIn();
+                                    }}
+                                />
+                            ) : (
+                                <div className="text-center py-8 text-muted-foreground bg-slate-50 rounded-lg border border-dashed">
+                                    Please select a vehicle to begin inspection.
+                                </div>
+                            )}
+
                             <button
                                 onClick={() => setShowInspection(false)}
                                 className="absolute top-4 right-4 text-muted-foreground hover:text-foreground p-2 bg-white/80 rounded-full"

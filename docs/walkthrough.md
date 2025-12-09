@@ -29,10 +29,15 @@ For the best field experience:
     *   Select your Project.
     *   Tap **"Clock In"**. The GPS location is verified automatically.
 
-2.  **Daily Reporting**:
+3.  **Safe DVIR / Inspection**:
+    *   **Clock In**: Select Project & Vehicle.
+    *   **Inspection**: Complete the pre-trip checklist for the selected vehicle.
+    *   **Result**: Validated clock-in with Asset ID linked.
+
+4.  **Daily Reporting (Wizard)**:
     *   Go to **Daily Reports**.
     *   Click **"New Report"**.
-    *   **Crew**: "Copy Yesterday's Crew" to save time.
+    *   **Wizard**: Follow the steps (General -> Crew -> Equipment -> Production).
     *   **Production**: Log drill footage (e.g., 500ft of 4" conduit).
     *   **Submit**: The report is locked and synced to the office.
 

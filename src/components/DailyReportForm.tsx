@@ -70,7 +70,8 @@ export default function DailyReportForm({ projects }: { projects: any[] }) {
             }
 
             toast.success("Daily report created successfully");
-            router.push("/dashboard/reports");
+            // Redirect to the edit wizard to fill in details
+            router.push(`/dashboard/reports/${result.data.id}`);
         } catch (error: any) {
             console.error("Error submitting report:", error);
             toast.error(error.message || "Failed to create report");
