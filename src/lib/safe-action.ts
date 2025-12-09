@@ -2,11 +2,9 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { z } from 'zod';
 
-export type ActionState<T> = {
-    success: boolean;
-    data?: T;
-    error?: string;
-};
+export type ActionState<T> =
+    | { success: true; data: T; error?: never }
+    | { success: false; error: string; data?: never };
 
 /**
  * 🎓 The Fortress Pattern: authenticatedAction
