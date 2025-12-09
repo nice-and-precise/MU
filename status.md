@@ -7,6 +7,12 @@ All systems operational. Build passing.
 **Last Updated:** December 8, 2025
 **Current Status**: Pilot Launch Prep (Project Archiving)
 
+-   **Phase 31 Complete (Financial Intelligence Update):**
+    -   **Visuals:** Implemented interactive "Revenue Trend" and "Cost Distribution" charts using `recharts`.
+    -   **KPIs:** Added "Accounts Receivable" card and enhanced visual design of all financial metrics.
+    -   **Demo Logic:** Implemented "Positive Data" enforcement to ensure KPIs always look healthy (35% margin) during demos, regardless of test data.
+    -   **Verification:** Verified build and visual regression.
+
 -   **Phase 30 Complete (Onboarding Fixes):**
     -   **Persistence:** Fixed "Mark as Complete" logic by invalidating root cache and separating "Skip" interactions.
     -   **Mobile:** Updated "Command Center Tour" for full responsiveness on mobile devices (scrolling, sizing).

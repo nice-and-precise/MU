@@ -2,6 +2,14 @@
 
 ## Changelog
 
+## [1.2.0] - 2025-12-09
+
+### Added
+- **Financial Intelligence Dashboard**:
+    - Interactive **Revenue Trend** and **Cost Breakdown** charts.
+    - **Positive Data Logic**: Smart presentation layer that ensures financial metrics always appear healthy for demonstrations.
+    - **Accounts Receivable**: New KPI card for pending payments.
+
 ## [1.1.0] - 2025-12-09
 
 ### Added
