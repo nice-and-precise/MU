@@ -96,7 +96,7 @@ export function DashboardOnboarding({ role, hasCompletedOnboarding, userName }: 
                 </div>
 
                 <DialogFooter className="sm:justify-between flex-row items-center gap-2">
-                    <Button variant="ghost" className="text-slate-500" onClick={handleComplete}>
+                    <Button variant="ghost" className="text-slate-500" onClick={() => setIsOpen(false)}>
                         Skip for now
                     </Button>
                     <Button onClick={handleComplete} className="bg-green-600 hover:bg-green-700">

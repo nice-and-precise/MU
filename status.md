@@ -7,11 +7,16 @@ All systems operational. Build passing.
 **Last Updated:** December 8, 2025
 **Current Status**: Pilot Launch Prep (Project Archiving)
 
-## Recent Accomplishments
+-   **Phase 30 Complete (Onboarding Fixes):**
+    -   **Persistence:** Fixed "Mark as Complete" logic by invalidating root cache and separating "Skip" interactions.
+    -   **Mobile:** Updated "Command Center Tour" for full responsiveness on mobile devices (scrolling, sizing).
+    -   **Verification:** Build passing.
+
 -   **Phase 29 Complete (Dark Mode Refactor):**
     -   **Financials:** Comprehensive dark mode refactor for `CrewDispatch`, `EmployeeManager`, and `GeoClockIn`.
     -   **Standards:** Enforced `dark:` variants for backgrounds, borders, and text to meet WCAG AA contrast.
     -   **Verification:** Build passing and visual verification complete.
+
 
 
 -   **Phase 28 Complete (ROI Calculator & Fixes):**
