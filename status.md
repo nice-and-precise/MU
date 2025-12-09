@@ -5,12 +5,30 @@ All systems operational. Build passing.
 - Offline Sync implemented.: Midwest Underground Field Ops Platform
 
 **Last Updated:** December 8, 2025
-**Current Phase:** Stabilization Phase 1 (Recovery & Baseline)
+**Current Status**: Pilot Launch Prep (Project Archiving)
 
 ## Recent Accomplishments
--   **Stabilization Phase 1 Complete:**
-    -   **Build & Test Health:** Achieved clean `npm run build` and 100% pass rate on unit tests (13 suites).
-    -   **Agent Protocols:** Established stability guidelines in `docs/AGENT_PROTOCOLS.md`.
+-   **Phase 27 Complete (Mobile Readiness):**
+    -   **PWA:** Configured `manifest.ts` with checks against `public/icons`. Verified Viewport settings.
+    -   **Verification:** `tsc` passed strict type checks.
+
+-   **Phase 26 Complete (Dashboard Integration):**
+    -   **Owner Dashboard:** Added "Command Center" summaries for Resource Health (Fleet & Inventory) and QC (Open Punch Items).
+    -   **Service Layer:** Extended `getOwnerStatsService` to fetch missing module data.
+
+-   **Phase 25 Complete (Project Closeout & Archiving):**
+    -   **Workflow:** Implemented Project Archive logic with precondition checks (Open QC Items).
+    -   **UI:** Added Tabbed interface to Dashboard Projects list (Active / Archived).
+    -   **Integration:** Verified filtering logic in `ProjectService`.
+
+- **E2E Test Stability**:
+    - `crew-flow`, `811-flow`, `owner-flow`, `report-flow` ALL PASSING.
+    - Resolved `report-flow` race condition in client-side navigation.
+- **Core Stability**:
+    - Build Passing.
+    - Database Schema Synced & Seeded.
+    - `use client` directives applied to interactive components.
+    - Established stability guidelines in `docs/AGENT_PROTOCOLS.md`.
     -   **Cleanup:** Resolved mock data inconsistencies in `financials` and `reporting` services.
     -   **Config:** Fixed `vitest` configuration to properly exclude E2E tests.
 -   **Phases 1-6 Complete (Payroll & Mobile Loop):**

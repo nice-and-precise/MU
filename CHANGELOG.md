@@ -1,17 +1,20 @@
 # CHANGELOG
 
-## [Unreleased] - 2025-12-08
+## Changelog
 
-### Stabilization Phase 1
-- **Fixed Build & Tests**:
-  - Resolved `TypeError` in `FinancialsService` by updating unit tests (`financials.test.ts`) to match service logic (renamed `timeCards` to `timeEntries`).
-  - Fixed `ReportingService` tests (`reporting.test.ts`) to use `productionEntries` instead of legacy `production` JSON string.
-  - Excluded E2E tests (`tests/e2e/**`) from `vitest` configuration to prevent false negatives during unit testing.
-  - Confirmed `npm run build` success.
-  - Confirmed `npm run test` success (13 files passed).
-- **Process**:
-  - Established `docs/AGENT_PROTOCOLS.md` for agent stability.
-  - Verified `npm install`, `prisma generate`, and `prisma db push` execution.
+## [1.0.0-pilot] - 2025-12-08
+
+### 🚀 Pilot Launch Readiness
+- **Project Archiving**: Implemented "Closeout Workflow" and "Archived" projects tab.
+- **Command Center**: Enhanced Owner Dashboard with real-time Inventory, Fleet, and QC metrics.
+- **Mobile PWA**: Verified manifest and viewport settings for field device compatibility.
+- **Stability**: Verified 8/8 E2E tests passing.
+
+### Fixed
+- **E2E Tests**: Resolved race condition in `report-flow` test.
+- **Type Safety**: Fixed `tsc` errors in `manifest.ts` and `reporting.test.ts`.
+
+## [0.3.0] - 2025-12-08
 
 ### Known Issues
 - `npm run lint` fails with "Invalid project directory" error. Temporarily bypassed to prioritize build/test stability.

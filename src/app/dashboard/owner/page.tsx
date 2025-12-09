@@ -1,7 +1,7 @@
 import { getOwnerStats } from "@/actions/dashboard";
 import { ProductionChart } from "@/components/dashboard/ProductionChart";
 import { QuickActions } from "@/components/dashboard/QuickActions";
-import { MapPin, DollarSign, AlertTriangle, FileCheck, TrendingUp, AlertOctagon } from "lucide-react";
+import { MapPin, DollarSign, AlertTriangle, FileCheck, TrendingUp, AlertOctagon, CheckCircle2, Truck } from "lucide-react";
 import Link from "next/link";
 import { CrewDispatch } from "@/components/financials/CrewDispatch";
 import { getAvailableCrewMembers } from "@/actions/employees";
@@ -35,7 +35,8 @@ export default async function OwnerDashboard() {
         activeFleet: 0,
         openSafetyIssues: 0,
         agedAr: 0,
-        pendingChangeOrders: []
+        pendingChangeOrders: [],
+        openPunchItems: 0
     };
 
     const currentUser = await prisma.user.findUnique({
@@ -196,6 +197,56 @@ export default async function OwnerDashboard() {
             <div className="bg-white dark:bg-slate-800 p-6 rounded-lg border border-gray-200 dark:border-slate-700 shadow-sm">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Weekly Production Trends</h3>
                 <ProductionChart />
+            </div>
+
+            {/* Resource Health Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="border-t-4 border-indigo-500 shadow-md">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-gray-500 text-sm font-bold uppercase tracking-wider flex items-center">
+                            <Truck className="h-4 w-4 mr-1 text-indigo-500" />
+                            Resource Health
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <p className="text-sm text-gray-500">Inventory Value</p>
+                                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                                    ${(stats.inventoryValue || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-500">Active Fleet</p>
+                                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                                    {stats.activeFleet} <span className="text-sm font-normal text-gray-500">units</span>
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card className="border-t-4 border-yellow-500 shadow-md">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-gray-500 text-sm font-bold uppercase tracking-wider flex items-center">
+                            <CheckCircle2 className="h-4 w-4 mr-1 text-yellow-500" />
+                            Quality Control
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <p className="text-sm text-gray-500">Open Punch Items</p>
+                                <p className={`text-2xl font-bold ${stats.openPunchItems > 0 ? 'text-yellow-600' : 'text-green-600'}`}>
+                                    {stats.openPunchItems || 0}
+                                </p>
+                            </div>
+                            <Button variant="outline" size="sm" asChild>
+                                <Link href="/dashboard/qc">View QC</Link>
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
 
             <div className="mt-8">

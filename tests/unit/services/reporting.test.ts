@@ -35,8 +35,6 @@ describe('ReportingService', () => {
                             id: 'report-1',
                             status: 'APPROVED',
                             reportDate: new Date(),
-                            status: 'APPROVED',
-                            reportDate: new Date(),
                             productionEntries: [
                                 {
                                     quantity: 10,

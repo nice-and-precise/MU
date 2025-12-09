@@ -3,11 +3,17 @@ import Link from "next/link";
 import { Calendar, MapPin, Activity } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 
-export default async function ProjectsPage() {
-    const res = await getProjects();
+export default async function ProjectsPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
+    const { tab } = await searchParams;
+    const activeTab = tab === 'archived' ? 'archived' : 'active';
+
+    const statusFilter = activeTab === 'active'
+        ? ['PLANNING', 'IN_PROGRESS']
+        : ['COMPLETED', 'ARCHIVED'];
+
+    const res = await getProjects({ status: statusFilter });
 
     if (!res.data) {
-        // Handle error gracefully or throw
         return <div className="p-8">Error loading projects.</div>;
     }
 
@@ -17,8 +23,8 @@ export default async function ProjectsPage() {
         <div className="p-8">
             <div className="flex justify-between items-center mb-8 border-b border-gray-200 pb-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-charcoal uppercase tracking-tight">Projects</h1>
-                    <p className="text-gray-500 mt-1">Manage and track all active jobs</p>
+                    <h1 className="text-3xl font-bold text-gray-900 uppercase tracking-tight">Projects</h1>
+                    <p className="text-gray-500 mt-1">Manage and track all {activeTab} jobs</p>
                 </div>
                 <Link
                     href="/dashboard/projects/new"
@@ -28,12 +34,36 @@ export default async function ProjectsPage() {
                 </Link>
             </div>
 
+            {/* Tabs */}
+            <div className="flex space-x-6 mb-8 border-b border-gray-200">
+                <Link
+                    href="/dashboard/projects?tab=active"
+                    className={`pb-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'active'
+                        ? 'border-black text-black'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        }`}
+                >
+                    Active Projects
+                </Link>
+                <Link
+                    href="/dashboard/projects?tab=archived"
+                    className={`pb-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'archived'
+                        ? 'border-black text-black'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        }`}
+                >
+                    Archived
+                </Link>
+            </div>
+
             {projects.length === 0 ? (
                 <div className="mt-12">
                     <EmptyState
-                        title="No projects found"
-                        description="Get started by creating your first project to track bores, costs, and daily reports."
-                        actionLabel="Create Project"
+                        title={`No ${activeTab} projects found`}
+                        description={activeTab === 'active'
+                            ? "Get started by creating your first project to track bores, costs, and daily reports."
+                            : "No projects have been archived yet."}
+                        actionLabel={activeTab === 'active' ? "Create Project" : undefined}
                         actionHref="/dashboard/projects/new"
                         icon={MapPin}
                     />

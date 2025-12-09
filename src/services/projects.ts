@@ -8,8 +8,9 @@ export const ProjectService = {
         });
     },
 
-    getProjects: async () => {
+    getProjects: async (statuses?: string[]) => {
         return await prisma.project.findMany({
+            where: statuses ? { status: { in: statuses } } : undefined,
             orderBy: { updatedAt: "desc" },
             include: {
                 _count: {

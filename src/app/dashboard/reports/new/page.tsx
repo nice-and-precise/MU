@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import DailyReportForm from "@/components/DailyReportForm";
 import {
     Breadcrumb,
@@ -8,8 +8,6 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-
-const prisma = new PrismaClient();
 
 async function getActiveProjects() {
     return await prisma.project.findMany({

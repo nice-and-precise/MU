@@ -21,38 +21,38 @@ async function main() {
 
   const owner = await prisma.user.upsert({
     where: { email: 'owner@midwestunderground.com' },
-    update: { password: passwordHash },
-    create: { email: 'owner@midwestunderground.com', name: 'John Owner', role: 'OWNER', password: passwordHash },
+    update: { password: passwordHash, preferences: JSON.stringify({ onboardingComplete: true }) },
+    create: { email: 'owner@midwestunderground.com', name: 'John Owner', role: 'OWNER', password: passwordHash, preferences: JSON.stringify({ onboardingComplete: true }) },
   });
 
   const superint = await prisma.user.upsert({
     where: { email: 'super@midwestunderground.com' },
-    update: { password: passwordHash },
-    create: { email: 'super@midwestunderground.com', name: 'Mike Super', role: 'SUPER', password: passwordHash },
+    update: { password: passwordHash, preferences: JSON.stringify({ onboardingComplete: true }) },
+    create: { email: 'super@midwestunderground.com', name: 'Mike Super', role: 'SUPER', password: passwordHash, preferences: JSON.stringify({ onboardingComplete: true }) },
   });
 
   const foreman = await prisma.user.upsert({
     where: { email: 'foreman@midwestunderground.com' },
-    update: { password: passwordHash },
-    create: { email: 'foreman@midwestunderground.com', name: 'Mike "Tophand" Williams', role: 'FOREMAN', password: passwordHash },
+    update: { password: passwordHash, preferences: JSON.stringify({ onboardingComplete: true }) },
+    create: { email: 'foreman@midwestunderground.com', name: 'Mike "Tophand" Williams', role: 'FOREMAN', password: passwordHash, preferences: JSON.stringify({ onboardingComplete: true }) },
   });
 
   const operator = await prisma.user.upsert({
     where: { email: 'operator@midwestunderground.com' },
-    update: { password: passwordHash },
-    create: { email: 'operator@midwestunderground.com', name: 'Sarah Jenkins', role: 'OPERATOR', password: passwordHash },
+    update: { password: passwordHash, preferences: JSON.stringify({ onboardingComplete: true }) },
+    create: { email: 'operator@midwestunderground.com', name: 'Sarah Jenkins', role: 'OPERATOR', password: passwordHash, preferences: JSON.stringify({ onboardingComplete: true }) },
   });
 
   const laborer = await prisma.user.upsert({
     where: { email: 'laborer@midwestunderground.com' },
-    update: { password: passwordHash },
-    create: { email: 'laborer@midwestunderground.com', name: 'Tom Davis', role: 'LABORER', password: passwordHash },
+    update: { password: passwordHash, preferences: JSON.stringify({ onboardingComplete: true }) },
+    create: { email: 'laborer@midwestunderground.com', name: 'Tom Davis', role: 'LABORER', password: passwordHash, preferences: JSON.stringify({ onboardingComplete: true }) },
   });
 
   const mechanic = await prisma.user.upsert({
     where: { email: 'mechanic@midwestunderground.com' },
-    update: { password: passwordHash },
-    create: { email: 'mechanic@midwestunderground.com', name: 'Dave Fixit', role: 'MECHANIC', password: passwordHash },
+    update: { password: passwordHash, preferences: JSON.stringify({ onboardingComplete: true }) },
+    create: { email: 'mechanic@midwestunderground.com', name: 'Dave Fixit', role: 'MECHANIC', password: passwordHash, preferences: JSON.stringify({ onboardingComplete: true }) },
   });
 
   // Famous People Seed Data

@@ -1,7 +1,7 @@
 # Midwest Underground (MU) | Digital Operations Platform
 
-![Deployment Status](https://img.shields.io/badge/Deployment-Demo_Ready-success?style=for-the-badge&logo=vercel)
-![Version](https://img.shields.io/badge/Version-0.3.1--RC-blue?style=for-the-badge)
+![Deployment Status](https://img.shields.io/badge/Deployment-Pilot_Launched-success?style=for-the-badge&logo=vercel)
+![Version](https://img.shields.io/badge/Version-1.0.0--Pilot-blue?style=for-the-badge)
 ![Tech Stack](https://img.shields.io/badge/Stack-Next.js_15_|_Prisma_|_Postgres-black?style=for-the-badge&logo=next.js)
 
 > **The Operating System for Horizontal Directional Drilling (HDD).**
@@ -14,23 +14,22 @@ Midwest Underground (MU) is a comprehensive, offline-first digital platform desi
 
 ### 🏗️ Field Operations
 - **Offline-First Daily Reports**: Crews can log labor, equipment, and production data without internet access. Data syncs automatically when connectivity returns.
+- **Mobile Companion (PWA)**: Installable on iPad/Android tablets for seamless field data entry.
 - **Digital Ticketing**: Integrated 811/OneCall ticket management with GPS-verified locate tracking.
-- **Drill Log Telemetry**: Shot-by-shot bore logging (Pitch, Azimuth, Depth) with real-time collision avoidance.
 
 ### 💼 Financial Intelligence
 - **Job Costing**: Real-time tracking of estimated vs. actual costs for labor, materials, and equipment.
-- **Accurate Payroll**: Automated time card generation with Double Time logic and RBAC protection for sensitive rates.
-- **Asset Management**: GPS tracking and maintenance logs for yellow iron and fleet vehicles.
+- **Command Center**: "Revenue Health" monitoring with live Inventory Value and Active Fleet counts.
+- **Automated Closeout**: Structured workflow to archive projects only when all punch items are resolved.
 
 ### 🛡️ Quality & Compliance
-- **216D Compliance**: Automated workflows for state-mandated utility damage prevention (Visual verification, White-lining).
-- **Safety**: Integrated JSA (Job Safety Analysis) and incident reporting.
+- **216D Compliance**: Automated workflows for state-mandated utility damage prevention.
 - **QC Punch Lists**: Photo-verified quality control inspections and resolution tracking.
+- **Safety**: Integrated JSA (Job Safety Analysis) and incident reporting.
 
 ### 📊 Executive Analytics
 - **Live Command Center**: Real-time map view of all active crews and rigs.
 - **Production Metrics**: Drill rates per rig, utility strike frequency, and bid accuracy analysis.
-- **Cost Coding**: Granular tracking of labor and equipment usage against specific cost codes for precise P&L.
 
 ---
 
@@ -46,7 +45,7 @@ graph TD
         PWA -->|Action| ServerActions[Server Actions]
     end
 
-    subgraph "Cloud (Servererless)"
+    subgraph "Cloud (Serverless)"
         ServerActions -->|Auth / Validation| Fortress[Fortress Security Layer]
         Fortress -->|ORM| Prisma[Prisma Client]
         Prisma -->|Query| DB[(PostgreSQL)]
@@ -89,58 +88,42 @@ erDiagram
     DAILY_REPORT ||--o{ LABOR_ENTRY : records
     DAILY_REPORT ||--o{ EQUIPMENT_USAGE : tracks
     DAILY_REPORT ||--o{ PRODUCTION_QTY : claims
-
+    
     PROJECT {
         string name
         string status
         float budget
-    }
-
-    BORE {
-        string name
-        float length
-        string status
-    }
-
-    ROD_PASS {
-        int sequence
-        float pitch
-        float depth
+        datetime archivedAt
     }
 ```
 
 ---
 
-## 🔄 User Journey: The Daily Report
+## 🔄 User Journey: The Project Lifecycle
 
-The "Daily Report" is the heartbeat of MU, feeding payroll, billing, and progress tracking in a single flow.
+From bidding to archiving, MU manages the entire lifecycle.
 
 ```mermaid
 sequenceDiagram
-    participant Foreman as 👷 Foreman
-    participant App as 📱 MU App
-    participant Cloud as ☁️ Server
-    participant Super as 👨‍💼 Superintendent
+    participant Sales as 💼 Sales
+    participant Ops as 🏗️ Ops
+    participant Field as 👷 Field
+    participant System as 🖥️ MU Core
 
-    Foreman->>App: Creates Daily Report
-    Foreman->>App: Adds Crew & Hours
-    Foreman->>App: Logs Production (Bore Footage)
-    Foreman->>App: Takes Site Photos
-    Foreman->>App: Signs & Submits
+    Sales->>System: Create Project (Planning)
+    System->>Ops: Notify New Job
+    Ops->>System: Assign Crew & Assets (Active)
     
-    rect rgb(240, 248, 255)
-        Note right of Foreman: If Offline, data saves locally
+    Note over Field: Field Operations Begin
+    
+    loop Daily
+        Field->>System: Submit Daily Report
+        System->>System: Update Cost & Schedule
     end
     
-    App->>Cloud: Sync Data (Fortress Validated)
-    Cloud->>Cloud: Calculate Costs & Payroll
-    Cloud->>Super: Notify "Report Pending"
-    
-    Super->>Cloud: Reviews Report
-    Super->>Cloud: Approves Report
-    
-    Cloud->>Cloud: Update Project Budget
-    Cloud->>Cloud: Finalize Time Cards
+    Field->>System: Complete Punch List
+    Ops->>System: Review & Archive Project
+    System->>System: Closeout Financials
 ```
 
 ---
@@ -156,7 +139,6 @@ sequenceDiagram
 | **Styling** | Tailwind CSS | Rapid UI development with a consistent design system. |
 | **State** | React Query / Zustand | Efficient server-state management. |
 | **Maps** | Mapbox GL JS | High-performance vector mapping for bore paths. |
-| **Simulation** | Rust/WASM (Subterra) | High-performance physics for drilling simulation. |
 
 ---
 

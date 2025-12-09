@@ -31,13 +31,24 @@ test.describe('Owner Dashboard Flow', () => {
         await page.goto('/dashboard/projects');
         await expect(page).toHaveURL(/\/dashboard\/projects/);
 
+        // Wait for loading to finish (if loading skeleton exists)
+        // If loading.tsx renders initially, we wait for it to detach
+        // But since we don't have a specific selector for the "whole" loading page other than generic structure...
+        // We can just wait for the heading to appear with a longer timeout
+
+        try {
+            await expect(page.getByRole('heading', { name: /projects/i })).toBeVisible({ timeout: 15000 });
+        } catch (e) {
+            console.error('Projects Page Title:', await page.title());
+            console.error('Projects content dump:', await page.content());
+            throw e;
+        }
+
         // CHeck for potential error state
         const errorMsg = page.getByText('Error loading projects.');
         if (await errorMsg.isVisible()) {
             console.error('Projects page failed to load data');
             throw new Error('Projects page showed error state');
         }
-
-        await expect(page.getByRole('heading', { name: /projects/i })).toBeVisible();
     });
 });

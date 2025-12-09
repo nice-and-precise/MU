@@ -205,7 +205,8 @@ export async function getOwnerStatsService() {
         activeFleet,
         openSafetyIssues,
         overdueInvoices,
-        changeOrders
+        changeOrders,
+        dbOpenPunchItems
     ] = await Promise.all([
         prisma.project.count({
             where: { status: "IN_PROGRESS" },
@@ -242,6 +243,9 @@ export async function getOwnerStatsService() {
             take: 5,
             include: { project: true },
             orderBy: { createdAt: 'desc' }
+        }),
+        prisma.punchItem.count({
+            where: { status: "OPEN" }
         })
     ]);
 
@@ -263,7 +267,8 @@ export async function getOwnerStatsService() {
             scope: co.scope,
             amount: co.budgetImpact || 0,
             date: co.createdAt
-        }))
+        })),
+        openPunchItems: dbOpenPunchItems
     };
 }
 

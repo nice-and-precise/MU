@@ -57,7 +57,6 @@ export default function DailyReportForm({ projects }: { projects: any[] }) {
                 OfflineQueue.add('DAILY_REPORT', data);
                 toast.success("Offline: Report saved to drafts queue.");
                 router.push("/dashboard/reports");
-                router.refresh();
                 return;
             }
 
@@ -72,7 +71,6 @@ export default function DailyReportForm({ projects }: { projects: any[] }) {
 
             toast.success("Daily report created successfully");
             router.push("/dashboard/reports");
-            router.refresh();
         } catch (error: any) {
             console.error("Error submitting report:", error);
             toast.error(error.message || "Failed to create report");

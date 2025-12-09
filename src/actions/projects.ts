@@ -8,9 +8,14 @@ export const getActiveProjects = authenticatedActionNoInput(async () => {
     return await ProjectService.getActiveProjects();
 });
 
-export const getProjects = authenticatedActionNoInput(async () => {
-    return await ProjectService.getProjects();
-});
+export const getProjects = authenticatedAction(
+    z.object({
+        status: z.array(z.string()).optional(),
+    }).optional(),
+    async (input) => {
+        return await ProjectService.getProjects(input?.status);
+    }
+);
 
 export const getProject = authenticatedAction(
     z.string(),

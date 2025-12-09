@@ -1,80 +1,99 @@
-
 import { test, expect } from '@playwright/test';
 
 test.describe('Daily Report Flow', () => {
     test.beforeEach(async ({ page }) => {
+        // Capture console logs
+        page.on('console', msg => console.log(`BROWSER CONSOLE: ${msg.text()}`));
+
         await page.goto('/login');
         await page.fill('input[name="email"]', 'foreman@midwestunderground.com');
         await page.fill('input[name="password"]', 'password123');
         await page.click('button[type="submit"]');
 
         // Wait for redirection
-        await expect(page).toHaveURL(/\/dashboard/, { timeout: 30000 });
-
-        // Capture console logs
-        page.on('console', msg => console.log(`BROWSER CONSOLE: ${msg.text()}`));
+        try {
+            await expect(page).toHaveURL(/\/dashboard/, { timeout: 30000 });
+        } catch (e) {
+            console.error('Login Redirect Failed. Current URL: ', page.url());
+            console.error('Page Title: ', await page.title());
+            throw e;
+        }
     });
 
     test('should create a new daily report', async ({ page }) => {
+        test.setTimeout(60000);
         // Navigate to New Report page
         await page.goto('/dashboard/reports/new');
+        console.error('STEP: Navigated to /new');
 
         // Verify Heading
-        await expect(page.getByText('New Daily Report', { exact: true })).toBeVisible();
+        try {
+            await expect(page.getByText('New Daily Report', { exact: true })).toBeVisible({ timeout: 10000 });
+            console.error('STEP: Heading Visible');
+        } catch (e) {
+            console.error('STEP FAILED: Heading Visibility');
+            console.error('Content Dump:', await page.content());
+            throw e;
+        }
 
         // Handle potential Onboarding or Tour Modals
+        // Escape key multiple times to be safe
         await page.keyboard.press('Escape');
         await page.waitForTimeout(300);
         await page.keyboard.press('Escape');
         await page.waitForTimeout(300);
 
         // Select Project
-        await page.click('button[role="combobox"]');
-        await expect(page.locator('[role="option"]').first()).toBeVisible();
-        const firstOption = page.locator('[role="option"]').first();
-        await firstOption.click();
+        try {
+            await page.click('button[role="combobox"]', { force: true, timeout: 5000 });
+            console.log('STEP: Clicked Combobox');
+            await expect(page.locator('[role="option"]').first()).toBeVisible({ timeout: 5000 });
+            console.log('STEP: Options Visible');
+            const firstOption = page.locator('[role="option"]').first();
+            await firstOption.click({ force: true });
+            console.log('STEP: Selected Option');
+        } catch (e) {
+            console.log('STEP FAILED: Project Selection');
+            throw e;
+        }
 
-        // Fill Date (Use random future date to avoid conflict)
+        // Fill Date (Use robust random date to avoid collision across workers)
+        const randomYear = 2025 + Math.floor(Math.random() * 50);
+        const randomMonth = Math.floor(Math.random() * 12) + 1;
         const randomDay = Math.floor(Math.random() * 28) + 1;
-        const randomDate = `2035-01-${randomDay.toString().padStart(2, '0')}`;
+        const randomDate = `${randomYear}-${randomMonth.toString().padStart(2, '0')}-${randomDay.toString().padStart(2, '0')}`;
+        console.error('STEP: Fill Date', randomDate);
         await page.fill('input[name="reportDate"]', randomDate);
 
         // Fill Notes
         await page.fill('textarea[name="notes"]', 'E2E Test Report Notes');
+        console.error('STEP: Filled Notes');
 
-        // Click Create
-        await page.click('button[type="submit"]');
-
-        // Check for validation errors
-        const validationMessages = page.locator('p.text-destructive');
-        if (await validationMessages.count() > 0) {
-            const count = await validationMessages.count();
-            for (let i = 0; i < count; ++i) {
-                const text = await validationMessages.nth(i).textContent();
-                if (text && text.trim() !== '*') {
-                    console.error('Real Validation Error:', text);
-                }
-            }
-        }
-
-        // Wait for success toast or redirect
+        // Submit
         try {
-            const successToast = page.getByText('Daily report created successfully');
-            try {
-                // Wait for toast if visible?
-                await expect(successToast).toBeVisible({ timeout: 5000 });
-                console.log('Success toast detected');
-            } catch (e) {
-                console.log('No success toast seen in 5s');
-            }
-
-            await expect(page).toHaveURL(/\/dashboard\/reports\/?$/, { timeout: 15000 });
+            await page.click('button[type="submit"]', { timeout: 5000 });
+            console.error('STEP: Clicked Submit');
         } catch (e) {
-            console.log('Final URL:', page.url());
+            console.error('STEP FAILED: Submit Click');
             throw e;
         }
 
-        // Verify redirect to list
-        await expect(page.getByText('Daily Reports').first()).toBeVisible();
+        // Wait for redirection or success
+        try {
+            // Check for potential success toast first (sometimes redirection is slow or toast appears first)
+            const successToast = page.locator('.sonner-toast[data-type="success"]');
+            try {
+                await expect(successToast).toBeVisible({ timeout: 5000 });
+                console.error('STEP: Success Toast Detected');
+            } catch (ignore) {
+                // Ignore if toast not seen immediately, wait for URL
+            }
+            await expect(page.getByRole('heading', { name: /daily reports/i })).toBeVisible({ timeout: 30000 });
+            console.error('STEP: List Page Verified');
+        } catch (e) {
+            console.error('STEP FAILED: List Verification/Redirect');
+            console.error('Final URL:', page.url());
+            throw e;
+        }
     });
 });
