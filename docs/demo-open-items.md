@@ -1,5 +1,15 @@
 # MU Pilot Demo: Open Items & Known Limitations
 
+## 🐛 Known Issues (Active)
+> [!WARNING]
+> The following issues verify as "Critical" and are prioritized for the immediate next patch.
+
+*   **Dashboard Loading Error**: Occasional crash due to data mapping issues on empty states.
+*   **DVIR Submission**: Foreign key error when submitting inspections for certain assets.
+*   **Report Form**: Simplified view; enhanced categories coming in next update.
+
+## 🚧 Feature Limitations
+
 > [!NOTE]
 > This document tracks items intentionally deferred post-pilot to ensure stability and focus on core workflows.
 
