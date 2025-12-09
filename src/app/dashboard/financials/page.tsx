@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, TrendingUp, TrendingDown, Activity, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { seedFullDemoData } from "@/actions/seed-demo-data"; // Use the server action for safety
+import { seedFullDemoDataFormAction } from "@/actions/seed-demo-data"; // Use the server action for safety
 
 export default async function FinancialsPage() {
     const stats = await FinancialsService.getOwnerStats();
@@ -46,7 +46,7 @@ export default async function FinancialsPage() {
                 <p className="text-gray-600 dark:text-slate-400 max-w-md mb-8">
                     No financial data found. Seed the demo environment to view the financial simulation.
                 </p>
-                <form action={seedFullDemoData}>
+                <form action={seedFullDemoDataFormAction}>
                     <Button type="submit" size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
                         Seed Demo Data
                     </Button>

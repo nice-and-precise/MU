@@ -17,3 +17,8 @@ export async function seedFullDemoData() {
         return { success: false, message: 'Failed to seed demo data. Check logs.' };
     }
 }
+
+export async function seedFullDemoDataFormAction() {
+    await seedFullDemoData();
+}
+

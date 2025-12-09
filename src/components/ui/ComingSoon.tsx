@@ -27,3 +27,5 @@ export function ComingSoon({
         </Card>
     );
 }
+
+export default ComingSoon;
