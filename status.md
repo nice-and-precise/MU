@@ -8,6 +8,11 @@ All systems operational. Build passing.
 **Current Status**: Pilot Launch Prep (Project Archiving)
 
 ## Recent Accomplishments
+-   **Phase 28 Complete (ROI Calculator & Fixes):**
+    -   **ROI Calculator:** Implemented wizard-style calculator in Settings Dashboard.
+    -   **Onboarding:** Fixed persistent "Welcome" popup by correcting cache revalidation scope.
+    -   **Verification:** Build passing.
+
 -   **Phase 27 Complete (Mobile Readiness):**
     -   **PWA:** Configured `manifest.ts` with checks against `public/icons`. Verified Viewport settings.
     -   **Verification:** `tsc` passed strict type checks.

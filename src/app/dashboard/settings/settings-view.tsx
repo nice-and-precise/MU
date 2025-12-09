@@ -12,6 +12,7 @@ import { Employee, Crew, CrewMember, User as PrismaUser } from "@prisma/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { AuditLogViewer } from "@/components/settings/AuditLogViewer";
+import { ROICalculator } from "@/components/roi/ROICalculator";
 
 type SafeEmployee = Omit<Employee, 'hourlyRate' | 'burdenRate' | 'salary' | 'ssn' | 'defaultOvertimeMultiplier' | 'doubleTimeMultiplier' | 'doubleTimeDailyThreshold' | 'qboEmployeeId' | 'adpEmployeeId' | 'defaultEarningCode'> & {
     hourlyRate?: number | null;
@@ -56,6 +57,7 @@ export function SettingsView({ initialEmployees, preferences, initialAuditLogs, 
                     {isOwner && <TabsTrigger value="access" className="gap-2"><Shield className="w-4 h-4" /> Access & Team</TabsTrigger>}
                     <TabsTrigger value="integrations" className="gap-2"><Layers className="w-4 h-4" /> Integrations</TabsTrigger>
                     <TabsTrigger value="general" className="gap-2"><Settings2 className="w-4 h-4" /> General</TabsTrigger>
+                    <TabsTrigger value="roi" className="gap-2"><Settings2 className="w-4 h-4" /> ROI Calculator</TabsTrigger>
                     {isOwner && <TabsTrigger value="audit" className="gap-2"><Lock className="w-4 h-4" /> Security Audit</TabsTrigger>}
                 </TabsList>
 
@@ -161,6 +163,11 @@ export function SettingsView({ initialEmployees, preferences, initialAuditLogs, 
                             </div>
                         </CardContent>
                     </Card>
+                </TabsContent>
+
+                {/* --- ROI CALCULATOR --- */}
+                <TabsContent value="roi" className="space-y-4 animate-in fade-in-50 duration-300">
+                    <ROICalculator />
                 </TabsContent>
 
                 {/* --- SECURITY AUDIT --- */}

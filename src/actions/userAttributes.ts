@@ -18,7 +18,7 @@ export async function completeOnboarding() {
             data: { hasCompletedOnboarding: true },
         });
 
-        revalidatePath('/dashboard');
+        revalidatePath('/dashboard', 'layout');
         return { success: true };
     } catch (error) {
         console.error("Failed to complete onboarding:", error);
