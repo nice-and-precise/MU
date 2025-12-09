@@ -8,6 +8,12 @@ All systems operational. Build passing.
 **Current Status**: Pilot Launch Prep (Project Archiving)
 
 ## Recent Accomplishments
+-   **Phase 29 Complete (Dark Mode Refactor):**
+    -   **Financials:** Comprehensive dark mode refactor for `CrewDispatch`, `EmployeeManager`, and `GeoClockIn`.
+    -   **Standards:** Enforced `dark:` variants for backgrounds, borders, and text to meet WCAG AA contrast.
+    -   **Verification:** Build passing and visual verification complete.
+
+
 -   **Phase 28 Complete (ROI Calculator & Fixes):**
     -   **ROI Calculator:** Implemented wizard-style calculator in Settings Dashboard.
     -   **Onboarding:** Fixed persistent "Welcome" popup by correcting cache revalidation scope.

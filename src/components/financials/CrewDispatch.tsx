@@ -108,7 +108,7 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
     }
 
     return (
-        <Card className="max-w-4xl mx-auto shadow-lg border-t-4 border-t-[#003366] bg-white dark:bg-slate-900">
+        <Card className="max-w-4xl mx-auto shadow-lg border-t-4 border-t-[#003366] bg-white dark:bg-slate-900 border-x dark:border-x-slate-700 border-b dark:border-b-slate-700">
             <CardHeader className="bg-slate-50 dark:bg-slate-800 border-b dark:border-slate-700">
                 <CardTitle className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-[#003366] dark:text-blue-400">
@@ -117,7 +117,7 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
                     </div>
                     {variant === "owner" && (
                         <div className="flex items-center gap-4">
-                            <div className="text-sm font-normal bg-green-100 text-green-800 px-3 py-1 rounded-full border border-green-200 shadow-sm">
+                            <div className="text-sm font-normal bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 px-3 py-1 rounded-full border border-green-200 dark:border-green-800 shadow-sm">
                                 Est. Run Rate: <span className="font-bold">${totalHourlyRate}/hr</span>
                             </div>
                         </div>
@@ -127,11 +127,11 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
             <CardContent className="space-y-8 p-6">
                 {/* Project & Priority (Owner Only) */}
                 {variant === "owner" && (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 bg-blue-50/50 rounded-xl border border-blue-100">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 bg-blue-50/50 dark:bg-blue-950/30 rounded-xl border border-blue-100 dark:border-blue-800">
                         <div className="space-y-2">
                             <Label className="font-semibold text-blue-900 dark:text-blue-100">Target Project</Label>
                             <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
-                                <SelectTrigger className="bg-white dark:bg-slate-950 border-blue-200 dark:border-blue-800">
+                                <SelectTrigger className="bg-white dark:bg-slate-950 border-blue-200 dark:border-blue-800 dark:text-slate-100">
                                     <SelectValue placeholder="Select Project" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -144,7 +144,7 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
                         <div className="space-y-2">
                             <Label className="font-semibold text-blue-900 dark:text-blue-100">Job Type</Label>
                             <Select value={jobType} onValueChange={setJobType}>
-                                <SelectTrigger className="bg-white dark:bg-slate-950 border-blue-200 dark:border-blue-800">
+                                <SelectTrigger className="bg-white dark:bg-slate-950 border-blue-200 dark:border-blue-800 dark:text-slate-100">
                                     <SelectValue placeholder="Select Type" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -172,16 +172,16 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Crew Selection */}
                     <div className="space-y-6">
-                        <div className="flex justify-between items-center border-b pb-2">
+                        <div className="flex justify-between items-center border-b dark:border-slate-700 pb-2">
                             <h3 className="font-bold text-lg text-gray-800 dark:text-gray-100">Crew Members</h3>
-                            <span className="text-xs font-medium text-muted-foreground bg-slate-100 px-2 py-1 rounded-full">{crewMembers.length} Assigned</span>
+                            <span className="text-xs font-medium text-muted-foreground bg-slate-100 dark:bg-slate-800 dark:text-slate-300 px-2 py-1 rounded-full">{crewMembers.length} Assigned</span>
                         </div>
 
                         <div className="flex flex-col md:flex-row gap-2 items-end bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border dark:border-slate-700">
                             <div className="w-full md:flex-1 space-y-2">
                                 <Label className="text-xs uppercase text-muted-foreground font-bold">Employee</Label>
                                 <Select value={selectedEmployeeId} onValueChange={setSelectedEmployeeId}>
-                                    <SelectTrigger className="bg-white dark:bg-slate-950">
+                                    <SelectTrigger className="bg-white dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100">
                                         <SelectValue placeholder="Select Employee" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -194,7 +194,7 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
                             <div className="w-full md:w-1/3 space-y-2">
                                 <Label className="text-xs uppercase text-muted-foreground font-bold">Role</Label>
                                 <Select value={selectedRole} onValueChange={setSelectedRole}>
-                                    <SelectTrigger className="bg-white dark:bg-slate-950">
+                                    <SelectTrigger className="bg-white dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100">
                                         <SelectValue placeholder="Default" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -213,7 +213,7 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
 
                         <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
                             {crewMembers.map(member => (
-                                <div key={member.id} className="flex items-center justify-between p-4 bg-white rounded-xl border shadow-sm hover:shadow-md transition-shadow group">
+                                <div key={member.id} className="flex items-center justify-between p-4 bg-white dark:bg-slate-800/50 rounded-xl border dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow group">
                                     <div className="flex items-center gap-3">
                                         <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold text-white ${member.role === 'FOREMAN' ? 'bg-blue-600' :
                                             member.role === 'OPERATOR' ? 'bg-orange-500' : 'bg-slate-500'
@@ -223,13 +223,13 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
                                         <div>
                                             <div className="font-bold text-black dark:text-white">{member.firstName} {member.lastName}</div>
                                             <div className="text-xs text-gray-900 dark:text-gray-300 flex items-center gap-2">
-                                                <span className="bg-slate-200 px-1.5 py-0.5 rounded text-black font-bold border border-slate-300">{member.role}</span>
-                                                <span className="text-black font-bold">•</span>
+                                                <span className="bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5 rounded text-black dark:text-slate-200 font-bold border border-slate-300 dark:border-slate-600">{member.role}</span>
+                                                <span className="text-black dark:text-slate-400 font-bold">•</span>
                                                 <span className="font-bold text-black dark:text-white">${member.hourlyRate}/hr</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <button onClick={() => removeMember(member.id)} className="text-gray-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors opacity-0 group-hover:opacity-100">
+                                    <button onClick={() => removeMember(member.id)} className="text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-full transition-colors opacity-0 group-hover:opacity-100">
                                         <X className="h-5 w-5" />
                                     </button>
                                 </div>
@@ -246,16 +246,16 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
                     {/* Asset Selection (Owner Only) */}
                     {variant === "owner" && (
                         <div className="space-y-6">
-                            <div className="flex justify-between items-center border-b pb-2">
+                            <div className="flex justify-between items-center border-b dark:border-slate-700 pb-2">
                                 <h3 className="font-bold text-lg text-gray-800 dark:text-gray-100">Assets & Equipment</h3>
-                                <span className="text-xs font-medium text-muted-foreground bg-slate-100 px-2 py-1 rounded-full">{selectedAssets.length} Assigned</span>
+                                <span className="text-xs font-medium text-muted-foreground bg-slate-100 dark:bg-slate-800 dark:text-slate-300 px-2 py-1 rounded-full">{selectedAssets.length} Assigned</span>
                             </div>
 
                             <div className="flex flex-col md:flex-row gap-2 items-end bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border dark:border-slate-700">
                                 <div className="w-full md:flex-1 space-y-2">
                                     <Label className="text-xs uppercase text-muted-foreground font-bold">Asset</Label>
                                     <Select value={selectedAssetId} onValueChange={setSelectedAssetId}>
-                                        <SelectTrigger className="bg-white dark:bg-slate-950">
+                                        <SelectTrigger className="bg-white dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100">
                                             <SelectValue placeholder="Select Asset" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -272,21 +272,21 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
 
                             <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
                                 {selectedAssets.map(asset => (
-                                    <div key={asset.id} className="flex items-center justify-between p-4 bg-white rounded-xl border shadow-sm hover:shadow-md transition-shadow group">
+                                    <div key={asset.id} className="flex items-center justify-between p-4 bg-white dark:bg-slate-800/50 rounded-xl border dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow group">
                                         <div className="flex items-center gap-3">
-                                            <div className="h-10 w-10 rounded-lg bg-yellow-100 flex items-center justify-center font-bold text-yellow-700">
+                                            <div className="h-10 w-10 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center font-bold text-yellow-700 dark:text-yellow-400">
                                                 {asset.type[0]}
                                             </div>
                                             <div>
-                                                <div className="font-bold text-gray-900">{asset.name}</div>
+                                                <div className="font-bold text-gray-900 dark:text-white">{asset.name}</div>
                                                 <div className="text-xs text-muted-foreground flex items-center gap-2">
-                                                    <span className="bg-slate-100 px-1.5 py-0.5 rounded text-slate-600 font-medium">{asset.type}</span>
+                                                    <span className="bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded text-slate-600 dark:text-slate-300 font-medium">{asset.type}</span>
                                                     <span>•</span>
                                                     <span>${asset.hourlyRate}/hr</span>
                                                 </div>
                                             </div>
                                         </div>
-                                        <button onClick={() => removeAsset(asset.id)} className="text-gray-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors opacity-0 group-hover:opacity-100">
+                                        <button onClick={() => removeAsset(asset.id)} className="text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-full transition-colors opacity-0 group-hover:opacity-100">
                                             <X className="h-5 w-5" />
                                         </button>
                                     </div>
@@ -301,7 +301,7 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
                     )}
                 </div>
 
-                <div className="pt-6 border-t flex gap-4">
+                <div className="pt-6 border-t dark:border-slate-700 flex gap-4">
                     <BigButton
                         label={isSubmitting ? "DISPATCHING..." : (variant === "owner" ? `DISPATCH CREW & ASSETS` : "DISPATCH CREW")}
                         icon={Users}
@@ -312,7 +312,7 @@ export function CrewDispatch({ variant = "default", employees, assets, projects 
                     {variant === "owner" && (
                         <button
                             onClick={handleNotifyCrew}
-                            className="px-6 py-3 bg-white border border-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+                            className="px-6 py-3 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-200 font-bold rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors shadow-sm"
                         >
                             NOTIFY CREW
                         </button>

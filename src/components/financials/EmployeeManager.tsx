@@ -180,8 +180,8 @@ export function EmployeeManager({ employees }: EmployeeManagerProps) {
                                             </TableCell>
                                             <TableCell className="hidden md:table-cell">
                                                 <Badge className={
-                                                    employee.status === "ACTIVE" ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-100" :
-                                                        "bg-slate-100 text-slate-800 hover:bg-slate-100"
+                                                    employee.status === "ACTIVE" ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/30" :
+                                                        "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
                                                 }>
                                                     {employee.status}
                                                 </Badge>

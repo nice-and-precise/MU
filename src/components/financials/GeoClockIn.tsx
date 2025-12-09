@@ -236,14 +236,14 @@ export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius,
                                     }}
                                 />
                             ) : (
-                                <div className="text-center py-8 text-muted-foreground bg-slate-50 rounded-lg border border-dashed">
+                                <div className="text-center py-8 text-muted-foreground bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-dashed dark:border-slate-700">
                                     Please select a vehicle to begin inspection.
                                 </div>
                             )}
 
                             <button
                                 onClick={() => setShowInspection(false)}
-                                className="absolute top-4 right-4 text-muted-foreground hover:text-foreground p-2 bg-white/80 rounded-full"
+                                className="absolute top-4 right-4 text-muted-foreground hover:text-foreground p-2 bg-white/80 dark:bg-slate-800/80 rounded-full"
                             >
                                 Close
                             </button>
@@ -272,7 +272,7 @@ export function GeoClockIn({ projectId, projectLat, projectLong, geofenceRadius,
                     </div>
                 </div>
 
-                <div className={`p-4 rounded-lg border ${distance && distance > geofenceRadius ? "bg-red-50 border-red-200" : "bg-green-50 border-green-200"}`}>
+                <div className={`p-4 rounded-lg border ${distance && distance > geofenceRadius ? "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-900" : "bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-900"}`}>
                     <div className="flex items-center gap-2 mb-2">
                         <MapPin className={`h-5 w-5 ${distance && distance > geofenceRadius ? "text-red-500" : "text-green-600"}`} />
                         <span className="font-bold">
