@@ -3,11 +3,9 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { CalculatorMode } from "../utils/calculations"
-import { Map, DollarSign, Clock, activity } from "lucide-react"
+import { Map, DollarSign, Clock, Activity } from "lucide-react"
 
-// Note: 'activity' is not exported by name from lucide-react usually, checking imports.
-// Using 'Activity' instead.
-import { Activity } from "lucide-react"
+
 
 interface ModeSelectorProps {
     onSelectMode: (mode: CalculatorMode) => void
