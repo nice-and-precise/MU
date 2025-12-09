@@ -2,6 +2,14 @@
 
 ## Changelog
 
+## [1.1.0] - 2025-12-09
+
+### Added
+- **Enhanced ROI Calculator**: Complete overhaul of the ROI calculator (`src/components/roi/`) with modular architecture.
+    - **Modules**: Added dedicated modules for 811 Ticket Efficiency, Job Costing, Payroll & Time, and Price-Per-Foot Analytics.
+    - **Interactive Inputs**: Added generic `SliderInput` component with "I don't know" smart defaults.
+    - **Results Dashboard**: Added unified dashboard for total annual savings visualization.
+
 ## [1.0.0-pilot] - 2025-12-08
 
 ### 🚀 Pilot Launch Readiness
