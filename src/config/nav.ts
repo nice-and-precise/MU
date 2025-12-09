@@ -10,7 +10,8 @@ import {
     Users,
     Package,
     Calculator,
-    Settings
+    Settings,
+    DollarSign
 } from "lucide-react";
 
 export interface NavItem {
@@ -59,6 +60,7 @@ export const NAV_ITEMS: NavGroup[] = [
         title: "Administration",
         items: [
             { title: "Estimating", href: "/dashboard/estimating", icon: Calculator, roles: ["OWNER", "SUPER"] },
+            { title: "Financials", href: "/dashboard/financials", icon: DollarSign, roles: ["OWNER", "SUPER"] },
             { title: "Command Center", href: "/dashboard/admin", icon: LayoutDashboard, roles: ["OWNER", "SUPER"] },
             { title: "Settings", href: "/dashboard/settings", icon: Settings, roles: ["OWNER", "SUPER"] },
         ]

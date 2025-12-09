@@ -15,7 +15,7 @@ export default withAuth(
         }
 
         // CREW Restrictions
-        const restrictedForCrew = ["/dashboard/admin", "/financials", "/billing"];
+        const restrictedForCrew = ["/dashboard/admin", "/dashboard/financials", "/financials", "/billing"];
         if (token?.role === "CREW" && restrictedForCrew.some(p => path.startsWith(p))) {
             return NextResponse.redirect(new URL("/dashboard", req.url));
         }

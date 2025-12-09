@@ -5,6 +5,7 @@
 ![Tech Stack](https://img.shields.io/badge/Stack-Next.js_15_|_Prisma_|_Postgres-black?style=for-the-badge&logo=next.js)
 
 > **The Operating System for Horizontal Directional Drilling (HDD).**
+> *See [Pilot Demo Open Items & Limitations](docs/demo-open-items.md) for current status.*
 
 Midwest Underground (MU) is a comprehensive, offline-first digital platform designed to modernize the HDD industry. It replaces fragmented paper processes, spreadsheets, and whiteboard tracking with a unified, real-time command center. From field data collection to financial analytics, MU bridges the gap between the muddy boots on the ground and the decisions in the office.
 
@@ -167,6 +168,24 @@ sequenceDiagram
     npx prisma generate
     npx prisma db push
     ```
+
+6.  **Demo Data Seeding**
+    The system includes a robust demo data generator that populates realistic users, projects, 811 tickets, and financial data.
+
+    **Local Developer Flow:**
+    ```bash
+    # Seed full demo data
+    npx prisma db seed
+
+    # Verify data integrity
+    npx ts-node scripts/verify-demo-data.ts
+    ```
+
+    **Hosted / Production Flow:**
+    -   Log in as an OWNER or SUPER user.
+    -   Go to the Owner Dashboard.
+    -   Click the **"Seed Demo System"** button in the top header.
+    -   *Note: This action is idempotent and safe to run multiple times.*
 
 5.  **Run Development Server**
     ```bash

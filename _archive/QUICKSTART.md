@@ -1,4 +1,9 @@
-# MU Repository Audit - Quick Start Guide
+> [!NOTE]
+> This file describes the initial setup for the "Claude Code" agent.
+> Current AI Agent protocols are defined in [docs/AGENT_PROTOCOLS.md](../docs/AGENT_PROTOCOLS.md) and [.cursorrules](../.cursorrules).
+
+# QUICKSTART: Midwest Underground (MU) Repository
+ Audit - Quick Start Guide
 
 ## Files Included
 

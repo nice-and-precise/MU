@@ -1,4 +1,9 @@
-# Executive Summary: HDD-Nexus Audit Report
+> [!IMPORTANT]
+> **LEGACY SNAPSHOT**: This document is a historical record of the initial audit from Dec 1, 2025.
+> The current status of the project is tracked in [status.md](../status.md).
+> Many issues listed here may have been resolved.
+
+# MU Platform Audit - Executive Summary
 **Audit Date:** December 1, 2025
 **Project:** HDD-Nexus (Midwest Underground)
 **Auditor:** Autonomous Audit Agent

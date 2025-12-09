@@ -1,10 +1,13 @@
-export default function PayPage() {
+import ComingSoon from "@/components/ui/ComingSoon";
+
+export default function MobilePayPage() {
     return (
-        <div className="p-4">
-            <h1 className="text-xl font-heading uppercase tracking-tight mb-4">Pay Stubs</h1>
-            <div className="bg-white p-4 rounded-lg shadow border text-center text-gray-500">
-                <p>Pay stub viewing is coming soon.</p>
-            </div>
+        <div className="p-4 space-y-4 pb-20">
+            <h1 className="text-2xl font-bold mb-4 font-heading text-foreground">Pay Stubs</h1>
+            <ComingSoon
+                title="Pay Stubs Coming Soon"
+                description="View your pay history and download stubs directly from your mobile device."
+            />
         </div>
     );
 }
